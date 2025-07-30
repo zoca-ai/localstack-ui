@@ -12,9 +12,10 @@ import {
 // GET /api/cloudwatch/log-groups/[name] - Get a specific log group
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
   try {
+    const params = await context.params;
     const logGroupName = decodeURIComponent(params.name);
 
     const describeParams: DescribeLogGroupsCommandInput = {
@@ -47,9 +48,10 @@ export async function GET(
 // PUT /api/cloudwatch/log-groups/[name] - Update a log group (retention policy)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
   try {
+    const params = await context.params;
     const logGroupName = decodeURIComponent(params.name);
     const body = await request.json();
     const { retentionInDays } = body;
@@ -80,9 +82,10 @@ export async function PUT(
 // DELETE /api/cloudwatch/log-groups/[name] - Delete a log group
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
   try {
+    const params = await context.params;
     const logGroupName = decodeURIComponent(params.name);
 
     const deleteParams: DeleteLogGroupCommandInput = {

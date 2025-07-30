@@ -10,9 +10,10 @@ import {
 // GET /api/cloudwatch/log-groups/[name]/streams - List log streams
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
   try {
+    const params = await context.params;
     const logGroupName = decodeURIComponent(params.name);
     const searchParams = request.nextUrl.searchParams;
     const logStreamNamePrefix = searchParams.get('prefix') || undefined;
@@ -49,9 +50,10 @@ export async function GET(
 // POST /api/cloudwatch/log-groups/[name]/streams - Create a log stream
 export async function POST(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
   try {
+    const params = await context.params;
     const logGroupName = decodeURIComponent(params.name);
     const body = await request.json();
     const { logStreamName } = body;

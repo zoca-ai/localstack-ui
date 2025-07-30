@@ -11,8 +11,8 @@ export async function GET(
   context: { params: Promise<{ name: string }> }
 ) {
   try {
-    const params = await context.params;
-    const alarmName = decodeURIComponent(params.name);
+    const routeParams = await context.params;
+    const alarmName = decodeURIComponent(routeParams.name);
     const searchParams = request.nextUrl.searchParams;
     
     const historyItemType = searchParams.get('historyItemType') as 'ConfigurationUpdate' | 'StateUpdate' | 'Action' | undefined;

@@ -183,7 +183,7 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
                       </TabsList>
                       <TabsContent value="formatted" className="mt-3">
                         <div className="relative">
-                          <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono">
+                          <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono whitespace-pre-wrap break-words">
                             <code>{formatSecretValue(secretData.value.secretString)}</code>
                           </pre>
                           <Button
@@ -210,7 +210,7 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
                       </TabsContent>
                       <TabsContent value="raw" className="mt-3">
                         <div className="relative">
-                          <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono">
+                          <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono whitespace-pre-wrap break-words">
                             <code>{secretData.value.secretString}</code>
                           </pre>
                           <Button
@@ -238,7 +238,7 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
                     </Tabs>
                   ) : (
                     <div className="relative">
-                      <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono">
+                      <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono whitespace-pre-wrap break-words">
                         <code>{secretData.value.secretString}</code>
                       </pre>
                       <Button

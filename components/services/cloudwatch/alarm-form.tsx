@@ -64,7 +64,7 @@ const formSchema = z.object({
   threshold: z.string().min(1, 'Threshold is required'),
   comparisonOperator: z.string().min(1, 'Comparison operator is required'),
   treatMissingData: z.string().optional(),
-  actionsEnabled: z.boolean().default(true),
+  actionsEnabled: z.boolean(),
   alarmActions: z.string().optional(),
   okActions: z.string().optional(),
   insufficientDataActions: z.string().optional(),

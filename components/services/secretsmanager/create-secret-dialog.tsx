@@ -89,6 +89,7 @@ export function CreateSecretDialog({
       } catch {
         setValueType('plaintext');
       }
+      setIsLoadingValue(false);
     }
   }, [isEditing, secretData, open, form]);
 
@@ -102,12 +103,15 @@ export function CreateSecretDialog({
       });
       setTags({});
       setValueType('plaintext');
+      setIsLoadingValue(false);
+    } else if (isEditing) {
+      setIsLoadingValue(true);
     }
-  }, [open, form]);
+  }, [open, form, isEditing]);
 
   const onSubmit = async (values: SecretFormValues) => {
     try {
-      let secretString = values.secretValue;
+      const secretString = values.secretValue;
       
       // Validate JSON if needed
       if (valueType === 'json') {
@@ -219,7 +223,7 @@ export function CreateSecretDialog({
 
             <div className="space-y-2">
               <FormLabel>Secret Value</FormLabel>
-              {isEditing && isLoadingSecret ? (
+              {isEditing && (isLoadingSecret || isLoadingValue) ? (
                 <div className="space-y-2">
                   <Skeleton className="h-10 w-full" />
                   <Skeleton className="h-[150px] w-full" />
@@ -230,7 +234,7 @@ export function CreateSecretDialog({
                     <TabsTrigger value="plaintext">Plaintext</TabsTrigger>
                     <TabsTrigger value="json">JSON</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="plaintext">
+                  <TabsContent value="plaintext" className="mt-3">
                     <FormField
                       control={form.control}
                       name="secretValue"
@@ -239,7 +243,7 @@ export function CreateSecretDialog({
                           <FormControl>
                             <Textarea
                               placeholder="Enter your secret value..."
-                              className="min-h-[150px] font-mono"
+                              className="min-h-[150px] font-mono text-sm resize-y"
                               {...field}
                             />
                           </FormControl>
@@ -248,7 +252,7 @@ export function CreateSecretDialog({
                       )}
                     />
                   </TabsContent>
-                  <TabsContent value="json">
+                  <TabsContent value="json" className="mt-3">
                     <FormField
                       control={form.control}
                       name="secretValue"
@@ -258,7 +262,7 @@ export function CreateSecretDialog({
                             <div className="space-y-2">
                               <Textarea
                                 placeholder='{"username": "admin", "password": "secret123"}'
-                                className="min-h-[150px] font-mono"
+                                className="min-h-[150px] font-mono text-sm resize-y"
                                 {...field}
                               />
                               <Button
