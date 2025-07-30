@@ -328,4 +328,3 @@ export default function CloudWatchPage() {
     </MainLayout>
   );
 }
-
