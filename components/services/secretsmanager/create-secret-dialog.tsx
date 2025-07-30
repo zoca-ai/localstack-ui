@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -26,9 +26,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { useCreateSecret, useUpdateSecretValue } from '@/hooks/use-secrets-manager';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useCreateSecret, useUpdateSecretValue, useSecret } from '@/hooks/use-secrets-manager';
 import { Secret } from '@/types';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Loader2 } from 'lucide-react';
 
 const secretSchema = z.object({
   name: z
@@ -61,6 +62,7 @@ export function CreateSecretDialog({
   const [newTagKey, setNewTagKey] = useState('');
   const [newTagValue, setNewTagValue] = useState('');
   const [valueType, setValueType] = useState<'plaintext' | 'json'>('plaintext');
+  const [isLoadingValue, setIsLoadingValue] = useState(false);
 
   const form = useForm<SecretFormValues>({
     resolver: zodResolver(secretSchema),
@@ -72,6 +74,36 @@ export function CreateSecretDialog({
   });
 
   const isEditing = !!editingSecret;
+
+  // Fetch existing secret value when editing
+  const { data: secretData, isLoading: isLoadingSecret } = useSecret(editingSecret?.name || null, isEditing && open);
+
+  // Update form when secret value is loaded
+  useEffect(() => {
+    if (isEditing && secretData?.value?.secretString && open) {
+      form.setValue('secretValue', secretData.value.secretString);
+      // Detect if it's JSON
+      try {
+        JSON.parse(secretData.value.secretString);
+        setValueType('json');
+      } catch {
+        setValueType('plaintext');
+      }
+    }
+  }, [isEditing, secretData, open, form]);
+
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      form.reset({
+        name: '',
+        description: '',
+        secretValue: '',
+      });
+      setTags({});
+      setValueType('plaintext');
+    }
+  }, [open, form]);
 
   const onSubmit = async (values: SecretFormValues) => {
     try {
@@ -104,8 +136,6 @@ export function CreateSecretDialog({
         });
       }
 
-      form.reset();
-      setTags({});
       onOpenChange(false);
     } catch (error) {
       // Error is handled by the mutation
