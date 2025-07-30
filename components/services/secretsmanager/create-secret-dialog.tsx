@@ -62,7 +62,6 @@ export function CreateSecretDialog({
   const [newTagKey, setNewTagKey] = useState('');
   const [newTagValue, setNewTagValue] = useState('');
   const [valueType, setValueType] = useState<'plaintext' | 'json'>('plaintext');
-  const [isLoadingValue, setIsLoadingValue] = useState(false);
 
   const form = useForm<SecretFormValues>({
     resolver: zodResolver(secretSchema),
@@ -80,20 +79,21 @@ export function CreateSecretDialog({
 
   // Update form when secret value is loaded
   useEffect(() => {
-    if (isEditing && secretData?.value?.secretString && open) {
-      form.setValue('secretValue', secretData.value.secretString);
-      // Detect if it's JSON
-      try {
-        JSON.parse(secretData.value.secretString);
-        setValueType('json');
-      } catch {
-        setValueType('plaintext');
+    if (isEditing && open) {
+      if (secretData?.value?.secretString) {
+        form.setValue('secretValue', secretData.value.secretString);
+        // Detect if it's JSON
+        try {
+          JSON.parse(secretData.value.secretString);
+          setValueType('json');
+        } catch {
+          setValueType('plaintext');
+        }
       }
-      setIsLoadingValue(false);
     }
   }, [isEditing, secretData, open, form]);
 
-  // Reset form when dialog closes
+  // Reset form when dialog opens/closes
   useEffect(() => {
     if (!open) {
       form.reset({
@@ -103,11 +103,16 @@ export function CreateSecretDialog({
       });
       setTags({});
       setValueType('plaintext');
-      setIsLoadingValue(false);
-    } else if (isEditing) {
-      setIsLoadingValue(true);
+    } else if (editingSecret) {
+      // When opening for editing, set the form values
+      form.reset({
+        name: editingSecret.name,
+        description: editingSecret.description || '',
+        secretValue: '', // This will be populated when the secret value loads
+      });
+      setTags(editingSecret.tags || {});
     }
-  }, [open, form, isEditing]);
+  }, [open, form, editingSecret]);
 
   const onSubmit = async (values: SecretFormValues) => {
     try {
@@ -223,7 +228,7 @@ export function CreateSecretDialog({
 
             <div className="space-y-2">
               <FormLabel>Secret Value</FormLabel>
-              {isEditing && (isLoadingSecret || isLoadingValue) ? (
+              {isEditing && isLoadingSecret ? (
                 <div className="space-y-2">
                   <Skeleton className="h-10 w-full" />
                   <Skeleton className="h-[150px] w-full" />
@@ -335,7 +340,10 @@ export function CreateSecretDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit">
+              <Button 
+                type="submit" 
+                disabled={isEditing && isLoadingSecret}
+              >
                 {isEditing ? 'Update Secret' : 'Create Secret'}
               </Button>
             </DialogFooter>

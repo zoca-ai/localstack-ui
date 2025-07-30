@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { SecretList } from "@/components/services/secretsmanager/secret-list";
-import { CreateSecretDialog } from "@/components/services/secretsmanager/create-secret-dialog";
-import { SecretViewer } from "@/components/services/secretsmanager/secret-viewer";
+import { SecretDialog } from "@/components/services/secretsmanager/secret-dialog";
 import {
   Card,
   CardContent,
@@ -19,21 +18,27 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function SecretsManagerPage() {
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSecret, setSelectedSecret] = useState<Secret | null>(null);
-  const [viewerOpen, setViewerOpen] = useState(false);
-  const [editingSecret, setEditingSecret] = useState<Secret | null>(null);
+  const [dialogMode, setDialogMode] = useState<'create' | 'view' | 'edit'>('create');
   const queryClient = useQueryClient();
 
   const handleViewSecret = (secret: Secret) => {
     setSelectedSecret(secret);
-    setViewerOpen(true);
+    setDialogMode('view');
+    setDialogOpen(true);
   };
 
   const handleEditSecret = (secret: Secret) => {
-    setEditingSecret(secret);
-    setCreateDialogOpen(true);
-    setViewerOpen(false);
+    setSelectedSecret(secret);
+    setDialogMode('edit');
+    setDialogOpen(true);
+  };
+
+  const handleCreateSecret = () => {
+    setSelectedSecret(null);
+    setDialogMode('create');
+    setDialogOpen(true);
   };
 
   const handleRefresh = () => {
@@ -118,12 +123,7 @@ export default function SecretsManagerPage() {
                   Manage your stored secrets and credentials
                 </CardDescription>
               </div>
-              <Button
-                onClick={() => {
-                  setEditingSecret(null);
-                  setCreateDialogOpen(true);
-                }}
-              >
+              <Button onClick={handleCreateSecret}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Secret
               </Button>
@@ -137,21 +137,11 @@ export default function SecretsManagerPage() {
           </CardContent>
         </Card>
 
-        <CreateSecretDialog
-          open={createDialogOpen}
-          onOpenChange={setCreateDialogOpen}
-          editingSecret={editingSecret}
-        />
-
-        <SecretViewer
+        <SecretDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
           secret={selectedSecret}
-          open={viewerOpen}
-          onOpenChange={setViewerOpen}
-          onEdit={() => {
-            if (selectedSecret) {
-              handleEditSecret(selectedSecret);
-            }
-          }}
+          mode={dialogMode}
         />
       </div>
     </MainLayout>
