@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 import { LocalStackHealth, Service } from '@/types';
 import { AVAILABLE_SERVICES } from '@/config/services';
-import { s3Client, dynamoClient, sqsClient, secretsManagerClient, lambdaClient, iamClient } from '@/lib/aws-config';
+import { s3Client, dynamoClient, sqsClient, secretsManagerClient, lambdaClient, iamClient, cloudWatchLogsClient } from '@/lib/aws-config';
 import { ListBucketsCommand } from '@aws-sdk/client-s3';
 import { ListTablesCommand } from '@aws-sdk/client-dynamodb';
 import { ListQueuesCommand } from '@aws-sdk/client-sqs';
 import { ListSecretsCommand } from '@aws-sdk/client-secrets-manager';
 import { ListFunctionsCommand } from '@aws-sdk/client-lambda';
 import { ListUsersCommand } from '@aws-sdk/client-iam';
+import { DescribeLogGroupsCommand } from '@aws-sdk/client-cloudwatch-logs';
 
 async function checkServiceHealth(service: Service): Promise<Service> {
   try {
@@ -34,6 +35,10 @@ async function checkServiceHealth(service: Service): Promise<Service> {
       
       case 'iam':
         await iamClient.send(new ListUsersCommand({}));
+        return { ...service, status: 'running' };
+      
+      case 'cloudwatch':
+        await cloudWatchLogsClient.send(new DescribeLogGroupsCommand({ limit: 1 }));
         return { ...service, status: 'running' };
       
       default:
