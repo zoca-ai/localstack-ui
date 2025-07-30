@@ -35,7 +35,7 @@ export const AVAILABLE_SERVICES: Service[] = [
     icon: "Activity",
     status: "unknown",
     description: "Monitoring and observability",
-    enabled: false,
+    enabled: true,
   },
   {
     id: "iam",
@@ -50,7 +50,7 @@ export const AVAILABLE_SERVICES: Service[] = [
     id: "lambda",
     name: "lambda",
     displayName: "Lambda",
-    icon: "Function",
+    icon: "Zap",
     status: "unknown", 
     description: "Serverless compute service",
     enabled: true,

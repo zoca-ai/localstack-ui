@@ -4,6 +4,8 @@ import { SQSClient } from '@aws-sdk/client-sqs';
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { IAMClient } from '@aws-sdk/client-iam';
+import { CloudWatchClient } from '@aws-sdk/client-cloudwatch';
+import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
 const config = {
@@ -23,3 +25,5 @@ export const sqsClient = new SQSClient(config);
 export const secretsManagerClient = new SecretsManagerClient(config);
 export const lambdaClient = new LambdaClient(config);
 export const iamClient = new IAMClient(config);
+export const cloudWatchClient = new CloudWatchClient(config);
+export const cloudWatchLogsClient = new CloudWatchLogsClient(config);

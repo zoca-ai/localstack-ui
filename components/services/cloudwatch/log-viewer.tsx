@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useCloudWatchLogEvents } from '@/hooks/use-cloudwatch';
-import type { CloudWatchLogEvent } from '@/types';
 
 interface LogViewerProps {
   logGroupName: string;

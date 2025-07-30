@@ -46,7 +46,7 @@ import {
 import { LogGroupForm } from './log-group-form';
 import { LogViewer } from './log-viewer';
 import { LogStreamForm } from './log-stream-form';
-import type { CloudWatchLogGroup, CloudWatchLogStream } from '@/types';
+import type { CloudWatchLogStream } from '@/types';
 
 interface LogGroupViewerProps {
   logGroupName: string;

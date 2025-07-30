@@ -233,3 +233,121 @@ export interface IAMAttachedPolicy {
   policyName: string;
   policyArn: string;
 }
+
+// CloudWatch Types
+export interface CloudWatchLogGroup {
+  logGroupName: string;
+  creationTime?: number;
+  retentionInDays?: number;
+  metricFilterCount?: number;
+  arn?: string;
+  storedBytes?: number;
+  kmsKeyId?: string;
+  dataProtectionStatus?: string;
+  inheritedProperties?: string[];
+}
+
+export interface CloudWatchLogStream {
+  logStreamName: string;
+  creationTime?: number;
+  firstEventTimestamp?: number;
+  lastEventTimestamp?: number;
+  lastIngestionTime?: number;
+  uploadSequenceToken?: string;
+  arn?: string;
+  storedBytes?: number;
+}
+
+export interface CloudWatchLogEvent {
+  timestamp: number;
+  message: string;
+  ingestionTime?: number;
+}
+
+export interface CloudWatchMetric {
+  namespace?: string;
+  metricName?: string;
+  dimensions?: CloudWatchDimension[];
+  timestamp?: Date;
+  value?: number;
+  statisticValues?: {
+    sampleCount: number;
+    sum: number;
+    minimum: number;
+    maximum: number;
+  };
+  unit?: string;
+  storageResolution?: number;
+}
+
+export interface CloudWatchDimension {
+  name: string;
+  value: string;
+}
+
+export interface CloudWatchAlarm {
+  alarmName?: string;
+  alarmArn?: string;
+  alarmDescription?: string;
+  alarmConfigurationUpdatedTimestamp?: Date;
+  actionsEnabled?: boolean;
+  okActions?: string[];
+  alarmActions?: string[];
+  insufficientDataActions?: string[];
+  stateValue?: 'OK' | 'ALARM' | 'INSUFFICIENT_DATA';
+  stateReason?: string;
+  stateReasonData?: string;
+  stateUpdatedTimestamp?: Date;
+  metricName?: string;
+  namespace?: string;
+  statistic?: string;
+  extendedStatistic?: string;
+  dimensions?: CloudWatchDimension[];
+  period?: number;
+  unit?: string;
+  evaluationPeriods?: number;
+  datapointsToAlarm?: number;
+  threshold?: number;
+  comparisonOperator?: string;
+  treatMissingData?: string;
+  evaluateLowSampleCountPercentile?: string;
+  metrics?: any[];
+  thresholdMetricId?: string;
+  evaluationState?: string;
+  stateTransitionedTimestamp?: Date;
+}
+
+export interface CloudWatchAlarmHistory {
+  alarmName?: string;
+  timestamp?: Date;
+  historyItemType?: 'ConfigurationUpdate' | 'StateUpdate' | 'Action';
+  historySummary?: string;
+  historyData?: string;
+}
+
+export interface MetricDataQuery {
+  id: string;
+  metricStat?: {
+    metric: {
+      namespace?: string;
+      metricName?: string;
+      dimensions?: CloudWatchDimension[];
+    };
+    period: number;
+    stat: string;
+    unit?: string;
+  };
+  expression?: string;
+  label?: string;
+  returnData?: boolean;
+  period?: number;
+}
+
+export interface MetricDataResult {
+  id?: string;
+  label?: string;
+  timestamps?: Date[];
+  values?: number[];
+  statusCode?: 'Complete' | 'InternalError' | 'PartialData';
+  messages?: string[];
+}
