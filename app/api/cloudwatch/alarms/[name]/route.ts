@@ -16,9 +16,10 @@ import {
 // GET /api/cloudwatch/alarms/[name] - Get a specific alarm
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
   try {
+    const params = await context.params;
     const alarmName = decodeURIComponent(params.name);
 
     const describeParams: DescribeAlarmsCommandInput = {
@@ -51,9 +52,10 @@ export async function GET(
 // PUT /api/cloudwatch/alarms/[name] - Update alarm state or actions
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
   try {
+    const params = await context.params;
     const alarmName = decodeURIComponent(params.name);
     const body = await request.json();
     const { action, stateValue, stateReason, stateReasonData } = body;
@@ -119,9 +121,10 @@ export async function PUT(
 // DELETE /api/cloudwatch/alarms/[name] - Delete an alarm
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  context: { params: Promise<{ name: string }> }
 ) {
   try {
+    const params = await context.params;
     const alarmName = decodeURIComponent(params.name);
 
     const deleteParams: DeleteAlarmsCommandInput = {

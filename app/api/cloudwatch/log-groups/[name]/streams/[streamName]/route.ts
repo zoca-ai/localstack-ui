@@ -8,9 +8,10 @@ import {
 // DELETE /api/cloudwatch/log-groups/[name]/streams/[streamName] - Delete a log stream
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { name: string; streamName: string } }
+  context: { params: Promise<{ name: string; streamName: string }> }
 ) {
   try {
+    const params = await context.params;
     const logGroupName = decodeURIComponent(params.name);
     const logStreamName = decodeURIComponent(params.streamName);
 

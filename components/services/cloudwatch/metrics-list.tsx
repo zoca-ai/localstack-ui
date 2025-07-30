@@ -36,7 +36,7 @@ export function MetricsList({ onSelectMetric }: MetricsListProps) {
     namespace: namespaceFilter !== 'all' ? namespaceFilter : undefined,
   });
 
-  const namespaces = [...new Set(metrics?.map(m => m.namespace).filter(Boolean) || [])];
+  const namespaces = [...new Set(metrics?.map(m => m.namespace).filter((ns): ns is string => Boolean(ns)) || [])];
 
   const filteredMetrics = metrics?.filter(metric =>
     metric.metricName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
