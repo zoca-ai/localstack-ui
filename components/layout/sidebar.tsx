@@ -35,7 +35,7 @@ export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className={cn("w-56 border-r", className)}>
+    <aside className={cn("w-64 border-r", className)}>
       <ScrollArea className="h-full">
         <div className="flex h-16 items-center border-b px-6">
           <h2 className="text-lg font-semibold">LocalStack</h2>
