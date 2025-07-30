@@ -150,3 +150,86 @@ export interface LambdaConfiguration {
   layers?: any[];
   tags?: Record<string, string>;
 }
+
+// IAM Types
+export interface IAMUser {
+  userName: string;
+  userId: string;
+  arn: string;
+  path: string;
+  createDate: Date;
+  passwordLastUsed?: Date;
+  permissionsBoundary?: {
+    permissionsBoundaryType?: string;
+    permissionsBoundaryArn?: string;
+  };
+  tags?: Array<{
+    key: string;
+    value: string;
+  }>;
+}
+
+export interface IAMRole {
+  roleName: string;
+  roleId: string;
+  arn: string;
+  path: string;
+  createDate: Date;
+  assumeRolePolicyDocument: string;
+  description?: string;
+  maxSessionDuration?: number;
+  permissionsBoundary?: {
+    permissionsBoundaryType?: string;
+    permissionsBoundaryArn?: string;
+  };
+  tags?: Array<{
+    key: string;
+    value: string;
+  }>;
+}
+
+export interface IAMPolicy {
+  policyName: string;
+  policyId: string;
+  arn: string;
+  path: string;
+  defaultVersionId: string;
+  attachmentCount?: number;
+  permissionsBoundaryUsageCount?: number;
+  isAttachable: boolean;
+  description?: string;
+  createDate: Date;
+  updateDate: Date;
+  tags?: Array<{
+    key: string;
+    value: string;
+  }>;
+}
+
+export interface IAMPolicyVersion {
+  document: string;
+  versionId: string;
+  isDefaultVersion: boolean;
+  createDate: Date;
+}
+
+export interface IAMAccessKey {
+  accessKeyId: string;
+  secretAccessKey?: string; // Only shown once when created
+  userName: string;
+  status: 'Active' | 'Inactive';
+  createDate: Date;
+}
+
+export interface IAMGroup {
+  groupName: string;
+  groupId: string;
+  arn: string;
+  path: string;
+  createDate: Date;
+}
+
+export interface IAMAttachedPolicy {
+  policyName: string;
+  policyArn: string;
+}

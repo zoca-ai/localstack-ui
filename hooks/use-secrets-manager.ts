@@ -199,7 +199,7 @@ export function useSecretVersionValue(secretId: string | null, versionId: string
         throw new Error(error.error || 'Failed to fetch version value');
       }
       
-      return response.json() as SecretValue;
+      return await response.json() as SecretValue;
     },
     enabled: !!secretId && !!versionId,
   });

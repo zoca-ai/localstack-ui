@@ -26,7 +26,7 @@ import {
   Tag, 
   AlertCircle,
   Timer,
-  Memory,
+  MemoryStick,
   Hash,
   Calendar,
   FileCode
@@ -95,7 +95,7 @@ export function FunctionViewer({ func, open, onOpenChange }: FunctionViewerProps
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Memory</p>
                   <div className="flex items-center gap-1">
-                    <Memory className="h-3 w-3 text-muted-foreground" />
+                    <MemoryStick className="h-3 w-3 text-muted-foreground" />
                     <span className="text-sm font-medium">{details.memorySize || 128} MB</span>
                   </div>
                 </div>
@@ -167,7 +167,7 @@ export function FunctionViewer({ func, open, onOpenChange }: FunctionViewerProps
                         <p className="text-sm text-muted-foreground font-mono break-all">
                           {value}
                         </p>
-                        {key !== Object.keys(details.environment.variables!)[Object.keys(details.environment.variables!).length - 1] && (
+                        {key !== Object.keys(details.environment?.variables || {})[Object.keys(details.environment?.variables || {}).length - 1] && (
                           <Separator className="mt-2" />
                         )}
                       </div>

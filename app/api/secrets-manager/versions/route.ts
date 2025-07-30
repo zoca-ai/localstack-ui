@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       const versions = Object.entries(response.Versions || {}).map(([versionId, stages]) => ({
         versionId,
         versionStages: stages as string[],
-        createdDate: response.Versions?.[versionId] ? new Date() : undefined, // LocalStack might not provide dates
+        createdDate: new Date(), // LocalStack might not provide dates
       }));
 
       return NextResponse.json({ versions });

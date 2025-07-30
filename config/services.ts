@@ -44,7 +44,16 @@ export const AVAILABLE_SERVICES: Service[] = [
     icon: "Shield",
     status: "unknown",
     description: "Identity and Access Management",
-    enabled: false,
+    enabled: true,
+  },
+  {
+    id: "lambda",
+    name: "lambda",
+    displayName: "Lambda",
+    icon: "Function",
+    status: "unknown", 
+    description: "Serverless compute service",
+    enabled: true,
   },
 ];
 

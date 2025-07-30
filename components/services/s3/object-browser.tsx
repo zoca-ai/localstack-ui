@@ -76,7 +76,7 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
 
   const filteredObjects = useMemo(() => {
     if (!data || !searchQuery) return data?.objects || [];
-    return data.objects.filter((obj) =>
+    return data.objects.filter((obj: any) =>
       obj.key.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [data, searchQuery]);
@@ -93,7 +93,7 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedKeys(new Set(filteredObjects.map((obj) => obj.key)));
+      setSelectedKeys(new Set(filteredObjects.map((obj: any) => obj.key)));
     } else {
       setSelectedKeys(new Set());
     }
@@ -227,7 +227,7 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.prefixes.map((prefix) => (
+          {data?.prefixes.map((prefix: any) => (
             <TableRow
               key={prefix}
               className="cursor-pointer"
@@ -247,7 +247,7 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
               <TableCell />
             </TableRow>
           ))}
-          {filteredObjects.map((object) => (
+          {filteredObjects.map((object: any) => (
             <TableRow key={object.key}>
               <TableCell>
                 <Checkbox

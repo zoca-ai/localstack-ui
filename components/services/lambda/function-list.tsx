@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Zap, Search, Timer, Memory, Code2, AlertCircle } from 'lucide-react';
+import { Zap, Search, Timer, MemoryStick, Code2, AlertCircle } from 'lucide-react';
 import { formatDistanceToNow, formatBytes } from '@/lib/utils';
 import { LambdaFunction } from '@/types';
 
@@ -139,7 +139,7 @@ export function FunctionList({ onViewFunction }: FunctionListProps) {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1 text-sm">
-                    <Memory className="h-3 w-3 text-muted-foreground" />
+                    <MemoryStick className="h-3 w-3 text-muted-foreground" />
                     <span>{func.memorySize || 128} MB</span>
                   </div>
                 </TableCell>
