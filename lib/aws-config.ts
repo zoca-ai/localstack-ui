@@ -1,0 +1,21 @@
+import { S3Client } from '@aws-sdk/client-s3';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { SQSClient } from '@aws-sdk/client-sqs';
+import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+
+const config = {
+  endpoint: process.env.NEXT_PUBLIC_LOCALSTACK_ENDPOINT || 'http://localhost:4566',
+  region: process.env.NEXT_PUBLIC_AWS_REGION || 'ap-south-1',
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || 'test',
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || 'test',
+  },
+  forcePathStyle: true, // Required for S3
+};
+
+export const s3Client = new S3Client(config);
+export const dynamoClient = new DynamoDBClient(config);
+export const dynamoDocClient = DynamoDBDocumentClient.from(dynamoClient);
+export const sqsClient = new SQSClient(config);
+export const secretsManagerClient = new SecretsManagerClient(config);
