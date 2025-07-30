@@ -70,10 +70,13 @@ export function GroupList({ selectedGroup, onSelectGroup }: GroupListProps) {
   }
 
   // Add default group if not in list
-  const allGroups = [
-    { name: 'default', state: 'ACTIVE' as const, arn: 'arn:aws:scheduler:::schedule-group/default' },
-    ...(groups || [])
-  ];
+  const hasDefaultGroup = groups?.some(group => group.name === 'default');
+  const allGroups = hasDefaultGroup
+    ? groups || []
+    : [
+        { name: 'default', state: 'ACTIVE' as const, arn: 'arn:aws:scheduler:::schedule-group/default' },
+        ...(groups || [])
+      ];
 
   return (
     <div className="space-y-4">
