@@ -37,8 +37,18 @@ export async function GET(request: NextRequest) {
     const command = new ListMetricsCommand(params);
     const response = await cloudWatchClient.send(command);
 
+    // Transform the response to match our TypeScript types
+    const metrics = (response.Metrics || []).map(metric => ({
+      namespace: metric.Namespace,
+      metricName: metric.MetricName,
+      dimensions: metric.Dimensions?.map(dim => ({
+        name: dim.Name || '',
+        value: dim.Value || ''
+      }))
+    }));
+
     return NextResponse.json({
-      metrics: response.Metrics || [],
+      metrics,
       nextToken: response.NextToken,
     });
   } catch (error: any) {
