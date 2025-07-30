@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server';
 import { LocalStackHealth, Service } from '@/types';
 import { AVAILABLE_SERVICES } from '@/config/services';
-import { s3Client, dynamoClient, sqsClient, secretsManagerClient, lambdaClient, iamClient, cloudWatchLogsClient } from '@/lib/aws-config';
+import { 
+  s3Client, 
+  dynamoClient, 
+  sqsClient, 
+  secretsManagerClient, 
+  lambdaClient, 
+  iamClient, 
+  cloudWatchLogsClient,
+  eventBridgeClient,
+  schedulerClient,
+  cloudFormationClient,
+  apiGatewayClient
+} from '@/lib/aws-config';
 import { ListBucketsCommand } from '@aws-sdk/client-s3';
 import { ListTablesCommand } from '@aws-sdk/client-dynamodb';
 import { ListQueuesCommand } from '@aws-sdk/client-sqs';
@@ -9,6 +21,10 @@ import { ListSecretsCommand } from '@aws-sdk/client-secrets-manager';
 import { ListFunctionsCommand } from '@aws-sdk/client-lambda';
 import { ListUsersCommand } from '@aws-sdk/client-iam';
 import { DescribeLogGroupsCommand } from '@aws-sdk/client-cloudwatch-logs';
+import { ListEventBusesCommand } from '@aws-sdk/client-eventbridge';
+import { ListScheduleGroupsCommand } from '@aws-sdk/client-scheduler';
+import { ListStacksCommand } from '@aws-sdk/client-cloudformation';
+import { GetRestApisCommand } from '@aws-sdk/client-api-gateway';
 
 async function checkServiceHealth(service: Service): Promise<Service> {
   try {
@@ -39,6 +55,26 @@ async function checkServiceHealth(service: Service): Promise<Service> {
       
       case 'cloudwatch':
         await cloudWatchLogsClient.send(new DescribeLogGroupsCommand({ limit: 1 }));
+        return { ...service, status: 'running' };
+      
+      case 'eventbridge':
+        await eventBridgeClient.send(new ListEventBusesCommand({}));
+        return { ...service, status: 'running' };
+      
+      case 'scheduler':
+        await schedulerClient.send(new ListScheduleGroupsCommand({}));
+        return { ...service, status: 'running' };
+      
+      case 'logs':
+        await cloudWatchLogsClient.send(new DescribeLogGroupsCommand({ limit: 1 }));
+        return { ...service, status: 'running' };
+      
+      case 'cloudformation':
+        await cloudFormationClient.send(new ListStacksCommand({}));
+        return { ...service, status: 'running' };
+      
+      case 'apigateway':
+        await apiGatewayClient.send(new GetRestApisCommand({}));
         return { ...service, status: 'running' };
       
       default:

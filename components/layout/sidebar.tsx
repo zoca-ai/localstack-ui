@@ -5,26 +5,34 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { AVAILABLE_SERVICES } from "@/config/services";
 import {
-  Database,
-  Table,
+  Package,
   MessageSquare,
-  Zap,
   Key,
   Activity,
+  Workflow,
+  Clock,
+  FileText,
+  Layers,
+  Globe,
   Shield,
+  Zap,
   Home,
   LucideIcon,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const iconMap: Record<string, LucideIcon> = {
-  Database,
-  Table,
+  Package,
   MessageSquare,
-  Zap,
   Key,
   Activity,
+  Workflow,
+  Clock,
+  FileText,
+  Layers,
+  Globe,
   Shield,
+  Zap,
 };
 
 interface SidebarProps {
@@ -60,11 +68,12 @@ export function Sidebar({ className }: SidebarProps) {
           <div className="space-y-1">
             {AVAILABLE_SERVICES.filter((service) => service.enabled).map(
               (service) => {
-                const Icon = iconMap[service.icon] || Database;
-                const isActive = pathname === `/services/${service.id}`;
+                const Icon = iconMap[service.icon] || Package;
+                const href = service.href || `/services/${service.id}`;
+                const isActive = pathname === href;
 
                 return (
-                  <Link key={service.id} href={`/services/${service.id}`}>
+                  <Link key={service.id} href={href}>
                     <div
                       className={cn(
                         "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
@@ -93,7 +102,7 @@ export function Sidebar({ className }: SidebarProps) {
               <div className="space-y-1">
                 {AVAILABLE_SERVICES.filter((service) => !service.enabled).map(
                   (service) => {
-                    const Icon = iconMap[service.icon] || Database;
+                    const Icon = iconMap[service.icon] || Package;
 
                     return (
                       <div

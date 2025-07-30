@@ -4,15 +4,14 @@ import { useState } from "react";
 import {
   Activity,
   AlertTriangle,
-  FileText,
   BarChart3,
   RefreshCw,
   Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
-import { MainLayout } from "@/components/layout/main-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ServicePageLayout } from "@/components/layout/service-page-layout";
+import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -22,32 +21,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
-  useCloudWatchLogGroups,
   useCloudWatchAlarms,
   useCloudWatchMetrics,
 } from "@/hooks/use-cloudwatch";
-import { LogGroupsList } from "@/components/services/cloudwatch/log-groups-list";
-import { LogGroupForm } from "@/components/services/cloudwatch/log-group-form";
-import { LogGroupViewer } from "@/components/services/cloudwatch/log-group-viewer";
 import { AlarmsList } from "@/components/services/cloudwatch/alarms-list";
 import { AlarmForm } from "@/components/services/cloudwatch/alarm-form";
 import { AlarmViewer } from "@/components/services/cloudwatch/alarm-viewer";
 import { MetricsList } from "@/components/services/cloudwatch/metrics-list";
 import type {
-  CloudWatchLogGroup,
   CloudWatchAlarm,
   CloudWatchMetric,
 } from "@/types";
 
 export default function CloudWatchPage() {
-  const [activeTab, setActiveTab] = useState("logs");
+  const [activeTab, setActiveTab] = useState("metrics");
   const queryClient = useQueryClient();
-  const [showCreateLogGroup, setShowCreateLogGroup] = useState(false);
   const [showCreateAlarm, setShowCreateAlarm] = useState(false);
-  const [selectedLogGroup, setSelectedLogGroup] =
-    useState<CloudWatchLogGroup | null>(null);
   const [selectedAlarm, setSelectedAlarm] = useState<CloudWatchAlarm | null>(
     null,
   );
@@ -55,215 +45,121 @@ export default function CloudWatchPage() {
     null,
   );
 
-  const { data: logGroups, isLoading: isLoadingLogGroups } =
-    useCloudWatchLogGroups();
   const { data: alarms, isLoading: isLoadingAlarms } = useCloudWatchAlarms();
   const { data: metrics, isLoading: isLoadingMetrics } = useCloudWatchMetrics();
 
   const alarmsInAlarmState =
     alarms?.filter((a) => a.stateValue === "ALARM").length || 0;
-  const totalLogGroups = logGroups?.length || 0;
   const totalMetrics = metrics?.length || 0;
   const totalAlarms = alarms?.length || 0;
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["cloudwatch-metrics"],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["cloudwatch-alarms"],
+    });
+  };
+
   return (
-    <MainLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">CloudWatch</h1>
-            <p className="text-muted-foreground">
-              Monitor logs, metrics, and alarms from your LocalStack services
-            </p>
-          </div>
-          <Button
-            onClick={() => {
-              queryClient.invalidateQueries({
-                queryKey: ["cloudwatch-log-groups"],
-              });
-              queryClient.invalidateQueries({
-                queryKey: ["cloudwatch-metrics"],
-              });
-              queryClient.invalidateQueries({
-                queryKey: ["cloudwatch-alarms"],
-              });
-            }}
-            variant="outline"
-            size="sm"
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-        </div>
+    <ServicePageLayout
+      title="CloudWatch"
+      description="Monitor metrics and alarms from your LocalStack services"
+      icon={Activity}
+      secondaryAction={{
+        label: "Refresh",
+        icon: RefreshCw,
+        onClick: handleRefresh,
+      }}
+      stats={[
+        {
+          title: "Metrics",
+          value: totalMetrics,
+          description: "Custom metrics",
+          icon: BarChart3,
+          loading: isLoadingMetrics,
+        },
+        {
+          title: "Alarms",
+          value: totalAlarms,
+          description: "Total alarms configured",
+          icon: Activity,
+          loading: isLoadingAlarms,
+        },
+        {
+          title: "Active Alarms",
+          value: alarmsInAlarmState,
+          description: "Alarms in ALARM state",
+          icon: AlertTriangle,
+          loading: isLoadingAlarms,
+        },
+        {
+          title: "Namespaces",
+          value: "-",
+          description: "Metric namespaces",
+          icon: BarChart3,
+          loading: false,
+        },
+      ]}
+      alert={{
+        icon: Info,
+        description:
+          "CloudWatch in LocalStack provides monitoring capabilities for your local AWS services. Track metrics and configure alarms to monitor your applications.",
+      }}
+    >
+      <Card>
+        <CardContent className="p-0">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full justify-start rounded-none border-b h-auto p-0">
+              <TabsTrigger
+                value="metrics"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
+              >
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Metrics
+              </TabsTrigger>
+              <TabsTrigger
+                value="alarms"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
+              >
+                <Activity className="mr-2 h-4 w-4" />
+                Alarms
+                {alarmsInAlarmState > 0 && (
+                  <span className="ml-2 rounded-full bg-destructive px-2 py-0.5 text-xs text-destructive-foreground">
+                    {alarmsInAlarmState}
+                  </span>
+                )}
+              </TabsTrigger>
+            </TabsList>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Log Groups</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {isLoadingLogGroups ? (
-                <Skeleton className="h-8 w-16" />
-              ) : (
-                <div className="text-2xl font-bold">{totalLogGroups}</div>
-              )}
-              <p className="text-xs text-muted-foreground">Total log groups</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Metrics</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {isLoadingMetrics ? (
-                <Skeleton className="h-8 w-16" />
-              ) : (
-                <div className="text-2xl font-bold">{totalMetrics}</div>
-              )}
-              <p className="text-xs text-muted-foreground">Custom metrics</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Alarms</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              {isLoadingAlarms ? (
-                <Skeleton className="h-8 w-16" />
-              ) : (
-                <div className="text-2xl font-bold">{totalAlarms}</div>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Total alarms configured
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Active Alarms
-              </CardTitle>
-              <AlertTriangle className="h-4 w-4 text-destructive" />
-            </CardHeader>
-            <CardContent>
-              {isLoadingAlarms ? (
-                <Skeleton className="h-8 w-16" />
-              ) : (
-                <div className="text-2xl font-bold text-destructive">
-                  {alarmsInAlarmState}
+            <div className="p-6">
+              <TabsContent value="metrics" className="mt-0 space-y-4">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Metrics</h2>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    View custom metrics published to CloudWatch
+                  </p>
+                  <MetricsList onSelectMetric={setSelectedMetric} />
                 </div>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Alarms in ALARM state
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+              </TabsContent>
 
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            CloudWatch in LocalStack provides monitoring capabilities for your
-            local AWS services. You can view logs, track metrics, and configure
-            alarms just like in AWS.
-          </AlertDescription>
-        </Alert>
-
-        <Card>
-          <CardContent className="p-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full justify-start rounded-none border-b h-auto p-0">
-                <TabsTrigger
-                  value="logs"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  Logs
-                </TabsTrigger>
-                <TabsTrigger
-                  value="metrics"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
-                >
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  Metrics
-                </TabsTrigger>
-                <TabsTrigger
-                  value="alarms"
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
-                >
-                  <Activity className="mr-2 h-4 w-4" />
-                  Alarms
-                  {alarmsInAlarmState > 0 && (
-                    <span className="ml-2 rounded-full bg-destructive px-2 py-0.5 text-xs text-destructive-foreground">
-                      {alarmsInAlarmState}
-                    </span>
-                  )}
-                </TabsTrigger>
-              </TabsList>
-
-              <div className="p-6">
-                <TabsContent value="logs" className="mt-0 space-y-4">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2">Log Groups</h2>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Manage and view log groups and their streams
-                    </p>
-                    <LogGroupsList
-                      onSelectLogGroup={setSelectedLogGroup}
-                      onCreateLogGroup={() => setShowCreateLogGroup(true)}
-                    />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="metrics" className="mt-0 space-y-4">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2">Metrics</h2>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      View custom metrics published to CloudWatch
-                    </p>
-                    <MetricsList onSelectMetric={setSelectedMetric} />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="alarms" className="mt-0 space-y-4">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2">Alarms</h2>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Configure and monitor CloudWatch alarms
-                    </p>
-                    <AlarmsList
-                      onSelectAlarm={setSelectedAlarm}
-                      onCreateAlarm={() => setShowCreateAlarm(true)}
-                    />
-                  </div>
-                </TabsContent>
-              </div>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Create Log Group Dialog */}
-      <Dialog open={showCreateLogGroup} onOpenChange={setShowCreateLogGroup}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Create Log Group</DialogTitle>
-            <DialogDescription>
-              Create a new CloudWatch log group to collect and store log events
-            </DialogDescription>
-          </DialogHeader>
-          <LogGroupForm
-            onSuccess={() => setShowCreateLogGroup(false)}
-            onCancel={() => setShowCreateLogGroup(false)}
-          />
-        </DialogContent>
-      </Dialog>
+              <TabsContent value="alarms" className="mt-0 space-y-4">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Alarms</h2>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Configure and monitor CloudWatch alarms
+                  </p>
+                  <AlarmsList
+                    onSelectAlarm={setSelectedAlarm}
+                    onCreateAlarm={() => setShowCreateAlarm(true)}
+                  />
+                </div>
+              </TabsContent>
+            </div>
+          </Tabs>
+        </CardContent>
+      </Card>
 
       {/* Create Alarm Dialog */}
       <Dialog open={showCreateAlarm} onOpenChange={setShowCreateAlarm}>
@@ -281,15 +177,6 @@ export default function CloudWatchPage() {
           />
         </DialogContent>
       </Dialog>
-
-      {/* Log Group Viewer */}
-      {selectedLogGroup && (
-        <LogGroupViewer
-          logGroupName={selectedLogGroup.logGroupName}
-          open={!!selectedLogGroup}
-          onOpenChange={(open) => !open && setSelectedLogGroup(null)}
-        />
-      )}
 
       {/* Alarm Viewer */}
       {selectedAlarm && selectedAlarm.alarmName && (
@@ -355,6 +242,6 @@ export default function CloudWatchPage() {
           )}
         </DialogContent>
       </Dialog>
-    </MainLayout>
+    </ServicePageLayout>
   );
 }

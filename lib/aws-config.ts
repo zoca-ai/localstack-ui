@@ -7,6 +7,10 @@ import { IAMClient } from '@aws-sdk/client-iam';
 import { CloudWatchClient } from '@aws-sdk/client-cloudwatch';
 import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+import { EventBridgeClient } from '@aws-sdk/client-eventbridge';
+import { SchedulerClient } from '@aws-sdk/client-scheduler';
+import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
+import { APIGatewayClient } from '@aws-sdk/client-api-gateway';
 
 const config = {
   endpoint: process.env.NEXT_PUBLIC_LOCALSTACK_ENDPOINT || 'http://localhost:4566',
@@ -27,3 +31,7 @@ export const lambdaClient = new LambdaClient(config);
 export const iamClient = new IAMClient(config);
 export const cloudWatchClient = new CloudWatchClient(config);
 export const cloudWatchLogsClient = new CloudWatchLogsClient(config);
+export const eventBridgeClient = new EventBridgeClient(config);
+export const schedulerClient = new SchedulerClient(config);
+export const cloudFormationClient = new CloudFormationClient(config);
+export const apiGatewayClient = new APIGatewayClient(config);

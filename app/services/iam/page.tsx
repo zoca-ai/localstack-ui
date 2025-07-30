@@ -1,15 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { MainLayout } from "@/components/layout/main-layout";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { ServicePageLayout } from "@/components/layout/service-page-layout";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog,
@@ -32,12 +25,14 @@ import {
   Lock,
   RefreshCw,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useDeleteIAMUser,
   useDeleteIAMRole,
   useDeleteIAMPolicy,
+  useIAMUsers,
+  useIAMRoles,
+  useIAMPolicies,
 } from "@/hooks/use-iam";
 
 // Import IAM components
@@ -70,6 +65,11 @@ export default function IAMPage() {
   const [showCreatePolicy, setShowCreatePolicy] = useState(false);
   const [policyToDelete, setPolicyToDelete] = useState<string | null>(null);
 
+  // Data queries
+  const { data: users, isLoading: isLoadingUsers } = useIAMUsers();
+  const { data: roles, isLoading: isLoadingRoles } = useIAMRoles();
+  const { data: policies, isLoading: isLoadingPolicies } = useIAMPolicies('Local');
+
   // Delete mutations
   const deleteUserMutation = useDeleteIAMUser();
   const deleteRoleMutation = useDeleteIAMRole();
@@ -96,72 +96,93 @@ export default function IAMPage() {
     }
   };
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["iam-users"] });
+    queryClient.invalidateQueries({ queryKey: ["iam-roles"] });
+    queryClient.invalidateQueries({ queryKey: ["iam-policies"] });
+  };
+
+  // Calculate stats
+  const totalUsers = users?.length || 0;
+  const totalRoles = roles?.length || 0;
+  const totalPolicies = policies?.length || 0;
+  const usersWithAccessKeys = users?.filter((u: any) => u.hasAccessKeys).length || 0;
+
   return (
-    <MainLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">IAM</h1>
-            <p className="text-muted-foreground">Manage IAM permissions</p>
-          </div>
-          <Button
-            onClick={() => {
-              queryClient.invalidateQueries({ queryKey: ["iam-users"] });
-              queryClient.invalidateQueries({ queryKey: ["iam-roles"] });
-              queryClient.invalidateQueries({ queryKey: ["iam-policies"] });
-            }}
-            variant="outline"
-            size="sm"
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-        </div>
+    <ServicePageLayout
+      title="IAM"
+      description="Manage identities and access permissions"
+      icon={Shield}
+      secondaryAction={{
+        label: "Refresh",
+        icon: RefreshCw,
+        onClick: handleRefresh,
+      }}
+      stats={[
+        {
+          title: "Users",
+          value: totalUsers,
+          description: "Total IAM users",
+          icon: Users,
+          loading: isLoadingUsers,
+        },
+        {
+          title: "Roles",
+          value: totalRoles,
+          description: "Service roles",
+          icon: ShieldCheck,
+          loading: isLoadingRoles,
+        },
+        {
+          title: "Policies",
+          value: totalPolicies,
+          description: "Custom policies",
+          icon: FileText,
+          loading: isLoadingPolicies,
+        },
+        {
+          title: "Access Keys",
+          value: usersWithAccessKeys,
+          description: "Users with keys",
+          icon: Key,
+          loading: isLoadingUsers,
+        },
+      ]}
+      alert={{
+        icon: Info,
+        description:
+          "IAM (Identity and Access Management) allows you to manage access to AWS services and resources securely. Create users, roles, and policies to control who can access what in your LocalStack environment.",
+      }}
+    >
+      <Card>
+        <CardContent className="p-0">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full justify-start rounded-none border-b h-auto p-0">
+              <TabsTrigger 
+                value="users" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Users
+              </TabsTrigger>
+              <TabsTrigger 
+                value="roles" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
+              >
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                Roles
+              </TabsTrigger>
+              <TabsTrigger
+                value="policies"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Policies
+              </TabsTrigger>
+            </TabsList>
 
-        {/* Alert */}
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            IAM (Identity and Access Management) allows you to manage access to
-            AWS services and resources securely. Create users, roles, and
-            policies to control who can access what in your LocalStack
-            environment.
-          </AlertDescription>
-        </Alert>
-
-        {/* Main Content */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Identity and Access Management
-            </CardTitle>
-            <CardDescription>
-              Manage users, roles, policies, and access keys for your LocalStack
-              AWS services
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="users" className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Users
-                </TabsTrigger>
-                <TabsTrigger value="roles" className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4" />
-                  Roles
-                </TabsTrigger>
-                <TabsTrigger
-                  value="policies"
-                  className="flex items-center gap-2"
-                >
-                  <FileText className="h-4 w-4" />
-                  Policies
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="users" className="mt-6">
+            <div className="p-6">
+              <TabsContent value="users" className="mt-0">
                 <UserList
                   onViewUser={setSelectedUser}
                   onCreateUser={() => setShowCreateUser(true)}
@@ -169,7 +190,7 @@ export default function IAMPage() {
                 />
               </TabsContent>
 
-              <TabsContent value="roles" className="mt-6">
+              <TabsContent value="roles" className="mt-0">
                 <RoleList
                   onViewRole={setSelectedRole}
                   onCreateRole={() => setShowCreateRole(true)}
@@ -177,17 +198,17 @@ export default function IAMPage() {
                 />
               </TabsContent>
 
-              <TabsContent value="policies" className="mt-6">
+              <TabsContent value="policies" className="mt-0">
                 <PolicyList
                   onViewPolicy={setSelectedPolicy}
                   onCreatePolicy={() => setShowCreatePolicy(true)}
                   onDeletePolicy={setPolicyToDelete}
                 />
               </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+          </Tabs>
+        </CardContent>
+      </Card>
 
       {/* User Dialogs */}
       <UserViewer
@@ -288,6 +309,6 @@ export default function IAMPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </MainLayout>
+    </ServicePageLayout>
   );
 }

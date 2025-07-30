@@ -6,6 +6,7 @@ export interface Service {
   status: 'running' | 'stopped' | 'error' | 'unknown';
   description: string;
   enabled: boolean;
+  href?: string;
 }
 
 export interface LocalStackHealth {
@@ -350,4 +351,326 @@ export interface MetricDataResult {
   values?: number[];
   statusCode?: 'Complete' | 'InternalError' | 'PartialData';
   messages?: string[];
+}
+
+// EventBridge Types
+export interface EventBusInfo {
+  name?: string;
+  arn?: string;
+  description?: string;
+  kmsKeyId?: string;
+  deadLetterConfig?: {
+    arn?: string;
+  };
+  state?: 'ACTIVE' | 'CREATING' | 'UPDATING' | 'DELETING';
+  creationTime?: Date;
+  lastModifiedTime?: Date;
+}
+
+export interface EventRule {
+  name?: string;
+  arn?: string;
+  eventPattern?: string;
+  state?: 'ENABLED' | 'DISABLED' | 'ENABLED_WITH_ALL_CLOUDTRAIL_MANAGEMENT_EVENTS';
+  description?: string;
+  scheduleExpression?: string;
+  roleArn?: string;
+  managedBy?: string;
+  eventBusName?: string;
+  createdBy?: string;
+}
+
+export interface EventTarget {
+  id: string;
+  arn: string;
+  roleArn?: string;
+  input?: string;
+  inputPath?: string;
+  inputTransformer?: {
+    inputPathsMap?: Record<string, string>;
+    inputTemplate?: string;
+  };
+  kinesisParameters?: any;
+  runCommandParameters?: any;
+  ecsParameters?: any;
+  batchParameters?: any;
+  sqsParameters?: any;
+  httpParameters?: any;
+  redshiftDataParameters?: any;
+  sageMakerPipelineParameters?: any;
+  deadLetterConfig?: {
+    arn?: string;
+  };
+  retryPolicy?: {
+    maximumRetryAttempts?: number;
+    maximumEventAge?: number;
+  };
+}
+
+// EventBridge Scheduler Types
+export interface ScheduleInfo {
+  arn?: string;
+  name?: string;
+  groupName?: string;
+  state?: 'ENABLED' | 'DISABLED';
+  description?: string;
+  scheduleExpression?: string;
+  scheduleExpressionTimezone?: string;
+  startDate?: Date;
+  endDate?: Date;
+  target?: ScheduleTarget;
+  flexibleTimeWindow?: {
+    mode: 'OFF' | 'FLEXIBLE';
+    maximumWindowInMinutes?: number;
+  };
+  creationDate?: Date;
+  lastModificationDate?: Date;
+  kmsKeyArn?: string;
+  actionAfterCompletion?: 'NONE' | 'DELETE';
+}
+
+export interface ScheduleTarget {
+  arn: string;
+  roleArn: string;
+  input?: string;
+  kinesisParameters?: any;
+  eventBridgeParameters?: {
+    detailType: string;
+    source: string;
+  };
+  sqsParameters?: any;
+  httpParameters?: any;
+  retryPolicy?: {
+    maximumEventAgeInSeconds?: number;
+    maximumRetryAttempts?: number;
+  };
+  deadLetterConfig?: {
+    arn?: string;
+  };
+}
+
+export interface ScheduleGroup {
+  arn?: string;
+  name?: string;
+  state?: 'ACTIVE' | 'DELETING';
+  creationDate?: Date;
+  lastModificationDate?: Date;
+}
+
+// CloudFormation Types
+export interface CloudFormationStack {
+  stackId?: string;
+  stackName: string;
+  changeSetId?: string;
+  description?: string;
+  parameters?: Array<{
+    parameterKey?: string;
+    parameterValue?: string;
+    usePreviousValue?: boolean;
+    resolvedValue?: string;
+  }>;
+  creationTime?: Date;
+  deletionTime?: Date;
+  lastUpdatedTime?: Date;
+  rollbackConfiguration?: any;
+  stackStatus: 'CREATE_IN_PROGRESS' | 'CREATE_FAILED' | 'CREATE_COMPLETE' | 'ROLLBACK_IN_PROGRESS' | 'ROLLBACK_FAILED' | 'ROLLBACK_COMPLETE' | 'DELETE_IN_PROGRESS' | 'DELETE_FAILED' | 'DELETE_COMPLETE' | 'UPDATE_IN_PROGRESS' | 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS' | 'UPDATE_COMPLETE' | 'UPDATE_FAILED' | 'UPDATE_ROLLBACK_IN_PROGRESS' | 'UPDATE_ROLLBACK_FAILED' | 'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS' | 'UPDATE_ROLLBACK_COMPLETE' | 'REVIEW_IN_PROGRESS' | 'IMPORT_IN_PROGRESS' | 'IMPORT_COMPLETE' | 'IMPORT_ROLLBACK_IN_PROGRESS' | 'IMPORT_ROLLBACK_FAILED' | 'IMPORT_ROLLBACK_COMPLETE';
+  stackStatusReason?: string;
+  disableRollback?: boolean;
+  notificationARNs?: string[];
+  timeoutInMinutes?: number;
+  capabilities?: Array<'CAPABILITY_IAM' | 'CAPABILITY_NAMED_IAM' | 'CAPABILITY_AUTO_EXPAND'>;
+  outputs?: Array<{
+    outputKey?: string;
+    outputValue?: string;
+    description?: string;
+    exportName?: string;
+  }>;
+  roleARN?: string;
+  tags?: Array<{
+    key: string;
+    value: string;
+  }>;
+  enableTerminationProtection?: boolean;
+  parentId?: string;
+  rootId?: string;
+  driftInformation?: {
+    stackDriftStatus: 'DRIFTED' | 'IN_SYNC' | 'UNKNOWN' | 'NOT_CHECKED';
+    lastCheckTimestamp?: Date;
+  };
+  retainExceptOnCreate?: boolean;
+}
+
+export interface CloudFormationResource {
+  stackName?: string;
+  stackId?: string;
+  logicalResourceId: string;
+  physicalResourceId?: string;
+  resourceType: string;
+  timestamp: Date;
+  resourceStatus: 'CREATE_IN_PROGRESS' | 'CREATE_FAILED' | 'CREATE_COMPLETE' | 'DELETE_IN_PROGRESS' | 'DELETE_FAILED' | 'DELETE_COMPLETE' | 'DELETE_SKIPPED' | 'UPDATE_IN_PROGRESS' | 'UPDATE_FAILED' | 'UPDATE_COMPLETE' | 'IMPORT_FAILED' | 'IMPORT_COMPLETE' | 'IMPORT_IN_PROGRESS' | 'IMPORT_ROLLBACK_IN_PROGRESS' | 'IMPORT_ROLLBACK_FAILED' | 'IMPORT_ROLLBACK_COMPLETE' | 'UPDATE_ROLLBACK_IN_PROGRESS' | 'UPDATE_ROLLBACK_COMPLETE' | 'UPDATE_ROLLBACK_FAILED' | 'ROLLBACK_IN_PROGRESS' | 'ROLLBACK_COMPLETE' | 'ROLLBACK_FAILED';
+  resourceStatusReason?: string;
+  description?: string;
+  metadata?: string;
+  driftInformation?: {
+    stackResourceDriftStatus: 'IN_SYNC' | 'MODIFIED' | 'DELETED' | 'NOT_CHECKED';
+    lastCheckTimestamp?: Date;
+  };
+  moduleInfo?: {
+    typeHierarchy?: string;
+    logicalIdHierarchy?: string;
+  };
+}
+
+export interface CloudFormationEvent {
+  stackId?: string;
+  eventId: string;
+  stackName: string;
+  logicalResourceId?: string;
+  physicalResourceId?: string;
+  resourceType?: string;
+  timestamp: Date;
+  resourceStatus?: string;
+  resourceStatusReason?: string;
+  resourceProperties?: string;
+  clientRequestToken?: string;
+  hookType?: string;
+  hookStatus?: string;
+  hookStatusReason?: string;
+  hookInvocationPoint?: string;
+  hookFailureMode?: string;
+}
+
+// API Gateway Types
+export interface RestApi {
+  id?: string;
+  name?: string;
+  description?: string;
+  createdDate?: Date;
+  version?: string;
+  warnings?: string[];
+  binaryMediaTypes?: string[];
+  minimumCompressionSize?: number;
+  apiKeySource?: 'HEADER' | 'AUTHORIZER';
+  endpointConfiguration?: {
+    types?: Array<'REGIONAL' | 'EDGE' | 'PRIVATE'>;
+    vpcEndpointIds?: string[];
+  };
+  policy?: string;
+  tags?: Record<string, string>;
+  disableExecuteApiEndpoint?: boolean;
+  rootResourceId?: string;
+}
+
+export interface ApiResource {
+  id?: string;
+  parentId?: string;
+  pathPart?: string;
+  path?: string;
+  resourceMethods?: Record<string, ApiMethod>;
+}
+
+export interface ApiMethod {
+  httpMethod?: string;
+  authorizationType?: string;
+  authorizerId?: string;
+  apiKeyRequired?: boolean;
+  requestValidatorId?: string;
+  operationName?: string;
+  requestParameters?: Record<string, boolean>;
+  requestModels?: Record<string, string>;
+  methodResponses?: Record<string, ApiMethodResponse>;
+  methodIntegration?: ApiIntegration;
+  authorizationScopes?: string[];
+}
+
+export interface ApiMethodResponse {
+  statusCode?: string;
+  responseParameters?: Record<string, boolean>;
+  responseModels?: Record<string, string>;
+}
+
+export interface ApiIntegration {
+  type?: 'HTTP' | 'AWS' | 'MOCK' | 'HTTP_PROXY' | 'AWS_PROXY';
+  httpMethod?: string;
+  uri?: string;
+  connectionType?: 'INTERNET' | 'VPC_LINK';
+  connectionId?: string;
+  credentials?: string;
+  requestParameters?: Record<string, string>;
+  requestTemplates?: Record<string, string>;
+  passthroughBehavior?: string;
+  contentHandling?: 'CONVERT_TO_BINARY' | 'CONVERT_TO_TEXT';
+  timeoutInMillis?: number;
+  cacheNamespace?: string;
+  cacheKeyParameters?: string[];
+  integrationResponses?: Record<string, ApiIntegrationResponse>;
+  tlsConfig?: {
+    insecureSkipVerification?: boolean;
+  };
+}
+
+export interface ApiIntegrationResponse {
+  statusCode?: string;
+  selectionPattern?: string;
+  responseParameters?: Record<string, string>;
+  responseTemplates?: Record<string, string>;
+  contentHandling?: 'CONVERT_TO_BINARY' | 'CONVERT_TO_TEXT';
+}
+
+export interface ApiDeployment {
+  id?: string;
+  description?: string;
+  createdDate?: Date;
+  apiSummary?: Record<string, Record<string, ApiMethodSummary>>;
+  canarySettings?: {
+    percentTraffic?: number;
+    stageVariableOverrides?: Record<string, string>;
+    useStageCache?: boolean;
+  };
+}
+
+export interface ApiMethodSummary {
+  authorizationType?: string;
+  apiKeyRequired?: boolean;
+}
+
+export interface ApiStage {
+  deploymentId?: string;
+  clientCertificateId?: string;
+  stageName?: string;
+  description?: string;
+  cacheClusterEnabled?: boolean;
+  cacheClusterSize?: string;
+  cacheClusterStatus?: 'CREATE_IN_PROGRESS' | 'AVAILABLE' | 'DELETE_IN_PROGRESS' | 'NOT_AVAILABLE' | 'FLUSH_IN_PROGRESS';
+  methodSettings?: Record<string, ApiMethodSetting>;
+  variables?: Record<string, string>;
+  documentationVersion?: string;
+  accessLogSettings?: {
+    format?: string;
+    destinationArn?: string;
+  };
+  canarySettings?: {
+    percentTraffic?: number;
+    deploymentId?: string;
+    stageVariableOverrides?: Record<string, string>;
+    useStageCache?: boolean;
+  };
+  tracingEnabled?: boolean;
+  webAclArn?: string;
+  tags?: Record<string, string>;
+  createdDate?: Date;
+  lastUpdatedDate?: Date;
+}
+
+export interface ApiMethodSetting {
+  metricsEnabled?: boolean;
+  loggingLevel?: string;
+  dataTraceEnabled?: boolean;
+  throttlingBurstLimit?: number;
+  throttlingRateLimit?: number;
+  cachingEnabled?: boolean;
+  cacheTtlInSeconds?: number;
+  cacheDataEncrypted?: boolean;
+  requireAuthorizationForCacheControl?: boolean;
+  unauthorizedCacheControlHeaderStrategy?: 'FAIL_WITH_403' | 'SUCCEED_WITH_RESPONSE_HEADER' | 'SUCCEED_WITHOUT_RESPONSE_HEADER';
 }
