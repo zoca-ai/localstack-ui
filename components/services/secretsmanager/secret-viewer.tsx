@@ -161,103 +161,124 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
 
             {/* Always show value section */}
             <>
-                {isLoading ? (
+              {isLoading ? (
+                <div className="space-y-3">
                   <Skeleton className="h-32 w-full" />
-                ) : error ? (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Failed to load secret value: {(error as Error).message}
-                    </AlertDescription>
-                  </Alert>
-                ) : secretData?.value?.secretString ? (
-                  <div className="space-y-2">
-                    {isJSON(secretData.value.secretString) ? (
-                      <Tabs defaultValue="formatted">
-                        <TabsList>
-                          <TabsTrigger value="formatted">Formatted</TabsTrigger>
-                          <TabsTrigger value="raw">Raw</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="formatted">
-                          <div className="relative">
-                            <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-64 text-xs">
-                              {formatSecretValue(secretData.value.secretString)}
-                            </pre>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="absolute top-2 right-2"
-                              onClick={() =>
-                                copyToClipboard(secretData.value.secretString!)
-                              }
-                            >
-                              {copied ? (
-                                <Check className="h-4 w-4" />
-                              ) : (
-                                <Copy className="h-4 w-4" />
-                              )}
-                            </Button>
-                          </div>
-                        </TabsContent>
-                        <TabsContent value="raw">
-                          <div className="relative">
-                            <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-64 text-xs">
-                              {secretData.value.secretString}
-                            </pre>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="absolute top-2 right-2"
-                              onClick={() =>
-                                copyToClipboard(secretData.value.secretString!)
-                              }
-                            >
-                              {copied ? (
-                                <Check className="h-4 w-4" />
-                              ) : (
-                                <Copy className="h-4 w-4" />
-                              )}
-                            </Button>
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    ) : (
-                      <div className="relative">
-                        <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-64 text-xs">
-                          {secretData.value.secretString}
-                        </pre>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-2 right-2"
-                          onClick={() =>
-                            copyToClipboard(secretData.value.secretString!)
-                          }
-                        >
-                          {copied ? (
-                            <Check className="h-4 w-4" />
-                          ) : (
-                            <Copy className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
-                    )}
-                    {secretData.value.versionId && (
-                      <p className="text-xs text-muted-foreground">
-                        Version: {secretData.value.versionId}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      No secret value available
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </>
-            )}
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              ) : error ? (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Failed to load secret value: {(error as Error).message}
+                  </AlertDescription>
+                </Alert>
+              ) : secretData?.value?.secretString ? (
+                <div className="space-y-3">
+                  {isJSON(secretData.value.secretString) ? (
+                    <Tabs defaultValue="formatted" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="formatted">Formatted JSON</TabsTrigger>
+                        <TabsTrigger value="raw">Raw</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="formatted" className="mt-3">
+                        <div className="relative">
+                          <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono">
+                            <code>{formatSecretValue(secretData.value.secretString)}</code>
+                          </pre>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="absolute top-2 right-2"
+                            onClick={() =>
+                              copyToClipboard(secretData.value.secretString!)
+                            }
+                          >
+                            {copied ? (
+                              <>
+                                <Check className="mr-2 h-3 w-3" />
+                                Copied
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="mr-2 h-3 w-3" />
+                                Copy
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="raw" className="mt-3">
+                        <div className="relative">
+                          <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono">
+                            <code>{secretData.value.secretString}</code>
+                          </pre>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="absolute top-2 right-2"
+                            onClick={() =>
+                              copyToClipboard(secretData.value.secretString!)
+                            }
+                          >
+                            {copied ? (
+                              <>
+                                <Check className="mr-2 h-3 w-3" />
+                                Copied
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="mr-2 h-3 w-3" />
+                                Copy
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  ) : (
+                    <div className="relative">
+                      <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono">
+                        <code>{secretData.value.secretString}</code>
+                      </pre>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={() =>
+                          copyToClipboard(secretData.value.secretString!)
+                        }
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="mr-2 h-3 w-3" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="mr-2 h-3 w-3" />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                  {secretData.value.versionId && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>Version ID: {secretData.value.versionId}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    No secret value available
+                  </AlertDescription>
+                </Alert>
+              )}
+            </>
           </div>
         </div>
       </SheetContent>
