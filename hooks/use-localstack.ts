@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { LocalStackHealth, Service } from '@/types';
 import { AVAILABLE_SERVICES } from '@/config/services';
-import { s3Client, dynamoClient, sqsClient, secretsManagerClient } from '@/lib/aws-config';
+import { s3Client, dynamoClient, sqsClient, secretsManagerClient, lambdaClient } from '@/lib/aws-config';
 import { ListBucketsCommand } from '@aws-sdk/client-s3';
 import { ListTablesCommand } from '@aws-sdk/client-dynamodb';
 import { ListQueuesCommand } from '@aws-sdk/client-sqs';
 import { ListSecretsCommand } from '@aws-sdk/client-secrets-manager';
+import { ListFunctionsCommand } from '@aws-sdk/client-lambda';
 
 async function checkServiceHealth(service: Service): Promise<Service> {
   try {
@@ -24,6 +25,10 @@ async function checkServiceHealth(service: Service): Promise<Service> {
       
       case 'secretsmanager':
         await secretsManagerClient.send(new ListSecretsCommand({}));
+        return { ...service, status: 'running' };
+      
+      case 'lambda':
+        await lambdaClient.send(new ListFunctionsCommand({}));
         return { ...service, status: 'running' };
       
       default:

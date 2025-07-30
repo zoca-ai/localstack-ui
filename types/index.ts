@@ -96,3 +96,57 @@ export interface SecretValue {
   versionStages?: string[];
   createdDate?: Date;
 }
+
+export interface LambdaFunction {
+  functionName: string;
+  functionArn?: string;
+  runtime?: string;
+  role?: string;
+  handler?: string;
+  codeSize?: number;
+  description?: string;
+  timeout?: number;
+  memorySize?: number;
+  lastModified?: string;
+  codeSha256?: string;
+  version?: string;
+  environment?: {
+    variables?: Record<string, string>;
+  };
+  state?: 'Pending' | 'Active' | 'Inactive' | 'Failed';
+  stateReason?: string;
+  stateReasonCode?: string;
+  vpcConfig?: {
+    subnetIds?: string[];
+    securityGroupIds?: string[];
+    vpcId?: string;
+  };
+  layers?: Array<{
+    arn?: string;
+    codeSize?: number;
+  }>;
+  tags?: Record<string, string>;
+}
+
+export interface LambdaConfiguration {
+  functionName: string;
+  functionArn: string;
+  runtime: string;
+  role: string;
+  handler: string;
+  codeSize: number;
+  description?: string;
+  timeout: number;
+  memorySize: number;
+  lastModified: string;
+  codeSha256: string;
+  version: string;
+  environment?: {
+    variables?: Record<string, string>;
+  };
+  state?: string;
+  stateReason?: string;
+  vpcConfig?: any;
+  layers?: any[];
+  tags?: Record<string, string>;
+}

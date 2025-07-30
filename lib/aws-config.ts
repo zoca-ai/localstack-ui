@@ -2,6 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { SQSClient } from '@aws-sdk/client-sqs';
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { LambdaClient } from '@aws-sdk/client-lambda';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
 const config = {
@@ -19,3 +20,4 @@ export const dynamoClient = new DynamoDBClient(config);
 export const dynamoDocClient = DynamoDBDocumentClient.from(dynamoClient);
 export const sqsClient = new SQSClient(config);
 export const secretsManagerClient = new SecretsManagerClient(config);
+export const lambdaClient = new LambdaClient(config);

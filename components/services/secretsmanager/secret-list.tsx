@@ -30,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Key, MoreVertical, Trash2, Eye, Edit, Search } from 'lucide-react';
+import { Key, MoreVertical, Trash2, Edit, Search } from 'lucide-react';
 import { formatDistanceToNow } from '@/lib/utils';
 import { Secret } from '@/types';
 
@@ -107,7 +107,11 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
           </TableHeader>
           <TableBody>
             {filteredSecrets.map((secret) => (
-              <TableRow key={secret.name}>
+              <TableRow 
+                key={secret.name} 
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => onViewSecret(secret)}
+              >
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     <Key className="h-4 w-4 text-muted-foreground" />
@@ -143,22 +147,30 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onViewSecret(secret)}>
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Secret
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onEditSecret(secret)}>
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEditSecret(secret);
+                        }}
+                      >
                         <Edit className="mr-2 h-4 w-4" />
                         Update Value
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => setDeleteTarget({ secret, forceDelete: false })}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteTarget({ secret, forceDelete: false });
+                        }}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete Secret
