@@ -219,58 +219,65 @@ export function CreateSecretDialog({
 
             <div className="space-y-2">
               <FormLabel>Secret Value</FormLabel>
-              <Tabs value={valueType} onValueChange={(v) => setValueType(v as 'plaintext' | 'json')}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="plaintext">Plaintext</TabsTrigger>
-                  <TabsTrigger value="json">JSON</TabsTrigger>
-                </TabsList>
-                <TabsContent value="plaintext">
-                  <FormField
-                    control={form.control}
-                    name="secretValue"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Enter your secret value..."
-                            className="min-h-[150px] font-mono"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </TabsContent>
-                <TabsContent value="json">
-                  <FormField
-                    control={form.control}
-                    name="secretValue"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="space-y-2">
+              {isEditing && isLoadingSecret ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-[150px] w-full" />
+                </div>
+              ) : (
+                <Tabs value={valueType} onValueChange={(v) => setValueType(v as 'plaintext' | 'json')}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="plaintext">Plaintext</TabsTrigger>
+                    <TabsTrigger value="json">JSON</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="plaintext">
+                    <FormField
+                      control={form.control}
+                      name="secretValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
                             <Textarea
-                              placeholder='{"username": "admin", "password": "secret123"}'
+                              placeholder="Enter your secret value..."
                               className="min-h-[150px] font-mono"
                               {...field}
                             />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={formatJSON}
-                            >
-                              Format JSON
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </TabsContent>
-              </Tabs>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </TabsContent>
+                  <TabsContent value="json">
+                    <FormField
+                      control={form.control}
+                      name="secretValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="space-y-2">
+                              <Textarea
+                                placeholder='{"username": "admin", "password": "secret123"}'
+                                className="min-h-[150px] font-mono"
+                                {...field}
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={formatJSON}
+                              >
+                                Format JSON
+                              </Button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </TabsContent>
+                </Tabs>
+              )}
             </div>
 
             {!isEditing && (

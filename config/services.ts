@@ -11,6 +11,15 @@ export const AVAILABLE_SERVICES: Service[] = [
     enabled: true,
   },
   {
+    id: "sqs",
+    name: "sqs",
+    displayName: "SQS",
+    icon: "MessageSquare",
+    status: "unknown",
+    description: "Simple Queue Service - Message queuing",
+    enabled: true,
+  },
+  {
     id: "secretsmanager",
     name: "secretsmanager",
     displayName: "Secrets Manager",

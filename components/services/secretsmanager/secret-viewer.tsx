@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useSecret } from '@/hooks/use-secrets-manager';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -65,21 +65,21 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
   if (!secret) return null;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[700px] sm:max-w-[700px] overflow-y-auto">
-        <SheetHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
           <div className="flex items-start gap-3">
             <div className="rounded-lg bg-primary/10 p-2">
               <Key className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
-              <SheetTitle className="text-xl">{secret.name}</SheetTitle>
-              <SheetDescription className="mt-1">
+              <DialogTitle className="text-xl">{secret.name}</DialogTitle>
+              <DialogDescription className="mt-1">
                 {secret.description || 'No description provided'}
-              </SheetDescription>
+              </DialogDescription>
             </div>
           </div>
-        </SheetHeader>
+        </DialogHeader>
 
         <div className="mt-6 space-y-6">
           {/* Basic Information */}
@@ -281,7 +281,7 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
             </>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
