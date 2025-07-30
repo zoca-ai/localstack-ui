@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { MainLayout } from '@/components/layout/main-layout';
-import { SecretList } from '@/components/services/secretsmanager/secret-list';
-import { CreateSecretDialog } from '@/components/services/secretsmanager/create-secret-dialog';
-import { SecretViewer } from '@/components/services/secretsmanager/secret-viewer';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Plus, Key, Shield, RefreshCw } from 'lucide-react';
-import { Secret } from '@/types';
-import { useQueryClient } from '@tanstack/react-query';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useState } from "react";
+import { MainLayout } from "@/components/layout/main-layout";
+import { SecretList } from "@/components/services/secretsmanager/secret-list";
+import { CreateSecretDialog } from "@/components/services/secretsmanager/create-secret-dialog";
+import { SecretViewer } from "@/components/services/secretsmanager/secret-viewer";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus, Key, Shield, RefreshCw, Info } from "lucide-react";
+import { Secret } from "@/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function SecretsManagerPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -31,7 +37,7 @@ export default function SecretsManagerPage() {
   };
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['secrets'] });
+    queryClient.invalidateQueries({ queryKey: ["secrets"] });
   };
 
   return (
@@ -39,7 +45,7 @@ export default function SecretsManagerPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Secrets Manager</h2>
+            <h1 className="text-3xl font-bold">Secrets Manager</h1>
             <p className="text-muted-foreground">
               Securely store and manage your application secrets
             </p>
@@ -60,7 +66,8 @@ export default function SecretsManagerPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Store API keys, database passwords, and other sensitive data securely
+                Store API keys, database passwords, and other sensitive data
+                securely
               </p>
             </CardContent>
           </Card>
@@ -73,7 +80,8 @@ export default function SecretsManagerPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Automatic versioning of secrets with the ability to restore previous versions
+                Automatic versioning of secrets with the ability to restore
+                previous versions
               </p>
             </CardContent>
           </Card>
@@ -86,17 +94,18 @@ export default function SecretsManagerPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Schedule automatic rotation of secrets to maintain security best practices
+                Schedule automatic rotation of secrets to maintain security best
+                practices
               </p>
             </CardContent>
           </Card>
         </div>
 
         <Alert>
-          <AlertTitle>LocalStack Secrets Manager</AlertTitle>
+          <Info className="h-4 w-4" />
           <AlertDescription>
-            This interface manages secrets in your LocalStack instance. All secrets are stored
-            locally and are not synchronized with AWS.
+            This interface manages secrets in your LocalStack instance. All
+            secrets are stored locally and are not synchronized with AWS.
           </AlertDescription>
         </Alert>
 
@@ -109,7 +118,7 @@ export default function SecretsManagerPage() {
                   Manage your stored secrets and credentials
                 </CardDescription>
               </div>
-              <Button 
+              <Button
                 onClick={() => {
                   setEditingSecret(null);
                   setCreateDialogOpen(true);
@@ -148,3 +157,4 @@ export default function SecretsManagerPage() {
     </MainLayout>
   );
 }
+

@@ -8,13 +8,16 @@ import { ObjectBrowser } from '@/components/services/s3/object-browser';
 import { UploadDialog } from '@/components/services/s3/upload-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Plus, Database, RefreshCw } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function S3Page() {
   const [selectedBucket, setSelectedBucket] = useState<string | null>(null);
   const [createBucketOpen, setCreateBucketOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [currentPrefix, setCurrentPrefix] = useState('');
+  const queryClient = useQueryClient();
 
   const handleSelectBucket = (bucketName: string) => {
     setSelectedBucket(bucketName);
@@ -29,12 +32,25 @@ export default function S3Page() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">S3 Management</h2>
-          <p className="text-muted-foreground">
-            Manage your S3 buckets and objects
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">S3</h1>
+            <p className="text-muted-foreground">
+              Manage your S3 buckets and objects
+            </p>
+          </div>
+          <Button onClick={() => queryClient.invalidateQueries({ queryKey: ['s3-buckets'] })} variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
         </div>
+
+        <Alert>
+          <Database className="h-4 w-4" />
+          <AlertDescription>
+            S3 in LocalStack provides a complete implementation of Amazon S3 for local development. You can create buckets, upload objects, and test S3 integrations without AWS costs.
+          </AlertDescription>
+        </Alert>
 
         {!selectedBucket ? (
           <Card>
