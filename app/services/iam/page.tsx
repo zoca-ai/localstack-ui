@@ -30,7 +30,10 @@ import {
   Shield,
   UserCheck,
   Lock,
+  RefreshCw,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useDeleteIAMUser,
   useDeleteIAMRole,
@@ -50,6 +53,7 @@ import { PolicyForm } from "@/components/services/iam/policy-form";
 
 export default function IAMPage() {
   const [activeTab, setActiveTab] = useState("users");
+  const queryClient = useQueryClient();
 
   // User state
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
@@ -95,64 +99,23 @@ export default function IAMPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">IAM</h1>
-          <p className="text-muted-foreground">Manage IAM permissions</p>
-        </div>
-
-        {/* Overview Cards */}
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Manage IAM Users</div>
-              <p className="text-xs text-muted-foreground">
-                Create and manage user identities
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Roles</CardTitle>
-              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Service Roles</div>
-              <p className="text-xs text-muted-foreground">
-                Delegate access to AWS services
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Policies</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Permission Policies</div>
-              <p className="text-xs text-muted-foreground">
-                Define what actions are allowed
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Access Keys</CardTitle>
-              <Key className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Programmatic Access</div>
-              <p className="text-xs text-muted-foreground">
-                Manage API access credentials
-              </p>
-            </CardContent>
-          </Card>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">IAM</h1>
+            <p className="text-muted-foreground">Manage IAM permissions</p>
+          </div>
+          <Button
+            onClick={() => {
+              queryClient.invalidateQueries({ queryKey: ["iam-users"] });
+              queryClient.invalidateQueries({ queryKey: ["iam-roles"] });
+              queryClient.invalidateQueries({ queryKey: ["iam-policies"] });
+            }}
+            variant="outline"
+            size="sm"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
         </div>
 
         {/* Alert */}
@@ -328,4 +291,3 @@ export default function IAMPage() {
     </MainLayout>
   );
 }
-

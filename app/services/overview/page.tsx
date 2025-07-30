@@ -1,20 +1,35 @@
-'use client';
+"use client";
 
-import { ConnectionStatus } from '@/components/services/overview/connection-status';
-import { ServiceCard } from '@/components/services/overview/service-card';
-import { useLocalStackHealth } from '@/hooks/use-localstack';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ConnectionStatus } from "@/components/services/overview/connection-status";
+import { ServiceCard } from "@/components/services/overview/service-card";
+import { useLocalStackHealth } from "@/hooks/use-localstack";
+import { Skeleton } from "@/components/ui/skeleton";
+import { MainLayout } from "@/components/layout/main-layout";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function OverviewPage() {
   const { data: health, isLoading } = useLocalStackHealth();
+  const queryClient = useQueryClient();
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Overview</h2>
-        <p className="text-muted-foreground">
-          Monitor and manage your LocalStack services
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Overview</h1>
+          <p className="text-muted-foreground">
+            Monitor and manage your LocalStack services
+          </p>
+        </div>
+        <Button
+          onClick={() => queryClient.invalidateQueries({ queryKey: ["localstack-health"] })}
+          variant="outline"
+          size="sm"
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh
+        </Button>
       </div>
 
       <ConnectionStatus />
@@ -34,3 +49,4 @@ export default function OverviewPage() {
     </div>
   );
 }
+

@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, AlertTriangle, FileText, BarChart3 } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  FileText,
+  BarChart3,
+  RefreshCw,
+  Info,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -34,6 +43,7 @@ import type {
 
 export default function CloudWatchPage() {
   const [activeTab, setActiveTab] = useState("logs");
+  const queryClient = useQueryClient();
   const [showCreateLogGroup, setShowCreateLogGroup] = useState(false);
   const [showCreateAlarm, setShowCreateAlarm] = useState(false);
   const [selectedLogGroup, setSelectedLogGroup] =
@@ -59,11 +69,31 @@ export default function CloudWatchPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">CloudWatch</h1>
-          <p className="text-muted-foreground">
-            Monitor logs, metrics, and alarms from your LocalStack services
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">CloudWatch</h1>
+            <p className="text-muted-foreground">
+              Monitor logs, metrics, and alarms from your LocalStack services
+            </p>
+          </div>
+          <Button
+            onClick={() => {
+              queryClient.invalidateQueries({
+                queryKey: ["cloudwatch-log-groups"],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["cloudwatch-metrics"],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["cloudwatch-alarms"],
+              });
+            }}
+            variant="outline"
+            size="sm"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -137,7 +167,7 @@ export default function CloudWatchPage() {
         </div>
 
         <Alert>
-          <Activity className="h-4 w-4" />
+          <Info className="h-4 w-4" />
           <AlertDescription>
             CloudWatch in LocalStack provides monitoring capabilities for your
             local AWS services. You can view logs, track metrics, and configure
