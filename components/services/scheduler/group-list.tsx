@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useScheduleGroups, useDeleteScheduleGroup } from '@/hooks/use-scheduler';
+import { useState } from "react";
+import {
+  useScheduleGroups,
+  useDeleteScheduleGroup,
+} from "@/hooks/use-scheduler";
 import {
   Table,
   TableBody,
@@ -9,12 +12,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { Trash2, Layers } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { Trash2, Layers } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,8 +27,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { CreateGroupDialog } from './create-group-dialog';
+} from "@/components/ui/alert-dialog";
+import { CreateGroupDialog } from "./create-group-dialog";
 
 interface GroupListProps {
   selectedGroup?: string;
@@ -45,7 +48,7 @@ export function GroupList({ selectedGroup, onSelectGroup }: GroupListProps) {
       toast.success(`Schedule group "${groupToDelete}" deleted successfully`);
       setGroupToDelete(null);
       if (selectedGroup === groupToDelete) {
-        onSelectGroup('default');
+        onSelectGroup("default");
       }
     } catch (error: any) {
       toast.error(`Failed to delete group: ${error.message}`);
@@ -70,12 +73,16 @@ export function GroupList({ selectedGroup, onSelectGroup }: GroupListProps) {
   }
 
   // Add default group if not in list
-  const hasDefaultGroup = groups?.some(group => group.name === 'default');
+  const hasDefaultGroup = groups?.some((group) => group.name === "default");
   const allGroups = hasDefaultGroup
     ? groups || []
     : [
-        { name: 'default', state: 'ACTIVE' as const, arn: 'arn:aws:scheduler:::schedule-group/default' },
-        ...(groups || [])
+        {
+          name: "default",
+          state: "ACTIVE" as const,
+          arn: "arn:aws:scheduler:::schedule-group/default",
+        },
+        ...(groups || []),
       ];
 
   return (
@@ -102,9 +109,9 @@ export function GroupList({ selectedGroup, onSelectGroup }: GroupListProps) {
               <TableRow
                 key={group.name}
                 className={`cursor-pointer hover:bg-muted/50 ${
-                  selectedGroup === group.name ? 'bg-muted/50' : ''
+                  selectedGroup === group.name ? "bg-muted/50" : ""
                 }`}
-                onClick={() => onSelectGroup(group.name || 'default')}
+                onClick={() => onSelectGroup(group.name || "default")}
               >
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
@@ -114,7 +121,7 @@ export function GroupList({ selectedGroup, onSelectGroup }: GroupListProps) {
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={group.state === 'ACTIVE' ? 'default' : 'secondary'}
+                    variant={group.state === "ACTIVE" ? "default" : "secondary"}
                   >
                     {group.state}
                   </Badge>
@@ -127,7 +134,7 @@ export function GroupList({ selectedGroup, onSelectGroup }: GroupListProps) {
                       e.stopPropagation();
                       setGroupToDelete(group.name || null);
                     }}
-                    disabled={group.name === 'default'}
+                    disabled={group.name === "default"}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -138,18 +145,25 @@ export function GroupList({ selectedGroup, onSelectGroup }: GroupListProps) {
         </Table>
       </div>
 
-      <AlertDialog open={!!groupToDelete} onOpenChange={(open) => !open && setGroupToDelete(null)}>
+      <AlertDialog
+        open={!!groupToDelete}
+        onOpenChange={(open) => !open && setGroupToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Schedule Group</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the schedule group "{groupToDelete}"? 
-              All schedules in this group will also be deleted. This action cannot be undone.
+              Are you sure you want to delete the schedule group "
+              {groupToDelete}"? All schedules in this group will also be
+              deleted. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

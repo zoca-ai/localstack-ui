@@ -1,22 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { schedulerClient } from '@/lib/aws-config';
-import { GetScheduleCommand } from '@aws-sdk/client-scheduler';
+import { NextRequest, NextResponse } from "next/server";
+import { schedulerClient } from "@/lib/aws-config";
+import { GetScheduleCommand } from "@aws-sdk/client-scheduler";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: { name: string } },
 ) {
   try {
     const { searchParams } = new URL(request.url);
-    const groupName = searchParams.get('groupName') || 'default';
-    
+    const groupName = searchParams.get("groupName") || "default";
+
     const command = new GetScheduleCommand({
       Name: params.name,
       GroupName: groupName,
     });
-    
+
     const response = await schedulerClient.send(command);
-    
+
     return NextResponse.json({
       arn: response.Arn,
       name: response.Name,
@@ -35,10 +35,10 @@ export async function GET(
       actionAfterCompletion: response.ActionAfterCompletion,
     });
   } catch (error: any) {
-    console.error('Error getting schedule:', error);
+    console.error("Error getting schedule:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to get schedule' },
-      { status: 500 }
+      { error: error.message || "Failed to get schedule" },
+      { status: 500 },
     );
   }
 }

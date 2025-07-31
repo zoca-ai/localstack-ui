@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useEventTargets, useRemoveEventTargets } from '@/hooks/use-eventbridge';
+import { useState } from "react";
+import {
+  useEventTargets,
+  useRemoveEventTargets,
+} from "@/hooks/use-eventbridge";
 import {
   Table,
   TableBody,
@@ -9,12 +12,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { Trash2, Target, FileJson } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { Trash2, Target, FileJson } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,16 +27,23 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { AddTargetDialog } from './add-target-dialog';
+} from "@/components/ui/alert-dialog";
+import { AddTargetDialog } from "./add-target-dialog";
 
 interface TargetListProps {
   ruleName: string;
   eventBusName?: string;
 }
 
-export function TargetList({ ruleName, eventBusName = 'default' }: TargetListProps) {
-  const { data: targets, isLoading, error } = useEventTargets(ruleName, eventBusName);
+export function TargetList({
+  ruleName,
+  eventBusName = "default",
+}: TargetListProps) {
+  const {
+    data: targets,
+    isLoading,
+    error,
+  } = useEventTargets(ruleName, eventBusName);
   const removeTargets = useRemoveEventTargets();
   const [targetToDelete, setTargetToDelete] = useState<string | null>(null);
 
@@ -46,7 +56,7 @@ export function TargetList({ ruleName, eventBusName = 'default' }: TargetListPro
         eventBusName,
         ids: [targetToDelete],
       });
-      toast.success('Target removed successfully');
+      toast.success("Target removed successfully");
       setTargetToDelete(null);
     } catch (error: any) {
       toast.error(`Failed to remove target: ${error.message}`);
@@ -64,9 +74,7 @@ export function TargetList({ ruleName, eventBusName = 'default' }: TargetListPro
 
   if (error) {
     return (
-      <div className="text-red-500">
-        Error loading targets: {error.message}
-      </div>
+      <div className="text-red-500">Error loading targets: {error.message}</div>
     );
   }
 
@@ -93,7 +101,10 @@ export function TargetList({ ruleName, eventBusName = 'default' }: TargetListPro
           <TableBody>
             {!targets || targets.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={4}
+                  className="text-center text-muted-foreground"
+                >
                   No targets configured
                 </TableCell>
               </TableRow>
@@ -136,17 +147,24 @@ export function TargetList({ ruleName, eventBusName = 'default' }: TargetListPro
         </Table>
       </div>
 
-      <AlertDialog open={!!targetToDelete} onOpenChange={(open) => !open && setTargetToDelete(null)}>
+      <AlertDialog
+        open={!!targetToDelete}
+        onOpenChange={(open) => !open && setTargetToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Target</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove this target? This action cannot be undone.
+              Are you sure you want to remove this target? This action cannot be
+              undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Remove
             </AlertDialogAction>
           </AlertDialogFooter>

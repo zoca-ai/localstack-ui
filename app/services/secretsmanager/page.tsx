@@ -20,24 +20,26 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 export default function SecretsManagerPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSecret, setSelectedSecret] = useState<Secret | null>(null);
-  const [dialogMode, setDialogMode] = useState<'create' | 'view' | 'edit'>('create');
+  const [dialogMode, setDialogMode] = useState<"create" | "view" | "edit">(
+    "create",
+  );
   const queryClient = useQueryClient();
 
   const handleViewSecret = (secret: Secret) => {
     setSelectedSecret(secret);
-    setDialogMode('view');
+    setDialogMode("view");
     setDialogOpen(true);
   };
 
   const handleEditSecret = (secret: Secret) => {
     setSelectedSecret(secret);
-    setDialogMode('edit');
+    setDialogMode("edit");
     setDialogOpen(true);
   };
 
   const handleCreateSecret = () => {
     setSelectedSecret(null);
-    setDialogMode('create');
+    setDialogMode("create");
     setDialogOpen(true);
   };
 
@@ -147,4 +149,3 @@ export default function SecretsManagerPage() {
     </MainLayout>
   );
 }
-

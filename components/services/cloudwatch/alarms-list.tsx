@@ -1,8 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { Search, Plus, Trash2, Eye, Bell, BellOff, RefreshCw } from 'lucide-react';
+import { useState } from "react";
+import { format } from "date-fns";
+import {
+  Search,
+  Plus,
+  Trash2,
+  Eye,
+  Bell,
+  BellOff,
+  RefreshCw,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -10,11 +18,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,20 +32,20 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   useCloudWatchAlarms,
   useDeleteCloudWatchAlarm,
   useUpdateCloudWatchAlarmState,
-} from '@/hooks/use-cloudwatch';
-import type { CloudWatchAlarm } from '@/types';
+} from "@/hooks/use-cloudwatch";
+import type { CloudWatchAlarm } from "@/types";
 
 interface AlarmsListProps {
   onSelectAlarm: (alarm: CloudWatchAlarm) => void;
@@ -45,19 +53,24 @@ interface AlarmsListProps {
 }
 
 export function AlarmsList({ onSelectAlarm, onCreateAlarm }: AlarmsListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [stateFilter, setStateFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [stateFilter, setStateFilter] = useState<string>("all");
   const [deleteAlarm, setDeleteAlarm] = useState<string | null>(null);
-  
-  const { data: alarms, isLoading, refetch } = useCloudWatchAlarms(
-    stateFilter !== 'all' ? { stateValue: stateFilter as any } : undefined
+
+  const {
+    data: alarms,
+    isLoading,
+    refetch,
+  } = useCloudWatchAlarms(
+    stateFilter !== "all" ? { stateValue: stateFilter as any } : undefined,
   );
   const deleteAlarmMutation = useDeleteCloudWatchAlarm();
   const updateAlarmStateMutation = useUpdateCloudWatchAlarmState();
 
-  const filteredAlarms = alarms?.filter(alarm =>
-    alarm.alarmName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    alarm.metricName?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAlarms = alarms?.filter(
+    (alarm) =>
+      alarm.alarmName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      alarm.metricName?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleDelete = async () => {
@@ -67,20 +80,30 @@ export function AlarmsList({ onSelectAlarm, onCreateAlarm }: AlarmsListProps) {
     }
   };
 
-  const toggleAlarmActions = async (alarmName: string, currentState: boolean) => {
+  const toggleAlarmActions = async (
+    alarmName: string,
+    currentState: boolean,
+  ) => {
     await updateAlarmStateMutation.mutateAsync({
       alarmName,
-      action: currentState ? 'disableActions' : 'enableActions',
+      action: currentState ? "disableActions" : "enableActions",
     });
   };
 
   const getStateBadge = (state?: string) => {
     switch (state) {
-      case 'OK':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">OK</Badge>;
-      case 'ALARM':
+      case "OK":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-50 text-green-700 border-green-200"
+          >
+            OK
+          </Badge>
+        );
+      case "ALARM":
         return <Badge variant="destructive">ALARM</Badge>;
-      case 'INSUFFICIENT_DATA':
+      case "INSUFFICIENT_DATA":
         return <Badge variant="secondary">INSUFFICIENT DATA</Badge>;
       default:
         return <Badge variant="outline">UNKNOWN</Badge>;
@@ -158,27 +181,29 @@ export function AlarmsList({ onSelectAlarm, onCreateAlarm }: AlarmsListProps) {
                   <TableCell className="font-medium">
                     {alarm.alarmName}
                   </TableCell>
-                  <TableCell>
-                    {getStateBadge(alarm.stateValue)}
-                  </TableCell>
+                  <TableCell>{getStateBadge(alarm.stateValue)}</TableCell>
                   <TableCell>
                     <div className="text-sm">
                       <div>{alarm.namespace}</div>
-                      <div className="text-muted-foreground">{alarm.metricName}</div>
+                      <div className="text-muted-foreground">
+                        {alarm.metricName}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     {alarm.comparisonOperator} {alarm.threshold}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={alarm.actionsEnabled ? 'default' : 'outline'}>
-                      {alarm.actionsEnabled ? 'Enabled' : 'Disabled'}
+                    <Badge
+                      variant={alarm.actionsEnabled ? "default" : "outline"}
+                    >
+                      {alarm.actionsEnabled ? "Enabled" : "Disabled"}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     {alarm.stateUpdatedTimestamp
-                      ? format(new Date(alarm.stateUpdatedTimestamp), 'PPp')
-                      : '-'}
+                      ? format(new Date(alarm.stateUpdatedTimestamp), "PPp")
+                      : "-"}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -198,7 +223,10 @@ export function AlarmsList({ onSelectAlarm, onCreateAlarm }: AlarmsListProps) {
                         onClick={(e) => {
                           e.stopPropagation();
                           if (alarm.alarmName) {
-                            toggleAlarmActions(alarm.alarmName, alarm.actionsEnabled || false);
+                            toggleAlarmActions(
+                              alarm.alarmName,
+                              alarm.actionsEnabled || false,
+                            );
                           }
                         }}
                       >
@@ -227,13 +255,16 @@ export function AlarmsList({ onSelectAlarm, onCreateAlarm }: AlarmsListProps) {
         </Table>
       </div>
 
-      <AlertDialog open={!!deleteAlarm} onOpenChange={() => setDeleteAlarm(null)}>
+      <AlertDialog
+        open={!!deleteAlarm}
+        onOpenChange={() => setDeleteAlarm(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the alarm "{deleteAlarm}".
-              This action cannot be undone.
+              This will permanently delete the alarm "{deleteAlarm}". This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

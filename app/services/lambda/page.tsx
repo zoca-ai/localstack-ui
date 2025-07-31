@@ -34,9 +34,12 @@ export default function LambdaPage() {
 
   // Calculate stats
   const totalFunctions = functions?.length || 0;
-  const totalCodeSize = functions?.reduce((sum, fn) => sum + (fn.codeSize || 0), 0) || 0;
-  const pythonFunctions = functions?.filter(fn => fn.runtime?.includes("python")).length || 0;
-  const nodeFunctions = functions?.filter(fn => fn.runtime?.includes("nodejs")).length || 0;
+  const totalCodeSize =
+    functions?.reduce((sum, fn) => sum + (fn.codeSize || 0), 0) || 0;
+  const pythonFunctions =
+    functions?.filter((fn) => fn.runtime?.includes("python")).length || 0;
+  const nodeFunctions =
+    functions?.filter((fn) => fn.runtime?.includes("nodejs")).length || 0;
 
   return (
     <ServicePageLayout

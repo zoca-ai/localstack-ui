@@ -1,7 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useEventRules, useDeleteEventRule, useToggleRuleState } from '@/hooks/use-eventbridge';
+import { useState } from "react";
+import {
+  useEventRules,
+  useDeleteEventRule,
+  useToggleRuleState,
+} from "@/hooks/use-eventbridge";
 import {
   Table,
   TableBody,
@@ -9,14 +13,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
-import { toast } from 'sonner';
-import { Search, Trash2, FileCode, Clock } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { Search, Trash2, FileCode, Clock } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,25 +30,26 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { CreateRuleDialog } from './create-rule-dialog';
-import { RuleViewer } from './rule-viewer';
+} from "@/components/ui/alert-dialog";
+import { CreateRuleDialog } from "./create-rule-dialog";
+import { RuleViewer } from "./rule-viewer";
 
 interface RuleListProps {
   eventBusName?: string;
 }
 
-export function RuleList({ eventBusName = 'default' }: RuleListProps) {
+export function RuleList({ eventBusName = "default" }: RuleListProps) {
   const { data: rules, isLoading, error } = useEventRules(eventBusName);
   const deleteRule = useDeleteEventRule();
   const toggleState = useToggleRuleState();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedRule, setSelectedRule] = useState<string | null>(null);
   const [ruleToDelete, setRuleToDelete] = useState<string | null>(null);
 
-  const filteredRules = rules?.filter(rule =>
-    rule.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredRules =
+    rules?.filter((rule) =>
+      rule.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+    ) || [];
 
   const handleDelete = async () => {
     if (!ruleToDelete) return;
@@ -60,7 +65,7 @@ export function RuleList({ eventBusName = 'default' }: RuleListProps) {
 
   const handleToggle = async (ruleName: string, currentState: string) => {
     try {
-      const action = currentState === 'ENABLED' ? 'disable' : 'enable';
+      const action = currentState === "ENABLED" ? "disable" : "enable";
       await toggleState.mutateAsync({ name: ruleName, eventBusName, action });
       toast.success(`Rule "${ruleName}" ${action}d successfully`);
     } catch (error: any) {
@@ -79,9 +84,7 @@ export function RuleList({ eventBusName = 'default' }: RuleListProps) {
 
   if (error) {
     return (
-      <div className="text-red-500">
-        Error loading rules: {error.message}
-      </div>
+      <div className="text-red-500">Error loading rules: {error.message}</div>
     );
   }
 
@@ -114,7 +117,10 @@ export function RuleList({ eventBusName = 'default' }: RuleListProps) {
           <TableBody>
             {filteredRules.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   No rules found
                 </TableCell>
               </TableRow>
@@ -145,21 +151,26 @@ export function RuleList({ eventBusName = 'default' }: RuleListProps) {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Switch
-                        checked={rule.state === 'ENABLED'}
+                        checked={rule.state === "ENABLED"}
                         onCheckedChange={(checked) => {
-                          handleToggle(rule.name || '', rule.state || 'DISABLED');
+                          handleToggle(
+                            rule.name || "",
+                            rule.state || "DISABLED",
+                          );
                         }}
                         onClick={(e) => e.stopPropagation()}
                       />
                       <Badge
-                        variant={rule.state === 'ENABLED' ? 'default' : 'secondary'}
+                        variant={
+                          rule.state === "ENABLED" ? "default" : "secondary"
+                        }
                       >
                         {rule.state}
                       </Badge>
                     </div>
                   </TableCell>
                   <TableCell className="max-w-md truncate">
-                    {rule.description || '-'}
+                    {rule.description || "-"}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
@@ -189,17 +200,24 @@ export function RuleList({ eventBusName = 'default' }: RuleListProps) {
         />
       )}
 
-      <AlertDialog open={!!ruleToDelete} onOpenChange={(open) => !open && setRuleToDelete(null)}>
+      <AlertDialog
+        open={!!ruleToDelete}
+        onOpenChange={(open) => !open && setRuleToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Rule</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the rule "{ruleToDelete}"? This action cannot be undone.
+              Are you sure you want to delete the rule "{ruleToDelete}"? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

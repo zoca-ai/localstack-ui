@@ -1,26 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudWatchLogsClient } from '@/lib/aws-config';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudWatchLogsClient } from "@/lib/aws-config";
 import {
   DescribeLogStreamsCommand,
   CreateLogStreamCommand,
   type DescribeLogStreamsCommandInput,
   type CreateLogStreamCommandInput,
-} from '@aws-sdk/client-cloudwatch-logs';
+} from "@aws-sdk/client-cloudwatch-logs";
 
 // GET /api/cloudwatch/log-groups/[name]/streams - List log streams
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ name: string }> }
+  context: { params: Promise<{ name: string }> },
 ) {
   try {
     const params = await context.params;
     const logGroupName = decodeURIComponent(params.name);
     const searchParams = request.nextUrl.searchParams;
-    const logStreamNamePrefix = searchParams.get('prefix') || undefined;
-    const nextToken = searchParams.get('nextToken') || undefined;
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50;
-    const orderBy = searchParams.get('orderBy') as 'LogStreamName' | 'LastEventTime' | undefined;
-    const descending = searchParams.get('descending') === 'true';
+    const logStreamNamePrefix = searchParams.get("prefix") || undefined;
+    const nextToken = searchParams.get("nextToken") || undefined;
+    const limit = searchParams.get("limit")
+      ? parseInt(searchParams.get("limit")!)
+      : 50;
+    const orderBy = searchParams.get("orderBy") as
+      | "LogStreamName"
+      | "LastEventTime"
+      | undefined;
+    const descending = searchParams.get("descending") === "true";
 
     const streamParams: DescribeLogStreamsCommandInput = {
       logGroupName,
@@ -39,10 +44,10 @@ export async function GET(
       nextToken: response.nextToken,
     });
   } catch (error: any) {
-    console.error('Error listing log streams:', error);
+    console.error("Error listing log streams:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to list log streams' },
-      { status: 500 }
+      { error: error.message || "Failed to list log streams" },
+      { status: 500 },
     );
   }
 }
@@ -50,7 +55,7 @@ export async function GET(
 // POST /api/cloudwatch/log-groups/[name]/streams - Create a log stream
 export async function POST(
   request: NextRequest,
-  context: { params: Promise<{ name: string }> }
+  context: { params: Promise<{ name: string }> },
 ) {
   try {
     const params = await context.params;
@@ -60,8 +65,8 @@ export async function POST(
 
     if (!logStreamName) {
       return NextResponse.json(
-        { error: 'Log stream name is required' },
-        { status: 400 }
+        { error: "Log stream name is required" },
+        { status: 400 },
       );
     }
 
@@ -74,15 +79,15 @@ export async function POST(
     await cloudWatchLogsClient.send(command);
 
     return NextResponse.json({
-      message: 'Log stream created successfully',
+      message: "Log stream created successfully",
       logGroupName,
       logStreamName,
     });
   } catch (error: any) {
-    console.error('Error creating log stream:', error);
+    console.error("Error creating log stream:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create log stream' },
-      { status: 500 }
+      { error: error.message || "Failed to create log stream" },
+      { status: 500 },
     );
   }
 }

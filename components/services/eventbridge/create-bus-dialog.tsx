@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCreateEventBus } from '@/hooks/use-eventbridge';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useCreateEventBus } from "@/hooks/use-eventbridge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,25 +11,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 export function CreateBusDialog() {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [kmsKeyId, setKmsKeyId] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [kmsKeyId, setKmsKeyId] = useState("");
   const createBus = useCreateEventBus();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name) {
-      toast.error('Bus name is required');
+      toast.error("Bus name is required");
       return;
     }
 
@@ -39,7 +39,7 @@ export function CreateBusDialog() {
         description: description || undefined,
         kmsKeyId: kmsKeyId || undefined,
       });
-      
+
       toast.success(`Event bus "${name}" created successfully`);
       setOpen(false);
       resetForm();
@@ -49,9 +49,9 @@ export function CreateBusDialog() {
   };
 
   const resetForm = () => {
-    setName('');
-    setDescription('');
-    setKmsKeyId('');
+    setName("");
+    setDescription("");
+    setKmsKeyId("");
   };
 
   return (
@@ -113,7 +113,7 @@ export function CreateBusDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={createBus.isPending}>
-              {createBus.isPending ? 'Creating...' : 'Create Bus'}
+              {createBus.isPending ? "Creating..." : "Create Bus"}
             </Button>
           </DialogFooter>
         </form>

@@ -1,22 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudWatchClient } from '@/lib/aws-config';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudWatchClient } from "@/lib/aws-config";
 import {
   DescribeAlarmsCommand,
   PutMetricAlarmCommand,
   type DescribeAlarmsCommandInput,
   type PutMetricAlarmCommandInput,
-} from '@aws-sdk/client-cloudwatch';
+} from "@aws-sdk/client-cloudwatch";
 
 // GET /api/cloudwatch/alarms - List alarms
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const alarmNames = searchParams.getAll('alarmNames');
-    const alarmNamePrefix = searchParams.get('alarmNamePrefix') || undefined;
-    const stateValue = searchParams.get('stateValue') as 'OK' | 'ALARM' | 'INSUFFICIENT_DATA' | undefined;
-    const actionPrefix = searchParams.get('actionPrefix') || undefined;
-    const maxRecords = searchParams.get('maxRecords') ? parseInt(searchParams.get('maxRecords')!) : 100;
-    const nextToken = searchParams.get('nextToken') || undefined;
+    const alarmNames = searchParams.getAll("alarmNames");
+    const alarmNamePrefix = searchParams.get("alarmNamePrefix") || undefined;
+    const stateValue = searchParams.get("stateValue") as
+      | "OK"
+      | "ALARM"
+      | "INSUFFICIENT_DATA"
+      | undefined;
+    const actionPrefix = searchParams.get("actionPrefix") || undefined;
+    const maxRecords = searchParams.get("maxRecords")
+      ? parseInt(searchParams.get("maxRecords")!)
+      : 100;
+    const nextToken = searchParams.get("nextToken") || undefined;
 
     const params: DescribeAlarmsCommandInput = {
       AlarmNames: alarmNames.length > 0 ? alarmNames : undefined,
@@ -36,10 +42,10 @@ export async function GET(request: NextRequest) {
       nextToken: response.NextToken,
     });
   } catch (error: any) {
-    console.error('Error listing alarms:', error);
+    console.error("Error listing alarms:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to list alarms' },
-      { status: 500 }
+      { error: error.message || "Failed to list alarms" },
+      { status: 500 },
     );
   }
 }
@@ -75,8 +81,8 @@ export async function POST(request: NextRequest) {
 
     if (!alarmName) {
       return NextResponse.json(
-        { error: 'Alarm name is required' },
-        { status: 400 }
+        { error: "Alarm name is required" },
+        { status: 400 },
       );
     }
 
@@ -85,17 +91,27 @@ export async function POST(request: NextRequest) {
       // Composite alarm validation
       if (!evaluationPeriods || !threshold || !comparisonOperator) {
         return NextResponse.json(
-          { error: 'Evaluation periods, threshold, and comparison operator are required for composite alarms' },
-          { status: 400 }
+          {
+            error:
+              "Evaluation periods, threshold, and comparison operator are required for composite alarms",
+          },
+          { status: 400 },
         );
       }
     } else {
       // Metric alarm validation
-      if (!metricName || !namespace || (!statistic && !extendedStatistic) || 
-          !period || !evaluationPeriods || !threshold || !comparisonOperator) {
+      if (
+        !metricName ||
+        !namespace ||
+        (!statistic && !extendedStatistic) ||
+        !period ||
+        !evaluationPeriods ||
+        !threshold ||
+        !comparisonOperator
+      ) {
         return NextResponse.json(
-          { error: 'Missing required parameters for metric alarm' },
-          { status: 400 }
+          { error: "Missing required parameters for metric alarm" },
+          { status: 400 },
         );
       }
     }
@@ -135,14 +151,14 @@ export async function POST(request: NextRequest) {
     await cloudWatchClient.send(command);
 
     return NextResponse.json({
-      message: 'Alarm created/updated successfully',
+      message: "Alarm created/updated successfully",
       alarmName,
     });
   } catch (error: any) {
-    console.error('Error creating/updating alarm:', error);
+    console.error("Error creating/updating alarm:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create/update alarm' },
-      { status: 500 }
+      { error: error.message || "Failed to create/update alarm" },
+      { status: 500 },
     );
   }
 }

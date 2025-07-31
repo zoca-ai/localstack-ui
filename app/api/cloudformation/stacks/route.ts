@@ -1,37 +1,38 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudFormationClient } from '@/lib/aws-config';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudFormationClient } from "@/lib/aws-config";
 import {
   ListStacksCommand,
   CreateStackCommand,
   DeleteStackCommand,
   UpdateStackCommand,
-} from '@aws-sdk/client-cloudformation';
+} from "@aws-sdk/client-cloudformation";
 
 export async function GET() {
   try {
     const command = new ListStacksCommand({});
     const response = await cloudFormationClient.send(command);
-    
-    const stacks = response.StackSummaries?.map(stack => ({
-      stackId: stack.StackId,
-      stackName: stack.StackName,
-      templateDescription: stack.TemplateDescription,
-      creationTime: stack.CreationTime,
-      lastUpdatedTime: stack.LastUpdatedTime,
-      deletionTime: stack.DeletionTime,
-      stackStatus: stack.StackStatus,
-      stackStatusReason: stack.StackStatusReason,
-      parentId: stack.ParentId,
-      rootId: stack.RootId,
-      driftInformation: stack.DriftInformation,
-    })) || [];
-    
+
+    const stacks =
+      response.StackSummaries?.map((stack) => ({
+        stackId: stack.StackId,
+        stackName: stack.StackName,
+        templateDescription: stack.TemplateDescription,
+        creationTime: stack.CreationTime,
+        lastUpdatedTime: stack.LastUpdatedTime,
+        deletionTime: stack.DeletionTime,
+        stackStatus: stack.StackStatus,
+        stackStatusReason: stack.StackStatusReason,
+        parentId: stack.ParentId,
+        rootId: stack.RootId,
+        driftInformation: stack.DriftInformation,
+      })) || [];
+
     return NextResponse.json(stacks);
   } catch (error: any) {
-    console.error('Error listing stacks:', error);
+    console.error("Error listing stacks:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to list stacks' },
-      { status: 500 }
+      { error: error.message || "Failed to list stacks" },
+      { status: 500 },
     );
   }
 }
@@ -59,14 +60,14 @@ export async function POST(request: NextRequest) {
       enableTerminationProtection,
       retainExceptOnCreate,
     } = body;
-    
+
     if (!stackName || (!templateBody && !templateURL)) {
       return NextResponse.json(
-        { error: 'Stack name and template (body or URL) are required' },
-        { status: 400 }
+        { error: "Stack name and template (body or URL) are required" },
+        { status: 400 },
       );
     }
-    
+
     const command = new CreateStackCommand({
       StackName: stackName,
       TemplateBody: templateBody,
@@ -95,17 +96,17 @@ export async function POST(request: NextRequest) {
       EnableTerminationProtection: enableTerminationProtection,
       RetainExceptOnCreate: retainExceptOnCreate,
     });
-    
+
     const response = await cloudFormationClient.send(command);
-    
+
     return NextResponse.json({
       stackId: response.StackId,
     });
   } catch (error: any) {
-    console.error('Error creating stack:', error);
+    console.error("Error creating stack:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create stack' },
-      { status: 500 }
+      { error: error.message || "Failed to create stack" },
+      { status: 500 },
     );
   }
 }
@@ -132,14 +133,14 @@ export async function PUT(request: NextRequest) {
       disableRollback,
       clientRequestToken,
     } = body;
-    
+
     if (!stackName) {
       return NextResponse.json(
-        { error: 'Stack name is required' },
-        { status: 400 }
+        { error: "Stack name is required" },
+        { status: 400 },
       );
     }
-    
+
     const command = new UpdateStackCommand({
       StackName: stackName,
       TemplateBody: templateBody,
@@ -167,17 +168,17 @@ export async function PUT(request: NextRequest) {
       DisableRollback: disableRollback,
       ClientRequestToken: clientRequestToken,
     });
-    
+
     const response = await cloudFormationClient.send(command);
-    
+
     return NextResponse.json({
       stackId: response.StackId,
     });
   } catch (error: any) {
-    console.error('Error updating stack:', error);
+    console.error("Error updating stack:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update stack' },
-      { status: 500 }
+      { error: error.message || "Failed to update stack" },
+      { status: 500 },
     );
   }
 }
@@ -185,33 +186,33 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const stackName = searchParams.get('stackName');
-    const retainResources = searchParams.get('retainResources');
-    const roleARN = searchParams.get('roleARN');
-    const clientRequestToken = searchParams.get('clientRequestToken');
-    
+    const stackName = searchParams.get("stackName");
+    const retainResources = searchParams.get("retainResources");
+    const roleARN = searchParams.get("roleARN");
+    const clientRequestToken = searchParams.get("clientRequestToken");
+
     if (!stackName) {
       return NextResponse.json(
-        { error: 'Stack name is required' },
-        { status: 400 }
+        { error: "Stack name is required" },
+        { status: 400 },
       );
     }
-    
+
     const command = new DeleteStackCommand({
       StackName: stackName,
-      RetainResources: retainResources ? retainResources.split(',') : undefined,
+      RetainResources: retainResources ? retainResources.split(",") : undefined,
       RoleARN: roleARN || undefined,
       ClientRequestToken: clientRequestToken || undefined,
     });
-    
+
     await cloudFormationClient.send(command);
-    
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error deleting stack:', error);
+    console.error("Error deleting stack:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete stack' },
-      { status: 500 }
+      { error: error.message || "Failed to delete stack" },
+      { status: 500 },
     );
   }
 }

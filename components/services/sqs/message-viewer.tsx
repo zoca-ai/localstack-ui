@@ -1,7 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSQSMessages, useSendMessage, useDeleteMessage } from '@/hooks/use-sqs';
+import { useState } from "react";
+import {
+  useSQSMessages,
+  useSendMessage,
+  useDeleteMessage,
+} from "@/hooks/use-sqs";
 import {
   Table,
   TableBody,
@@ -9,10 +13,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -20,11 +24,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { ArrowLeft, RefreshCw, Send, Trash2, Eye, Loader2 } from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, RefreshCw, Send, Trash2, Eye, Loader2 } from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
 
 interface MessageViewerProps {
   queueUrl: string;
@@ -32,13 +36,17 @@ interface MessageViewerProps {
   onBack: () => void;
 }
 
-export function MessageViewer({ queueUrl, queueName, onBack }: MessageViewerProps) {
+export function MessageViewer({
+  queueUrl,
+  queueName,
+  onBack,
+}: MessageViewerProps) {
   const { data: messages, isLoading, refetch } = useSQSMessages(queueUrl);
   const sendMessage = useSendMessage();
   const deleteMessage = useDeleteMessage();
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [showSendDialog, setShowSendDialog] = useState(false);
-  const [messageBody, setMessageBody] = useState('');
+  const [messageBody, setMessageBody] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = async () => {
@@ -55,7 +63,7 @@ export function MessageViewer({ queueUrl, queueName, onBack }: MessageViewerProp
       messageBody,
     });
 
-    setMessageBody('');
+    setMessageBody("");
     setShowSendDialog(false);
     refetch();
   };
@@ -87,7 +95,9 @@ export function MessageViewer({ queueUrl, queueName, onBack }: MessageViewerProp
             onClick={handleRefresh}
             disabled={isRefreshing}
           >
-            <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
           <Button size="sm" onClick={() => setShowSendDialog(true)}>
@@ -123,16 +133,18 @@ export function MessageViewer({ queueUrl, queueName, onBack }: MessageViewerProp
           <TableBody>
             {messages.map((message) => (
               <TableRow key={message.messageId}>
-                <TableCell className="font-mono text-sm">{message.messageId}</TableCell>
+                <TableCell className="font-mono text-sm">
+                  {message.messageId}
+                </TableCell>
                 <TableCell>
-                  <div className="max-w-xs truncate">
-                    {message.body}
-                  </div>
+                  <div className="max-w-xs truncate">{message.body}</div>
                 </TableCell>
                 <TableCell>
                   {message.attributes?.SentTimestamp
-                    ? formatDistanceToNow(new Date(parseInt(message.attributes.SentTimestamp))) + ' ago'
-                    : 'Unknown'}
+                    ? formatDistanceToNow(
+                        new Date(parseInt(message.attributes.SentTimestamp)),
+                      ) + " ago"
+                    : "Unknown"}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
@@ -182,15 +194,23 @@ export function MessageViewer({ queueUrl, queueName, onBack }: MessageViewerProp
             <Button variant="outline" onClick={() => setShowSendDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSendMessage} disabled={sendMessage.isPending}>
-              {sendMessage.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button
+              onClick={handleSendMessage}
+              disabled={sendMessage.isPending}
+            >
+              {sendMessage.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Send
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!selectedMessage} onOpenChange={() => setSelectedMessage(null)}>
+      <Dialog
+        open={!!selectedMessage}
+        onOpenChange={() => setSelectedMessage(null)}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Message Details</DialogTitle>
@@ -199,11 +219,15 @@ export function MessageViewer({ queueUrl, queueName, onBack }: MessageViewerProp
             <div className="space-y-4">
               <div>
                 <Label>Message ID</Label>
-                <p className="font-mono text-sm mt-1">{selectedMessage.messageId}</p>
+                <p className="font-mono text-sm mt-1">
+                  {selectedMessage.messageId}
+                </p>
               </div>
               <div>
                 <Label>Receipt Handle</Label>
-                <p className="font-mono text-sm mt-1 break-all">{selectedMessage.receiptHandle}</p>
+                <p className="font-mono text-sm mt-1 break-all">
+                  {selectedMessage.receiptHandle}
+                </p>
               </div>
               <div>
                 <Label>Message Body</Label>
@@ -211,19 +235,22 @@ export function MessageViewer({ queueUrl, queueName, onBack }: MessageViewerProp
                   {selectedMessage.body}
                 </pre>
               </div>
-              {selectedMessage.attributes && Object.keys(selectedMessage.attributes).length > 0 && (
-                <div>
-                  <Label>Attributes</Label>
-                  <div className="mt-1 space-y-1">
-                    {Object.entries(selectedMessage.attributes).map(([key, value]) => (
-                      <div key={key} className="flex gap-2">
-                        <Badge variant="secondary">{key}</Badge>
-                        <span className="text-sm">{value as string}</span>
-                      </div>
-                    ))}
+              {selectedMessage.attributes &&
+                Object.keys(selectedMessage.attributes).length > 0 && (
+                  <div>
+                    <Label>Attributes</Label>
+                    <div className="mt-1 space-y-1">
+                      {Object.entries(selectedMessage.attributes).map(
+                        ([key, value]) => (
+                          <div key={key} className="flex gap-2">
+                            <Badge variant="secondary">{key}</Badge>
+                            <span className="text-sm">{value as string}</span>
+                          </div>
+                        ),
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           )}
           <DialogFooter>

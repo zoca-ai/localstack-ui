@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAddEventTargets } from '@/hooks/use-eventbridge';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useAddEventTargets } from "@/hooks/use-eventbridge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,31 +11,34 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 interface AddTargetDialogProps {
   ruleName: string;
   eventBusName?: string;
 }
 
-export function AddTargetDialog({ ruleName, eventBusName = 'default' }: AddTargetDialogProps) {
+export function AddTargetDialog({
+  ruleName,
+  eventBusName = "default",
+}: AddTargetDialogProps) {
   const [open, setOpen] = useState(false);
-  const [targetId, setTargetId] = useState('');
-  const [targetArn, setTargetArn] = useState('');
-  const [roleArn, setRoleArn] = useState('');
-  const [input, setInput] = useState('');
+  const [targetId, setTargetId] = useState("");
+  const [targetArn, setTargetArn] = useState("");
+  const [roleArn, setRoleArn] = useState("");
+  const [input, setInput] = useState("");
   const addTargets = useAddEventTargets();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!targetId || !targetArn) {
-      toast.error('Target ID and ARN are required');
+      toast.error("Target ID and ARN are required");
       return;
     }
 
@@ -44,7 +47,7 @@ export function AddTargetDialog({ ruleName, eventBusName = 'default' }: AddTarge
       try {
         JSON.parse(input);
       } catch {
-        toast.error('Invalid JSON in input field');
+        toast.error("Invalid JSON in input field");
         return;
       }
     }
@@ -53,15 +56,17 @@ export function AddTargetDialog({ ruleName, eventBusName = 'default' }: AddTarge
       await addTargets.mutateAsync({
         rule: ruleName,
         eventBusName,
-        targets: [{
-          id: targetId,
-          arn: targetArn,
-          roleArn: roleArn || undefined,
-          input: input || undefined,
-        }],
+        targets: [
+          {
+            id: targetId,
+            arn: targetArn,
+            roleArn: roleArn || undefined,
+            input: input || undefined,
+          },
+        ],
       });
-      
-      toast.success('Target added successfully');
+
+      toast.success("Target added successfully");
       setOpen(false);
       resetForm();
     } catch (error: any) {
@@ -70,10 +75,10 @@ export function AddTargetDialog({ ruleName, eventBusName = 'default' }: AddTarge
   };
 
   const resetForm = () => {
-    setTargetId('');
-    setTargetArn('');
-    setRoleArn('');
-    setInput('');
+    setTargetId("");
+    setTargetArn("");
+    setRoleArn("");
+    setInput("");
   };
 
   const generateTargetId = () => {
@@ -107,12 +112,16 @@ export function AddTargetDialog({ ruleName, eventBusName = 'default' }: AddTarge
                   onChange={(e) => setTargetId(e.target.value)}
                   required
                 />
-                <Button type="button" variant="outline" onClick={generateTargetId}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={generateTargetId}
+                >
                   Generate
                 </Button>
               </div>
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="targetArn">Target ARN</Label>
               <Input
@@ -167,7 +176,7 @@ export function AddTargetDialog({ ruleName, eventBusName = 'default' }: AddTarge
               Cancel
             </Button>
             <Button type="submit" disabled={addTargets.isPending}>
-              {addTargets.isPending ? 'Adding...' : 'Add Target'}
+              {addTargets.isPending ? "Adding..." : "Add Target"}
             </Button>
           </DialogFooter>
         </form>

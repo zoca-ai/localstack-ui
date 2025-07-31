@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Service } from '@/types';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Service } from "@/types";
 import {
   Database,
   Table,
@@ -14,8 +20,8 @@ import {
   Shield,
   LucideIcon,
   ArrowRight,
-} from 'lucide-react';
-import Link from 'next/link';
+} from "lucide-react";
+import Link from "next/link";
 
 const iconMap: Record<string, LucideIcon> = {
   Database,
@@ -28,10 +34,10 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 const statusVariant = {
-  running: 'default' as const,
-  stopped: 'secondary' as const,
-  error: 'destructive' as const,
-  unknown: 'outline' as const,
+  running: "default" as const,
+  stopped: "secondary" as const,
+  error: "destructive" as const,
+  unknown: "outline" as const,
 };
 
 interface ServiceCardProps {

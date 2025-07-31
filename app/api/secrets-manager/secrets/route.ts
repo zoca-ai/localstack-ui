@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import {
   ListSecretsCommand,
   CreateSecretCommand,
@@ -7,22 +7,22 @@ import {
   DescribeSecretCommand,
   GetSecretValueCommand,
   PutSecretValueCommand,
-} from '@aws-sdk/client-secrets-manager';
-import { secretsManagerClient } from '@/lib/aws-config';
+} from "@aws-sdk/client-secrets-manager";
+import { secretsManagerClient } from "@/lib/aws-config";
 
 // GET /api/secrets-manager/secrets - List all secrets or get secret details
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const secretId = searchParams.get('secretId');
-    const includeValue = searchParams.get('includeValue') === 'true';
+    const secretId = searchParams.get("secretId");
+    const includeValue = searchParams.get("includeValue") === "true";
 
     if (secretId) {
       // Get secret details
       const describeResponse = await secretsManagerClient.send(
         new DescribeSecretCommand({
           SecretId: secretId,
-        })
+        }),
       );
 
       let secretValue = null;
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
           const valueResponse = await secretsManagerClient.send(
             new GetSecretValueCommand({
               SecretId: secretId,
-            })
+            }),
           );
           secretValue = {
             secretString: valueResponse.SecretString,
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
             versionStages: valueResponse.VersionStages,
           };
         } catch (error) {
-          console.error('Error getting secret value:', error);
+          console.error("Error getting secret value:", error);
         }
       }
 
@@ -52,18 +52,27 @@ export async function GET(request: NextRequest) {
           createdDate: describeResponse.CreatedDate,
           lastChangedDate: describeResponse.LastChangedDate,
           lastAccessedDate: describeResponse.LastAccessedDate,
-          tags: describeResponse.Tags?.reduce((acc, tag) => {
-            if (tag.Key && tag.Value) acc[tag.Key] = tag.Value;
-            return acc;
-          }, {} as Record<string, string>),
-          versionId: describeResponse.VersionIdsToStages ? Object.keys(describeResponse.VersionIdsToStages)[0] : undefined,
-          versionStages: describeResponse.VersionIdsToStages ? Object.values(describeResponse.VersionIdsToStages).flat() : undefined,
+          tags: describeResponse.Tags?.reduce(
+            (acc, tag) => {
+              if (tag.Key && tag.Value) acc[tag.Key] = tag.Value;
+              return acc;
+            },
+            {} as Record<string, string>,
+          ),
+          versionId: describeResponse.VersionIdsToStages
+            ? Object.keys(describeResponse.VersionIdsToStages)[0]
+            : undefined,
+          versionStages: describeResponse.VersionIdsToStages
+            ? Object.values(describeResponse.VersionIdsToStages).flat()
+            : undefined,
         },
         value: secretValue,
       });
     } else {
       // List all secrets
-      const response = await secretsManagerClient.send(new ListSecretsCommand({}));
+      const response = await secretsManagerClient.send(
+        new ListSecretsCommand({}),
+      );
       const secrets = (response.SecretList || []).map((secret) => ({
         arn: secret.ARN,
         name: secret.Name!,
@@ -71,19 +80,22 @@ export async function GET(request: NextRequest) {
         createdDate: secret.CreatedDate,
         lastChangedDate: secret.LastChangedDate,
         lastAccessedDate: secret.LastAccessedDate,
-        tags: secret.Tags?.reduce((acc, tag) => {
-          if (tag.Key && tag.Value) acc[tag.Key] = tag.Value;
-          return acc;
-        }, {} as Record<string, string>),
+        tags: secret.Tags?.reduce(
+          (acc, tag) => {
+            if (tag.Key && tag.Value) acc[tag.Key] = tag.Value;
+            return acc;
+          },
+          {} as Record<string, string>,
+        ),
       }));
 
       return NextResponse.json({ secrets });
     }
   } catch (error: any) {
-    console.error('Error with secrets:', error);
+    console.error("Error with secrets:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to process secrets request' },
-      { status: 500 }
+      { error: error.message || "Failed to process secrets request" },
+      { status: 500 },
     );
   }
 }
@@ -96,8 +108,8 @@ export async function POST(request: NextRequest) {
 
     if (!name || (!secretString && !secretBinary)) {
       return NextResponse.json(
-        { error: 'Name and either secretString or secretBinary are required' },
-        { status: 400 }
+        { error: "Name and either secretString or secretBinary are required" },
+        { status: 400 },
       );
     }
 
@@ -120,7 +132,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await secretsManagerClient.send(
-      new CreateSecretCommand(command)
+      new CreateSecretCommand(command),
     );
 
     return NextResponse.json({
@@ -130,10 +142,10 @@ export async function POST(request: NextRequest) {
       versionId: response.VersionId,
     });
   } catch (error: any) {
-    console.error('Error creating secret:', error);
+    console.error("Error creating secret:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create secret' },
-      { status: 500 }
+      { error: error.message || "Failed to create secret" },
+      { status: 500 },
     );
   }
 }
@@ -146,8 +158,11 @@ export async function PUT(request: NextRequest) {
 
     if (!secretId || (!secretString && !secretBinary)) {
       return NextResponse.json(
-        { error: 'SecretId and either secretString or secretBinary are required' },
-        { status: 400 }
+        {
+          error:
+            "SecretId and either secretString or secretBinary are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -163,7 +178,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const response = await secretsManagerClient.send(
-      new PutSecretValueCommand(command)
+      new PutSecretValueCommand(command),
     );
 
     return NextResponse.json({
@@ -173,10 +188,10 @@ export async function PUT(request: NextRequest) {
       versionId: response.VersionId,
     });
   } catch (error: any) {
-    console.error('Error updating secret:', error);
+    console.error("Error updating secret:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update secret' },
-      { status: 500 }
+      { error: error.message || "Failed to update secret" },
+      { status: 500 },
     );
   }
 }
@@ -185,13 +200,13 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const secretId = searchParams.get('secretId');
-    const forceDelete = searchParams.get('forceDelete') === 'true';
+    const secretId = searchParams.get("secretId");
+    const forceDelete = searchParams.get("forceDelete") === "true";
 
     if (!secretId) {
       return NextResponse.json(
-        { error: 'SecretId is required' },
-        { status: 400 }
+        { error: "SecretId is required" },
+        { status: 400 },
       );
     }
 
@@ -200,7 +215,7 @@ export async function DELETE(request: NextRequest) {
         SecretId: secretId,
         ForceDeleteWithoutRecovery: forceDelete,
         RecoveryWindowInDays: forceDelete ? undefined : 7,
-      })
+      }),
     );
 
     return NextResponse.json({
@@ -210,10 +225,10 @@ export async function DELETE(request: NextRequest) {
       deletionDate: response.DeletionDate,
     });
   } catch (error: any) {
-    console.error('Error deleting secret:', error);
+    console.error("Error deleting secret:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete secret' },
-      { status: 500 }
+      { error: error.message || "Failed to delete secret" },
+      { status: 500 },
     );
   }
 }

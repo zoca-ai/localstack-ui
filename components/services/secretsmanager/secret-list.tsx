@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSecrets, useDeleteSecret } from '@/hooks/use-secrets-manager';
+import { useState } from "react";
+import { useSecrets, useDeleteSecret } from "@/hooks/use-secrets-manager";
 import {
   Table,
   TableBody,
@@ -9,17 +9,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,10 +29,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Key, MoreVertical, Trash2, Edit, Search } from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
-import { Secret } from '@/types';
+} from "@/components/ui/alert-dialog";
+import { Key, MoreVertical, Trash2, Edit, Search } from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
+import { Secret } from "@/types";
 
 interface SecretListProps {
   onViewSecret: (secret: Secret) => void;
@@ -42,12 +42,15 @@ interface SecretListProps {
 export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
   const { data: secrets, isLoading } = useSecrets();
   const deleteSecret = useDeleteSecret();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<{ secret: Secret; forceDelete: boolean } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<{
+    secret: Secret;
+    forceDelete: boolean;
+  } | null>(null);
 
   const handleDeleteSecret = async () => {
     if (!deleteTarget) return;
-    
+
     await deleteSecret.mutateAsync({
       secretId: deleteTarget.secret.name,
       forceDelete: deleteTarget.forceDelete,
@@ -55,10 +58,12 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
     setDeleteTarget(null);
   };
 
-  const filteredSecrets = secrets?.filter(secret =>
-    secret.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    secret.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredSecrets =
+    secrets?.filter(
+      (secret) =>
+        secret.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        secret.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+    ) || [];
 
   if (isLoading) {
     return (
@@ -88,7 +93,9 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
         <div className="text-center py-12">
           <Key className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
           <p className="text-muted-foreground">
-            {searchQuery ? 'No secrets found matching your search' : 'No secrets found'}
+            {searchQuery
+              ? "No secrets found matching your search"
+              : "No secrets found"}
           </p>
           <p className="text-sm text-muted-foreground mt-2">
             Create a secret to get started
@@ -107,8 +114,8 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
           </TableHeader>
           <TableBody>
             {filteredSecrets.map((secret) => (
-              <TableRow 
-                key={secret.name} 
+              <TableRow
+                key={secret.name}
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => onViewSecret(secret)}
               >
@@ -119,21 +126,28 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
                   </div>
                 </TableCell>
                 <TableCell className="max-w-[300px] truncate">
-                  {secret.description || '-'}
+                  {secret.description || "-"}
                 </TableCell>
                 <TableCell>
                   {secret.lastChangedDate
-                    ? formatDistanceToNow(new Date(secret.lastChangedDate)) + ' ago'
-                    : '-'}
+                    ? formatDistanceToNow(new Date(secret.lastChangedDate)) +
+                      " ago"
+                    : "-"}
                 </TableCell>
                 <TableCell>
                   {secret.tags && Object.keys(secret.tags).length > 0 ? (
                     <div className="flex gap-1">
-                      {Object.keys(secret.tags).slice(0, 2).map((key) => (
-                        <Badge key={key} variant="secondary" className="text-xs">
-                          {key}
-                        </Badge>
-                      ))}
+                      {Object.keys(secret.tags)
+                        .slice(0, 2)
+                        .map((key) => (
+                          <Badge
+                            key={key}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {key}
+                          </Badge>
+                        ))}
                       {Object.keys(secret.tags).length > 2 && (
                         <Badge variant="secondary" className="text-xs">
                           +{Object.keys(secret.tags).length - 2}
@@ -141,14 +155,14 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
                       )}
                     </div>
                   ) : (
-                    '-'
+                    "-"
                   )}
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="icon"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -156,7 +170,7 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={(e) => {
                           e.stopPropagation();
                           onEditSecret(secret);
@@ -184,16 +198,20 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
         </Table>
       )}
 
-      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={() => setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Secret</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the secret &quot;{deleteTarget?.secret.name}&quot;?
+              Are you sure you want to delete the secret &quot;
+              {deleteTarget?.secret.name}&quot;?
               {!deleteTarget?.forceDelete && (
                 <span className="block mt-2">
-                  The secret will be scheduled for deletion with a 7-day recovery window.
-                  You can restore it within this period.
+                  The secret will be scheduled for deletion with a 7-day
+                  recovery window. You can restore it within this period.
                 </span>
               )}
             </AlertDialogDescription>
@@ -207,7 +225,7 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
                 setDeleteTarget(
                   deleteTarget
                     ? { ...deleteTarget, forceDelete: e.target.checked }
-                    : null
+                    : null,
                 )
               }
               className="rounded border-gray-300"
@@ -222,7 +240,9 @@ export function SecretList({ onViewSecret, onEditSecret }: SecretListProps) {
               onClick={handleDeleteSecret}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {deleteTarget?.forceDelete ? 'Delete Permanently' : 'Schedule Deletion'}
+              {deleteTarget?.forceDelete
+                ? "Delete Permanently"
+                : "Schedule Deletion"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

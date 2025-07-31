@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useStackEvents } from '@/hooks/use-cloudformation';
+import { useStackEvents } from "@/hooks/use-cloudformation";
 import {
   Table,
   TableBody,
@@ -8,10 +8,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Activity, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Activity,
+  CheckCircle,
+  Clock,
+  XCircle,
+  AlertCircle,
+} from "lucide-react";
 
 interface EventListProps {
   stackName: string;
@@ -22,29 +28,31 @@ export function EventList({ stackName }: EventListProps) {
 
   const getStatusIcon = (status?: string) => {
     if (!status) return null;
-    
-    if (status.includes('COMPLETE') && !status.includes('FAILED')) {
+
+    if (status.includes("COMPLETE") && !status.includes("FAILED")) {
       return <CheckCircle className="h-4 w-4 text-green-500" />;
-    } else if (status.includes('IN_PROGRESS')) {
+    } else if (status.includes("IN_PROGRESS")) {
       return <Clock className="h-4 w-4 text-blue-500 animate-pulse" />;
-    } else if (status.includes('FAILED')) {
+    } else if (status.includes("FAILED")) {
       return <XCircle className="h-4 w-4 text-red-500" />;
     } else {
       return <AlertCircle className="h-4 w-4 text-yellow-500" />;
     }
   };
 
-  const getStatusVariant = (status?: string): "default" | "secondary" | "destructive" | "outline" => {
-    if (!status) return 'outline';
-    
-    if (status.includes('COMPLETE') && !status.includes('FAILED')) {
-      return 'default';
-    } else if (status.includes('IN_PROGRESS')) {
-      return 'secondary';
-    } else if (status.includes('FAILED')) {
-      return 'destructive';
+  const getStatusVariant = (
+    status?: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    if (!status) return "outline";
+
+    if (status.includes("COMPLETE") && !status.includes("FAILED")) {
+      return "default";
+    } else if (status.includes("IN_PROGRESS")) {
+      return "secondary";
+    } else if (status.includes("FAILED")) {
+      return "destructive";
     } else {
-      return 'outline';
+      return "outline";
     }
   };
 
@@ -59,9 +67,7 @@ export function EventList({ stackName }: EventListProps) {
 
   if (error) {
     return (
-      <div className="text-red-500">
-        Error loading events: {error.message}
-      </div>
+      <div className="text-red-500">Error loading events: {error.message}</div>
     );
   }
 
@@ -88,7 +94,10 @@ export function EventList({ stackName }: EventListProps) {
           <TableBody>
             {!events || events.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   No events recorded
                 </TableCell>
               </TableRow>
@@ -98,29 +107,29 @@ export function EventList({ stackName }: EventListProps) {
                   <TableCell className="whitespace-nowrap">
                     {event.timestamp
                       ? new Date(event.timestamp).toLocaleTimeString()
-                      : '-'}
+                      : "-"}
                   </TableCell>
                   <TableCell className="font-medium">
                     {event.logicalResourceId || event.stackName}
                   </TableCell>
                   <TableCell>
                     <code className="text-xs bg-muted px-1 py-0.5 rounded">
-                      {event.resourceType || 'Stack'}
+                      {event.resourceType || "Stack"}
                     </code>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {getStatusIcon(event.resourceStatus)}
-                      <Badge 
+                      <Badge
                         variant={getStatusVariant(event.resourceStatus)}
                         className="text-xs"
                       >
-                        {event.resourceStatus || '-'}
+                        {event.resourceStatus || "-"}
                       </Badge>
                     </div>
                   </TableCell>
                   <TableCell className="max-w-xs truncate">
-                    {event.resourceStatusReason || '-'}
+                    {event.resourceStatusReason || "-"}
                   </TableCell>
                 </TableRow>
               ))

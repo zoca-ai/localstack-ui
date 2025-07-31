@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,57 +12,61 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { useCreateCloudWatchAlarm } from '@/hooks/use-cloudwatch';
-import type { CloudWatchAlarm } from '@/types';
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useCreateCloudWatchAlarm } from "@/hooks/use-cloudwatch";
+import type { CloudWatchAlarm } from "@/types";
 
 const STATISTICS = [
-  { value: 'Average', label: 'Average' },
-  { value: 'Sum', label: 'Sum' },
-  { value: 'SampleCount', label: 'Sample Count' },
-  { value: 'Maximum', label: 'Maximum' },
-  { value: 'Minimum', label: 'Minimum' },
+  { value: "Average", label: "Average" },
+  { value: "Sum", label: "Sum" },
+  { value: "SampleCount", label: "Sample Count" },
+  { value: "Maximum", label: "Maximum" },
+  { value: "Minimum", label: "Minimum" },
 ];
 
 const COMPARISON_OPERATORS = [
-  { value: 'GreaterThanThreshold', label: 'Greater than (>)' },
-  { value: 'GreaterThanOrEqualToThreshold', label: 'Greater than or equal (≥)' },
-  { value: 'LessThanThreshold', label: 'Less than (<)' },
-  { value: 'LessThanOrEqualToThreshold', label: 'Less than or equal (≤)' },
-  { value: 'LessThanLowerOrGreaterThanUpperThreshold', label: 'Outside range' },
-  { value: 'LessThanLowerThreshold', label: 'Less than lower' },
-  { value: 'GreaterThanUpperThreshold', label: 'Greater than upper' },
+  { value: "GreaterThanThreshold", label: "Greater than (>)" },
+  {
+    value: "GreaterThanOrEqualToThreshold",
+    label: "Greater than or equal (≥)",
+  },
+  { value: "LessThanThreshold", label: "Less than (<)" },
+  { value: "LessThanOrEqualToThreshold", label: "Less than or equal (≤)" },
+  { value: "LessThanLowerOrGreaterThanUpperThreshold", label: "Outside range" },
+  { value: "LessThanLowerThreshold", label: "Less than lower" },
+  { value: "GreaterThanUpperThreshold", label: "Greater than upper" },
 ];
 
 const TREAT_MISSING_DATA = [
-  { value: 'breaching', label: 'Treat as breaching threshold' },
-  { value: 'notBreaching', label: 'Treat as not breaching threshold' },
-  { value: 'ignore', label: 'Ignore and maintain current state' },
-  { value: 'missing', label: 'Treat as missing data' },
+  { value: "breaching", label: "Treat as breaching threshold" },
+  { value: "notBreaching", label: "Treat as not breaching threshold" },
+  { value: "ignore", label: "Ignore and maintain current state" },
+  { value: "missing", label: "Treat as missing data" },
 ];
 
 const formSchema = z.object({
-  alarmName: z.string()
-    .min(1, 'Alarm name is required')
-    .max(255, 'Alarm name must be less than 255 characters'),
+  alarmName: z
+    .string()
+    .min(1, "Alarm name is required")
+    .max(255, "Alarm name must be less than 255 characters"),
   alarmDescription: z.string().optional(),
-  metricName: z.string().min(1, 'Metric name is required'),
-  namespace: z.string().min(1, 'Namespace is required'),
-  statistic: z.string().min(1, 'Statistic is required'),
-  period: z.string().min(1, 'Period is required'),
-  evaluationPeriods: z.string().min(1, 'Evaluation periods is required'),
-  threshold: z.string().min(1, 'Threshold is required'),
-  comparisonOperator: z.string().min(1, 'Comparison operator is required'),
+  metricName: z.string().min(1, "Metric name is required"),
+  namespace: z.string().min(1, "Namespace is required"),
+  statistic: z.string().min(1, "Statistic is required"),
+  period: z.string().min(1, "Period is required"),
+  evaluationPeriods: z.string().min(1, "Evaluation periods is required"),
+  threshold: z.string().min(1, "Threshold is required"),
+  comparisonOperator: z.string().min(1, "Comparison operator is required"),
   treatMissingData: z.string().optional(),
   actionsEnabled: z.boolean(),
   alarmActions: z.string().optional(),
@@ -83,20 +87,20 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      alarmName: alarm?.alarmName || '',
-      alarmDescription: alarm?.alarmDescription || '',
-      metricName: alarm?.metricName || '',
-      namespace: alarm?.namespace || 'AWS/EC2',
-      statistic: alarm?.statistic || 'Average',
-      period: alarm?.period?.toString() || '300',
-      evaluationPeriods: alarm?.evaluationPeriods?.toString() || '1',
-      threshold: alarm?.threshold?.toString() || '',
-      comparisonOperator: alarm?.comparisonOperator || 'GreaterThanThreshold',
-      treatMissingData: alarm?.treatMissingData || 'notBreaching',
+      alarmName: alarm?.alarmName || "",
+      alarmDescription: alarm?.alarmDescription || "",
+      metricName: alarm?.metricName || "",
+      namespace: alarm?.namespace || "AWS/EC2",
+      statistic: alarm?.statistic || "Average",
+      period: alarm?.period?.toString() || "300",
+      evaluationPeriods: alarm?.evaluationPeriods?.toString() || "1",
+      threshold: alarm?.threshold?.toString() || "",
+      comparisonOperator: alarm?.comparisonOperator || "GreaterThanThreshold",
+      treatMissingData: alarm?.treatMissingData || "notBreaching",
       actionsEnabled: alarm?.actionsEnabled ?? true,
-      alarmActions: alarm?.alarmActions?.join(',') || '',
-      okActions: alarm?.okActions?.join(',') || '',
-      insufficientDataActions: alarm?.insufficientDataActions?.join(',') || '',
+      alarmActions: alarm?.alarmActions?.join(",") || "",
+      okActions: alarm?.okActions?.join(",") || "",
+      insufficientDataActions: alarm?.insufficientDataActions?.join(",") || "",
     },
   });
 
@@ -106,9 +110,15 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
         alarmName: values.alarmName,
         alarmDescription: values.alarmDescription,
         actionsEnabled: values.actionsEnabled,
-        okActions: values.okActions ? values.okActions.split(',').filter(Boolean) : undefined,
-        alarmActions: values.alarmActions ? values.alarmActions.split(',').filter(Boolean) : undefined,
-        insufficientDataActions: values.insufficientDataActions ? values.insufficientDataActions.split(',').filter(Boolean) : undefined,
+        okActions: values.okActions
+          ? values.okActions.split(",").filter(Boolean)
+          : undefined,
+        alarmActions: values.alarmActions
+          ? values.alarmActions.split(",").filter(Boolean)
+          : undefined,
+        insufficientDataActions: values.insufficientDataActions
+          ? values.insufficientDataActions.split(",").filter(Boolean)
+          : undefined,
         metricName: values.metricName,
         namespace: values.namespace,
         statistic: values.statistic,
@@ -190,7 +200,7 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
 
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Metric Configuration</h3>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -277,7 +287,7 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
 
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Alarm Conditions</h3>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -335,12 +345,7 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
                 <FormItem>
                   <FormLabel>Evaluation Periods</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="1"
-                      min="1"
-                      {...field}
-                    />
+                    <Input type="number" placeholder="1" min="1" {...field} />
                   </FormControl>
                   <FormDescription>
                     Number of periods to evaluate
@@ -382,7 +387,7 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
 
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Actions (Optional)</h3>
-          
+
           <FormField
             control={form.control}
             name="alarmActions"
@@ -416,7 +421,8 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
                   />
                 </FormControl>
                 <FormDescription>
-                  Comma-separated list of ARNs to notify when alarm returns to OK
+                  Comma-separated list of ARNs to notify when alarm returns to
+                  OK
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -436,7 +442,8 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
                   />
                 </FormControl>
                 <FormDescription>
-                  Comma-separated list of ARNs to notify when alarm has insufficient data
+                  Comma-separated list of ARNs to notify when alarm has
+                  insufficient data
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -449,9 +456,7 @@ export function AlarmForm({ alarm, onSuccess, onCancel }: AlarmFormProps) {
             Cancel
           </Button>
           <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting
-              ? 'Creating...'
-              : 'Create Alarm'}
+            {form.formState.isSubmitting ? "Creating..." : "Create Alarm"}
           </Button>
         </div>
       </form>

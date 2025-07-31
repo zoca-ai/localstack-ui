@@ -1,12 +1,18 @@
-import { NextResponse } from 'next/server';
-import { SQSClient, ListQueuesCommand, CreateQueueCommand, DeleteQueueCommand, GetQueueAttributesCommand } from '@aws-sdk/client-sqs';
+import { NextResponse } from "next/server";
+import {
+  SQSClient,
+  ListQueuesCommand,
+  CreateQueueCommand,
+  DeleteQueueCommand,
+  GetQueueAttributesCommand,
+} from "@aws-sdk/client-sqs";
 
 const client = new SQSClient({
-  endpoint: process.env.LOCALSTACK_ENDPOINT || 'http://localhost:4566',
-  region: process.env.AWS_REGION || 'us-east-1',
+  endpoint: process.env.LOCALSTACK_ENDPOINT || "http://localhost:4566",
+  region: process.env.AWS_REGION || "us-east-1",
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'test',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'test',
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "test",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "test",
   },
 });
 
@@ -14,7 +20,7 @@ export async function GET() {
   try {
     const command = new ListQueuesCommand({});
     const response = await client.send(command);
-    
+
     if (!response.QueueUrls || response.QueueUrls.length === 0) {
       return NextResponse.json({ queues: [] });
     }
@@ -25,13 +31,13 @@ export async function GET() {
         try {
           const attributesCommand = new GetQueueAttributesCommand({
             QueueUrl: queueUrl,
-            AttributeNames: ['All'],
+            AttributeNames: ["All"],
           });
           const attributesResponse = await client.send(attributesCommand);
-          
+
           // Extract queue name from URL
-          const queueName = queueUrl.split('/').pop() || '';
-          
+          const queueName = queueUrl.split("/").pop() || "";
+
           return {
             queueUrl,
             queueName,
@@ -39,22 +45,22 @@ export async function GET() {
           };
         } catch (error) {
           // If we can't get attributes, return basic info
-          const queueName = queueUrl.split('/').pop() || '';
+          const queueName = queueUrl.split("/").pop() || "";
           return {
             queueUrl,
             queueName,
             attributes: {},
           };
         }
-      })
+      }),
     );
 
     return NextResponse.json({ queues: queuesWithAttributes });
   } catch (error: any) {
-    console.error('Failed to list queues:', error);
+    console.error("Failed to list queues:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to list queues' },
-      { status: 500 }
+      { error: error.message || "Failed to list queues" },
+      { status: 500 },
     );
   }
 }
@@ -66,8 +72,8 @@ export async function POST(request: Request) {
 
     if (!queueName) {
       return NextResponse.json(
-        { error: 'Queue name is required' },
-        { status: 400 }
+        { error: "Queue name is required" },
+        { status: 400 },
       );
     }
 
@@ -80,13 +86,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       queueUrl: response.QueueUrl,
-      message: 'Queue created successfully',
+      message: "Queue created successfully",
     });
   } catch (error: any) {
-    console.error('Failed to create queue:', error);
+    console.error("Failed to create queue:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create queue' },
-      { status: 500 }
+      { error: error.message || "Failed to create queue" },
+      { status: 500 },
     );
   }
 }
@@ -94,12 +100,12 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const queueUrl = searchParams.get('queueUrl');
+    const queueUrl = searchParams.get("queueUrl");
 
     if (!queueUrl) {
       return NextResponse.json(
-        { error: 'Queue URL is required' },
-        { status: 400 }
+        { error: "Queue URL is required" },
+        { status: 400 },
       );
     }
 
@@ -109,12 +115,12 @@ export async function DELETE(request: Request) {
 
     await client.send(command);
 
-    return NextResponse.json({ message: 'Queue deleted successfully' });
+    return NextResponse.json({ message: "Queue deleted successfully" });
   } catch (error: any) {
-    console.error('Failed to delete queue:', error);
+    console.error("Failed to delete queue:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete queue' },
-      { status: 500 }
+      { error: error.message || "Failed to delete queue" },
+      { status: 500 },
     );
   }
 }

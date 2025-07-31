@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useStackResources } from '@/hooks/use-cloudformation';
+import { useStackResources } from "@/hooks/use-cloudformation";
 import {
   Table,
   TableBody,
@@ -8,39 +8,51 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Package, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Package,
+  CheckCircle,
+  Clock,
+  XCircle,
+  AlertCircle,
+} from "lucide-react";
 
 interface ResourceListProps {
   stackName: string;
 }
 
 export function ResourceList({ stackName }: ResourceListProps) {
-  const { data: resources, isLoading, error } = useStackResources(stackName, true);
+  const {
+    data: resources,
+    isLoading,
+    error,
+  } = useStackResources(stackName, true);
 
   const getStatusIcon = (status: string) => {
-    if (status.includes('COMPLETE') && !status.includes('FAILED')) {
+    if (status.includes("COMPLETE") && !status.includes("FAILED")) {
       return <CheckCircle className="h-4 w-4 text-green-500" />;
-    } else if (status.includes('IN_PROGRESS')) {
+    } else if (status.includes("IN_PROGRESS")) {
       return <Clock className="h-4 w-4 text-blue-500 animate-pulse" />;
-    } else if (status.includes('FAILED') || status.includes('DELETE')) {
+    } else if (status.includes("FAILED") || status.includes("DELETE")) {
       return <XCircle className="h-4 w-4 text-red-500" />;
     } else {
       return <AlertCircle className="h-4 w-4 text-yellow-500" />;
     }
   };
 
-  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-    if (status.includes('COMPLETE') && !status.includes('FAILED')) {
-      return 'default';
-    } else if (status.includes('IN_PROGRESS')) {
-      return 'secondary';
-    } else if (status.includes('FAILED') || status.includes('DELETE')) {
-      return 'destructive';
+  const getStatusVariant = (
+    status: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    if (status.includes("COMPLETE") && !status.includes("FAILED")) {
+      return "default";
+    } else if (status.includes("IN_PROGRESS")) {
+      return "secondary";
+    } else if (status.includes("FAILED") || status.includes("DELETE")) {
+      return "destructive";
     } else {
-      return 'outline';
+      return "outline";
     }
   };
 
@@ -84,7 +96,10 @@ export function ResourceList({ stackName }: ResourceListProps) {
           <TableBody>
             {!resources || resources.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   No resources in this stack
                 </TableCell>
               </TableRow>
@@ -102,18 +117,20 @@ export function ResourceList({ stackName }: ResourceListProps) {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {getStatusIcon(resource.resourceStatus)}
-                      <Badge variant={getStatusVariant(resource.resourceStatus)}>
+                      <Badge
+                        variant={getStatusVariant(resource.resourceStatus)}
+                      >
                         {resource.resourceStatus}
                       </Badge>
                     </div>
                   </TableCell>
                   <TableCell className="max-w-xs truncate">
-                    {resource.physicalResourceId || '-'}
+                    {resource.physicalResourceId || "-"}
                   </TableCell>
                   <TableCell>
                     {resource.timestamp
                       ? new Date(resource.timestamp).toLocaleString()
-                      : '-'}
+                      : "-"}
                   </TableCell>
                 </TableRow>
               ))

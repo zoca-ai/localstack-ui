@@ -1,32 +1,38 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { MainLayout } from '@/components/layout/main-layout';
-import { BucketList } from '@/components/services/s3/bucket-list';
-import { CreateBucketDialog } from '@/components/services/s3/create-bucket-dialog';
-import { ObjectBrowser } from '@/components/services/s3/object-browser';
-import { UploadDialog } from '@/components/services/s3/upload-dialog';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Database, RefreshCw } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useState } from "react";
+import { MainLayout } from "@/components/layout/main-layout";
+import { BucketList } from "@/components/services/s3/bucket-list";
+import { CreateBucketDialog } from "@/components/services/s3/create-bucket-dialog";
+import { ObjectBrowser } from "@/components/services/s3/object-browser";
+import { UploadDialog } from "@/components/services/s3/upload-dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Plus, Database, RefreshCw } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function S3Page() {
   const [selectedBucket, setSelectedBucket] = useState<string | null>(null);
   const [createBucketOpen, setCreateBucketOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [currentPrefix, setCurrentPrefix] = useState('');
+  const [currentPrefix, setCurrentPrefix] = useState("");
   const queryClient = useQueryClient();
 
   const handleSelectBucket = (bucketName: string) => {
     setSelectedBucket(bucketName);
-    setCurrentPrefix('');
+    setCurrentPrefix("");
   };
 
   const handleBack = () => {
     setSelectedBucket(null);
-    setCurrentPrefix('');
+    setCurrentPrefix("");
   };
 
   return (
@@ -39,7 +45,13 @@ export default function S3Page() {
               Manage your S3 buckets and objects
             </p>
           </div>
-          <Button onClick={() => queryClient.invalidateQueries({ queryKey: ['s3-buckets'] })} variant="outline" size="sm">
+          <Button
+            onClick={() =>
+              queryClient.invalidateQueries({ queryKey: ["s3-buckets"] })
+            }
+            variant="outline"
+            size="sm"
+          >
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
@@ -48,7 +60,9 @@ export default function S3Page() {
         <Alert>
           <Database className="h-4 w-4" />
           <AlertDescription>
-            S3 in LocalStack provides a complete implementation of Amazon S3 for local development. You can create buckets, upload objects, and test S3 integrations without AWS costs.
+            S3 in LocalStack provides a complete implementation of Amazon S3 for
+            local development. You can create buckets, upload objects, and test
+            S3 integrations without AWS costs.
           </AlertDescription>
         </Alert>
 

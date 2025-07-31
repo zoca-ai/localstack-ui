@@ -1,7 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useApiStages, useApiDeployments, useCreateDeployment, useDeleteStage } from '@/hooks/use-apigateway';
+import { useState } from "react";
+import {
+  useApiStages,
+  useApiDeployments,
+  useCreateDeployment,
+  useDeleteStage,
+} from "@/hooks/use-apigateway";
 import {
   Table,
   TableBody,
@@ -9,15 +14,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { Rocket, Trash2, ExternalLink, Copy } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
+import { Rocket, Trash2, ExternalLink, Copy } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +30,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,7 +40,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
 interface StageListProps {
   apiId: string;
@@ -43,21 +48,22 @@ interface StageListProps {
 
 export function StageList({ apiId }: StageListProps) {
   const { data: stages, isLoading: stagesLoading } = useApiStages(apiId, true);
-  const { data: deployments, isLoading: deploymentsLoading } = useApiDeployments(apiId, true);
+  const { data: deployments, isLoading: deploymentsLoading } =
+    useApiDeployments(apiId, true);
   const createDeployment = useCreateDeployment();
   const deleteStage = useDeleteStage();
-  
+
   const [showDeployDialog, setShowDeployDialog] = useState(false);
-  const [stageName, setStageName] = useState('');
-  const [stageDescription, setStageDescription] = useState('');
-  const [deploymentDescription, setDeploymentDescription] = useState('');
+  const [stageName, setStageName] = useState("");
+  const [stageDescription, setStageDescription] = useState("");
+  const [deploymentDescription, setDeploymentDescription] = useState("");
   const [stageToDelete, setStageToDelete] = useState<string | null>(null);
 
   const isLoading = stagesLoading || deploymentsLoading;
 
   const handleDeploy = async () => {
     if (!stageName) {
-      toast.error('Stage name is required');
+      toast.error("Stage name is required");
       return;
     }
 
@@ -92,15 +98,15 @@ export function StageList({ apiId }: StageListProps) {
   };
 
   const resetForm = () => {
-    setStageName('');
-    setStageDescription('');
-    setDeploymentDescription('');
+    setStageName("");
+    setStageDescription("");
+    setDeploymentDescription("");
   };
 
   const copyUrl = (stage: string) => {
-    const url = `https://${apiId}.execute-api.${process.env.NEXT_PUBLIC_AWS_REGION || 'us-east-1'}.localhost.localstack.cloud:4566/${stage}`;
+    const url = `https://${apiId}.execute-api.${process.env.NEXT_PUBLIC_AWS_REGION || "us-east-1"}.localhost.localstack.cloud:4566/${stage}`;
     navigator.clipboard.writeText(url);
-    toast.success('URL copied to clipboard');
+    toast.success("URL copied to clipboard");
   };
 
   if (isLoading) {
@@ -137,14 +143,17 @@ export function StageList({ apiId }: StageListProps) {
             <TableBody>
               {!stages || stages.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-muted-foreground"
+                  >
                     No stages deployed. Deploy your API to create a stage.
                   </TableCell>
                 </TableRow>
               ) : (
                 stages.map((stage) => {
-                  const stageUrl = `https://${apiId}.execute-api.${process.env.NEXT_PUBLIC_AWS_REGION || 'us-east-1'}.localhost.localstack.cloud:4566/${stage.stageName}`;
-                  
+                  const stageUrl = `https://${apiId}.execute-api.${process.env.NEXT_PUBLIC_AWS_REGION || "us-east-1"}.localhost.localstack.cloud:4566/${stage.stageName}`;
+
                   return (
                     <TableRow key={stage.stageName}>
                       <TableCell className="font-medium">
@@ -158,7 +167,7 @@ export function StageList({ apiId }: StageListProps) {
                       <TableCell>
                         {stage.lastUpdatedDate
                           ? new Date(stage.lastUpdatedDate).toLocaleString()
-                          : '-'}
+                          : "-"}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -168,14 +177,14 @@ export function StageList({ apiId }: StageListProps) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => copyUrl(stage.stageName || '')}
+                            onClick={() => copyUrl(stage.stageName || "")}
                           >
                             <Copy className="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => window.open(stageUrl, '_blank')}
+                            onClick={() => window.open(stageUrl, "_blank")}
                           >
                             <ExternalLink className="h-3 w-3" />
                           </Button>
@@ -185,7 +194,9 @@ export function StageList({ apiId }: StageListProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setStageToDelete(stage.stageName || null)}
+                          onClick={() =>
+                            setStageToDelete(stage.stageName || null)
+                          }
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -208,7 +219,10 @@ export function StageList({ apiId }: StageListProps) {
             </p>
           ) : (
             deployments.slice(0, 5).map((deployment) => (
-              <div key={deployment.id} className="flex items-center justify-between p-2 border rounded">
+              <div
+                key={deployment.id}
+                className="flex items-center justify-between p-2 border rounded"
+              >
                 <div>
                   <code className="text-xs bg-muted px-1 py-0.5 rounded">
                     {deployment.id}
@@ -222,7 +236,7 @@ export function StageList({ apiId }: StageListProps) {
                 <span className="text-xs text-muted-foreground">
                   {deployment.createdDate
                     ? new Date(deployment.createdDate).toLocaleString()
-                    : '-'}
+                    : "-"}
                 </span>
               </div>
             ))
@@ -261,7 +275,9 @@ export function StageList({ apiId }: StageListProps) {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="deploymentDescription">Deployment Description</Label>
+              <Label htmlFor="deploymentDescription">
+                Deployment Description
+              </Label>
               <Input
                 id="deploymentDescription"
                 placeholder="Initial deployment"
@@ -271,31 +287,43 @@ export function StageList({ apiId }: StageListProps) {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setShowDeployDialog(false);
-              resetForm();
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeployDialog(false);
+                resetForm();
+              }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleDeploy} disabled={createDeployment.isPending}>
-              {createDeployment.isPending ? 'Deploying...' : 'Deploy'}
+            <Button
+              onClick={handleDeploy}
+              disabled={createDeployment.isPending}
+            >
+              {createDeployment.isPending ? "Deploying..." : "Deploy"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!stageToDelete} onOpenChange={(open) => !open && setStageToDelete(null)}>
+      <AlertDialog
+        open={!!stageToDelete}
+        onOpenChange={(open) => !open && setStageToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Stage</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the stage "{stageToDelete}"? 
-              This action cannot be undone.
+              Are you sure you want to delete the stage "{stageToDelete}"? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteStage} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDeleteStage}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -10,7 +10,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, MessageSquare, RefreshCw, Info, Inbox, Send, Clock } from "lucide-react";
+import {
+  Plus,
+  MessageSquare,
+  RefreshCw,
+  Info,
+  Inbox,
+  Send,
+  Clock,
+} from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueueList } from "@/components/services/sqs/queue-list";
 import { CreateQueueDialog } from "@/components/services/sqs/create-queue-dialog";
@@ -40,19 +48,25 @@ export default function SQSPage() {
 
   // Calculate stats
   const totalQueues = queues?.length || 0;
-  const standardQueues = queues?.filter(q => !q.queueName.endsWith('.fifo')).length || 0;
-  const fifoQueues = queues?.filter(q => q.queueName.endsWith('.fifo')).length || 0;
+  const standardQueues =
+    queues?.filter((q) => !q.queueName.endsWith(".fifo")).length || 0;
+  const fifoQueues =
+    queues?.filter((q) => q.queueName.endsWith(".fifo")).length || 0;
 
   return (
     <ServicePageLayout
       title="SQS"
       description="Manage your SQS queues and messages"
       icon={MessageSquare}
-      primaryAction={!selectedQueue ? {
-        label: "Create Queue",
-        icon: Plus,
-        onClick: () => setShowCreateDialog(true),
-      } : undefined}
+      primaryAction={
+        !selectedQueue
+          ? {
+              label: "Create Queue",
+              icon: Plus,
+              onClick: () => setShowCreateDialog(true),
+            }
+          : undefined
+      }
       secondaryAction={{
         label: "Refresh",
         icon: RefreshCw,

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -20,29 +20,33 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useCreateSecret, useUpdateSecretValue, useSecret } from '@/hooks/use-secrets-manager';
-import { Secret } from '@/types';
-import { Plus, X, Copy, Check, AlertCircle, Save, Edit3 } from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  useCreateSecret,
+  useUpdateSecretValue,
+  useSecret,
+} from "@/hooks/use-secrets-manager";
+import { Secret } from "@/types";
+import { Plus, X, Copy, Check, AlertCircle, Save, Edit3 } from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
 
 const secretSchema = z.object({
   name: z
     .string()
-    .min(1, 'Secret name is required')
+    .min(1, "Secret name is required")
     .regex(
       /^[a-zA-Z0-9/_+=.@-]+$/,
-      'Secret name can only contain alphanumeric characters and /_+=.@-'
+      "Secret name can only contain alphanumeric characters and /_+=.@-",
     ),
   description: z.string().optional(),
-  secretValue: z.string().min(1, 'Secret value is required'),
+  secretValue: z.string().min(1, "Secret value is required"),
 });
 
 type SecretFormValues = z.infer<typeof secretSchema>;
@@ -51,7 +55,7 @@ interface SecretDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   secret: Secret | null;
-  mode: 'create' | 'view' | 'edit';
+  mode: "create" | "view" | "edit";
 }
 
 export function SecretDialog({
@@ -65,31 +69,31 @@ export function SecretDialog({
   const [mode, setMode] = useState(initialMode);
   const [copied, setCopied] = useState(false);
   const [tags, setTags] = useState<Record<string, string>>({});
-  const [newTagKey, setNewTagKey] = useState('');
-  const [newTagValue, setNewTagValue] = useState('');
-  const [valueType, setValueType] = useState<'plaintext' | 'json'>('plaintext');
-  const [keyValuePairs, setKeyValuePairs] = useState<Array<{ key: string; value: string }>>([
-    { key: '', value: '' }
-  ]);
+  const [newTagKey, setNewTagKey] = useState("");
+  const [newTagValue, setNewTagValue] = useState("");
+  const [valueType, setValueType] = useState<"plaintext" | "json">("plaintext");
+  const [keyValuePairs, setKeyValuePairs] = useState<
+    Array<{ key: string; value: string }>
+  >([{ key: "", value: "" }]);
   const [isJsonObject, setIsJsonObject] = useState(false);
 
   const form = useForm<SecretFormValues>({
     resolver: zodResolver(secretSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      secretValue: '',
+      name: "",
+      description: "",
+      secretValue: "",
     },
   });
 
-  const isEditing = mode === 'edit';
-  const isViewing = mode === 'view';
-  const isCreating = mode === 'create';
+  const isEditing = mode === "edit";
+  const isViewing = mode === "view";
+  const isCreating = mode === "create";
 
   // Fetch existing secret value when viewing or editing
   const { data: secretData, isLoading: isLoadingSecret } = useSecret(
     secret?.name || null,
-    (isViewing || isEditing) && open
+    (isViewing || isEditing) && open,
   );
 
   // Update mode when prop changes
@@ -98,59 +102,70 @@ export function SecretDialog({
   }, [initialMode]);
 
   // Parse key-value pairs from plaintext or JSON
-  const parseKeyValuePairs = (text: string): Array<{ key: string; value: string }> => {
+  const parseKeyValuePairs = (
+    text: string,
+  ): Array<{ key: string; value: string }> => {
     // First try to parse as JSON
     try {
       const jsonObj = JSON.parse(text);
       // If it's an object (not array), convert to key-value pairs
-      if (typeof jsonObj === 'object' && !Array.isArray(jsonObj) && jsonObj !== null) {
+      if (
+        typeof jsonObj === "object" &&
+        !Array.isArray(jsonObj) &&
+        jsonObj !== null
+      ) {
         const pairs = Object.entries(jsonObj).map(([key, value]) => ({
           key,
-          value: typeof value === 'string' ? value : JSON.stringify(value)
+          value: typeof value === "string" ? value : JSON.stringify(value),
         }));
-        return pairs.length > 0 ? pairs : [{ key: '', value: '' }];
+        return pairs.length > 0 ? pairs : [{ key: "", value: "" }];
       }
     } catch {
       // Not JSON, parse as plaintext key=value format
     }
 
     // Parse as plaintext key=value format
-    const lines = text.split('\n').filter(line => line.trim());
-    const pairs = lines.map(line => {
-      const [key, ...valueParts] = line.split('=');
+    const lines = text.split("\n").filter((line) => line.trim());
+    const pairs = lines.map((line) => {
+      const [key, ...valueParts] = line.split("=");
       return {
-        key: key?.trim() || '',
-        value: valueParts.join('=').trim() || ''
+        key: key?.trim() || "",
+        value: valueParts.join("=").trim() || "",
       };
     });
-    return pairs.length > 0 ? pairs : [{ key: '', value: '' }];
+    return pairs.length > 0 ? pairs : [{ key: "", value: "" }];
   };
 
   // Convert key-value pairs to plaintext
-  const keyValuePairsToText = (pairs: Array<{ key: string; value: string }>): string => {
+  const keyValuePairsToText = (
+    pairs: Array<{ key: string; value: string }>,
+  ): string => {
     return pairs
-      .filter(pair => pair.key)
-      .map(pair => `${pair.key}=${pair.value}`)
-      .join('\n');
+      .filter((pair) => pair.key)
+      .map((pair) => `${pair.key}=${pair.value}`)
+      .join("\n");
   };
 
   // Update form and detect type when secret data is loaded
   useEffect(() => {
     if ((isViewing || isEditing) && secretData?.value?.secretString && open) {
       const secretValue = secretData.value.secretString;
-      form.setValue('secretValue', secretValue);
-      
+      form.setValue("secretValue", secretValue);
+
       // Detect if it's JSON
       try {
         const parsed = JSON.parse(secretValue);
-        const isObj = typeof parsed === 'object' && !Array.isArray(parsed) && parsed !== null;
+        const isObj =
+          typeof parsed === "object" &&
+          !Array.isArray(parsed) &&
+          parsed !== null;
         setIsJsonObject(isObj);
-        setValueType('json');
+        setValueType("json");
         // Parse key-value pairs for both JSON objects and plaintext
         setKeyValuePairs(parseKeyValuePairs(secretValue));
       } catch {
         setIsJsonObject(false);
-        setValueType('plaintext');
+        setValueType("plaintext");
         // Parse key-value pairs for plaintext
         setKeyValuePairs(parseKeyValuePairs(secretValue));
       }
@@ -161,21 +176,21 @@ export function SecretDialog({
   useEffect(() => {
     if (!open) {
       form.reset({
-        name: '',
-        description: '',
-        secretValue: '',
+        name: "",
+        description: "",
+        secretValue: "",
       });
       setTags({});
-      setValueType('plaintext');
-      setKeyValuePairs([{ key: '', value: '' }]);
+      setValueType("plaintext");
+      setKeyValuePairs([{ key: "", value: "" }]);
       setCopied(false);
       setIsJsonObject(false);
     } else if (secret) {
       // When opening with a secret, set the form values
       form.reset({
         name: secret.name,
-        description: secret.description || '',
-        secretValue: '', // This will be populated when the secret value loads
+        description: secret.description || "",
+        secretValue: "", // This will be populated when the secret value loads
       });
       setTags(secret.tags || {});
     }
@@ -184,13 +199,13 @@ export function SecretDialog({
   const onSubmit = async (values: SecretFormValues) => {
     try {
       let secretString = values.secretValue;
-      
+
       // For plaintext table mode, check if we should convert to JSON
-      if (valueType === 'plaintext' && keyValuePairs.length > 0) {
+      if (valueType === "plaintext" && keyValuePairs.length > 0) {
         if (isJsonObject) {
           // Convert key-value pairs back to JSON object
           const jsonObj: Record<string, any> = {};
-          keyValuePairs.forEach(pair => {
+          keyValuePairs.forEach((pair) => {
             if (pair.key) {
               // Try to parse value as JSON first (for nested objects/arrays)
               try {
@@ -207,15 +222,15 @@ export function SecretDialog({
           secretString = keyValuePairsToText(keyValuePairs);
         }
       }
-      
+
       // Validate JSON if needed
-      if (valueType === 'json') {
+      if (valueType === "json") {
         try {
           JSON.parse(secretString);
         } catch {
-          form.setError('secretValue', {
-            type: 'manual',
-            message: 'Invalid JSON format',
+          form.setError("secretValue", {
+            type: "manual",
+            message: "Invalid JSON format",
           });
           return;
         }
@@ -244,8 +259,8 @@ export function SecretDialog({
   const addTag = () => {
     if (newTagKey && newTagValue) {
       setTags({ ...tags, [newTagKey]: newTagValue });
-      setNewTagKey('');
-      setNewTagValue('');
+      setNewTagKey("");
+      setNewTagValue("");
     }
   };
 
@@ -257,8 +272,8 @@ export function SecretDialog({
 
   const formatJSON = () => {
     try {
-      const parsed = JSON.parse(form.getValues('secretValue'));
-      form.setValue('secretValue', JSON.stringify(parsed, null, 2));
+      const parsed = JSON.parse(form.getValues("secretValue"));
+      form.setValue("secretValue", JSON.stringify(parsed, null, 2));
     } catch {
       // Invalid JSON, do nothing
     }
@@ -271,26 +286,30 @@ export function SecretDialog({
   };
 
   const addKeyValuePair = () => {
-    setKeyValuePairs([...keyValuePairs, { key: '', value: '' }]);
+    setKeyValuePairs([...keyValuePairs, { key: "", value: "" }]);
   };
 
-  const updateKeyValuePair = (index: number, field: 'key' | 'value', value: string) => {
+  const updateKeyValuePair = (
+    index: number,
+    field: "key" | "value",
+    value: string,
+  ) => {
     const newPairs = [...keyValuePairs];
     newPairs[index][field] = value;
     setKeyValuePairs(newPairs);
-    
+
     // Update form value
     const textValue = keyValuePairsToText(newPairs);
-    form.setValue('secretValue', textValue);
+    form.setValue("secretValue", textValue);
   };
 
   const removeKeyValuePair = (index: number) => {
     const newPairs = keyValuePairs.filter((_, i) => i !== index);
-    setKeyValuePairs(newPairs.length > 0 ? newPairs : [{ key: '', value: '' }]);
-    
+    setKeyValuePairs(newPairs.length > 0 ? newPairs : [{ key: "", value: "" }]);
+
     // Update form value
     const textValue = keyValuePairsToText(newPairs);
-    form.setValue('secretValue', textValue);
+    form.setValue("secretValue", textValue);
   };
 
   return (
@@ -298,14 +317,16 @@ export function SecretDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isCreating && 'Create New Secret'}
+            {isCreating && "Create New Secret"}
             {isViewing && `Secret: ${secret?.name}`}
             {isEditing && `Edit Secret: ${secret?.name}`}
           </DialogTitle>
           <DialogDescription>
-            {isCreating && 'Create a new secret in AWS Secrets Manager.'}
-            {isViewing && (secret?.description || 'View secret details and value.')}
-            {isEditing && 'Update the secret value. This will create a new version.'}
+            {isCreating && "Create a new secret in AWS Secrets Manager."}
+            {isViewing &&
+              (secret?.description || "View secret details and value.")}
+            {isEditing &&
+              "Update the secret value. This will create a new version."}
           </DialogDescription>
         </DialogHeader>
 
@@ -317,16 +338,17 @@ export function SecretDialog({
                 <p className="text-xs text-muted-foreground">Created</p>
                 <p className="text-sm font-medium">
                   {secret.createdDate
-                    ? formatDistanceToNow(new Date(secret.createdDate)) + ' ago'
-                    : 'Unknown'}
+                    ? formatDistanceToNow(new Date(secret.createdDate)) + " ago"
+                    : "Unknown"}
                 </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Last Modified</p>
                 <p className="text-sm font-medium">
                   {secret.lastChangedDate
-                    ? formatDistanceToNow(new Date(secret.lastChangedDate)) + ' ago'
-                    : 'Never'}
+                    ? formatDistanceToNow(new Date(secret.lastChangedDate)) +
+                      " ago"
+                    : "Never"}
                 </p>
               </div>
             </div>
@@ -336,7 +358,11 @@ export function SecretDialog({
                 <h3 className="text-sm font-semibold">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(secret.tags).map(([key, value]) => (
-                    <Badge key={key} variant="secondary" className="font-normal">
+                    <Badge
+                      key={key}
+                      variant="secondary"
+                      className="font-normal"
+                    >
                       <span className="font-medium">{key}:</span> {value}
                     </Badge>
                   ))}
@@ -393,7 +419,7 @@ export function SecretDialog({
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => setMode('edit')}
+                    onClick={() => setMode("edit")}
                   >
                     <Edit3 className="mr-2 h-4 w-4" />
                     Edit
@@ -407,7 +433,10 @@ export function SecretDialog({
                   <Skeleton className="h-[200px] w-full" />
                 </div>
               ) : (
-                <Tabs value={valueType} onValueChange={(v) => setValueType(v as 'plaintext' | 'json')}>
+                <Tabs
+                  value={valueType}
+                  onValueChange={(v) => setValueType(v as "plaintext" | "json")}
+                >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="plaintext">Plaintext</TabsTrigger>
                     <TabsTrigger value="json">JSON</TabsTrigger>
@@ -419,8 +448,14 @@ export function SecretDialog({
                           (() => {
                             // Try to parse as JSON and display as table
                             try {
-                              const jsonObj = JSON.parse(secretData.value.secretString);
-                              if (typeof jsonObj === 'object' && !Array.isArray(jsonObj) && jsonObj !== null) {
+                              const jsonObj = JSON.parse(
+                                secretData.value.secretString,
+                              );
+                              if (
+                                typeof jsonObj === "object" &&
+                                !Array.isArray(jsonObj) &&
+                                jsonObj !== null
+                              ) {
                                 // Display as table for JSON objects
                                 return (
                                   <div className="space-y-3">
@@ -428,19 +463,32 @@ export function SecretDialog({
                                       <table className="w-full">
                                         <thead>
                                           <tr className="border-b bg-muted/50">
-                                            <th className="text-left p-3 font-medium">Key</th>
-                                            <th className="text-left p-3 font-medium">Value</th>
+                                            <th className="text-left p-3 font-medium">
+                                              Key
+                                            </th>
+                                            <th className="text-left p-3 font-medium">
+                                              Value
+                                            </th>
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          {Object.entries(jsonObj).map(([key, value]) => (
-                                            <tr key={key} className="border-b last:border-0">
-                                              <td className="p-3 font-mono text-sm">{key}</td>
-                                              <td className="p-3 font-mono text-sm">
-                                                {typeof value === 'string' ? value : JSON.stringify(value)}
-                                              </td>
-                                            </tr>
-                                          ))}
+                                          {Object.entries(jsonObj).map(
+                                            ([key, value]) => (
+                                              <tr
+                                                key={key}
+                                                className="border-b last:border-0"
+                                              >
+                                                <td className="p-3 font-mono text-sm">
+                                                  {key}
+                                                </td>
+                                                <td className="p-3 font-mono text-sm">
+                                                  {typeof value === "string"
+                                                    ? value
+                                                    : JSON.stringify(value)}
+                                                </td>
+                                              </tr>
+                                            ),
+                                          )}
                                         </tbody>
                                       </table>
                                     </div>
@@ -448,7 +496,11 @@ export function SecretDialog({
                                       type="button"
                                       variant="secondary"
                                       size="sm"
-                                      onClick={() => copyToClipboard(secretData.value.secretString!)}
+                                      onClick={() =>
+                                        copyToClipboard(
+                                          secretData.value.secretString!,
+                                        )
+                                      }
                                       className="w-full"
                                     >
                                       {copied ? (
@@ -469,7 +521,7 @@ export function SecretDialog({
                             } catch {
                               // Not JSON, display as plaintext
                             }
-                            
+
                             // Display as plaintext if not a JSON object
                             return (
                               <>
@@ -481,7 +533,11 @@ export function SecretDialog({
                                   variant="secondary"
                                   size="sm"
                                   className="absolute top-2 right-2"
-                                  onClick={() => copyToClipboard(secretData.value.secretString!)}
+                                  onClick={() =>
+                                    copyToClipboard(
+                                      secretData.value.secretString!,
+                                    )
+                                  }
                                 >
                                   {copied ? (
                                     <>
@@ -510,19 +566,32 @@ export function SecretDialog({
                           <table className="w-full">
                             <thead>
                               <tr className="border-b bg-muted/50">
-                                <th className="text-left p-2 font-medium">Key</th>
-                                <th className="text-left p-2 font-medium">Value</th>
+                                <th className="text-left p-2 font-medium">
+                                  Key
+                                </th>
+                                <th className="text-left p-2 font-medium">
+                                  Value
+                                </th>
                                 <th className="w-10"></th>
                               </tr>
                             </thead>
                             <tbody>
                               {keyValuePairs.map((pair, index) => (
-                                <tr key={index} className="border-b last:border-0">
+                                <tr
+                                  key={index}
+                                  className="border-b last:border-0"
+                                >
                                   <td className="p-2">
                                     <Input
                                       placeholder="KEY_NAME"
                                       value={pair.key}
-                                      onChange={(e) => updateKeyValuePair(index, 'key', e.target.value)}
+                                      onChange={(e) =>
+                                        updateKeyValuePair(
+                                          index,
+                                          "key",
+                                          e.target.value,
+                                        )
+                                      }
                                       className="font-mono text-sm"
                                     />
                                   </td>
@@ -530,7 +599,13 @@ export function SecretDialog({
                                     <Input
                                       placeholder="value"
                                       value={pair.value}
-                                      onChange={(e) => updateKeyValuePair(index, 'value', e.target.value)}
+                                      onChange={(e) =>
+                                        updateKeyValuePair(
+                                          index,
+                                          "value",
+                                          e.target.value,
+                                        )
+                                      }
                                       className="font-mono text-sm"
                                     />
                                   </td>
@@ -569,16 +644,21 @@ export function SecretDialog({
                         <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono whitespace-pre-wrap break-words">
                           <code>
                             {(() => {
-                                  try {
-                                    return JSON.stringify(
-                                      JSON.parse(secretData?.value?.secretString || '{}'),
-                                      null,
-                                      2
-                                    );
-                                  } catch {
-                                    return secretData?.value?.secretString || 'Invalid JSON';
-                                  }
-                                })()}
+                              try {
+                                return JSON.stringify(
+                                  JSON.parse(
+                                    secretData?.value?.secretString || "{}",
+                                  ),
+                                  null,
+                                  2,
+                                );
+                              } catch {
+                                return (
+                                  secretData?.value?.secretString ||
+                                  "Invalid JSON"
+                                );
+                              }
+                            })()}
                           </code>
                         </pre>
                         {secretData?.value?.secretString && (
@@ -587,7 +667,9 @@ export function SecretDialog({
                             variant="secondary"
                             size="sm"
                             className="absolute top-2 right-2"
-                            onClick={() => copyToClipboard(secretData.value.secretString!)}
+                            onClick={() =>
+                              copyToClipboard(secretData.value.secretString!)
+                            }
                           >
                             {copied ? (
                               <>
@@ -695,7 +777,7 @@ export function SecretDialog({
                     variant="outline"
                     onClick={() => {
                       if (isEditing) {
-                        setMode('view');
+                        setMode("view");
                       } else {
                         onOpenChange(false);
                       }
@@ -703,10 +785,7 @@ export function SecretDialog({
                   >
                     Cancel
                   </Button>
-                  <Button 
-                    type="submit" 
-                    disabled={isEditing && isLoadingSecret}
-                  >
+                  <Button type="submit" disabled={isEditing && isLoadingSecret}>
                     {isEditing ? (
                       <>
                         <Save className="mr-2 h-4 w-4" />

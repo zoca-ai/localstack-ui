@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,9 +19,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/alert-dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Key,
   Plus,
@@ -31,17 +31,17 @@ import {
   ToggleLeft,
   ToggleRight,
   AlertTriangle,
-  Info
-} from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
+  Info,
+} from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
 import {
   useAccessKeys,
   useCreateAccessKey,
   useUpdateAccessKey,
   useDeleteAccessKey,
-} from '@/hooks/use-iam';
-import { toast } from 'sonner';
-import { IAMAccessKey } from '@/types';
+} from "@/hooks/use-iam";
+import { toast } from "sonner";
+import { IAMAccessKey } from "@/types";
 
 interface AccessKeyManagerProps {
   userName: string;
@@ -67,8 +67,11 @@ export function AccessKeyManager({ userName }: AccessKeyManagerProps) {
     }
   };
 
-  const handleToggleStatus = async (accessKeyId: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+  const handleToggleStatus = async (
+    accessKeyId: string,
+    currentStatus: string,
+  ) => {
+    const newStatus = currentStatus === "Active" ? "Inactive" : "Active";
     await updateMutation.mutateAsync({
       userName,
       accessKeyId,
@@ -96,9 +99,9 @@ export function AccessKeyManager({ userName }: AccessKeyManagerProps) {
 aws_access_key_id = ${newAccessKey.accessKeyId}
 aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
 
-    const blob = new Blob([credentials], { type: 'text/plain' });
+    const blob = new Blob([credentials], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `${userName}-credentials.txt`;
     document.body.appendChild(a);
@@ -155,14 +158,20 @@ aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
                     variant="ghost"
                     size="icon"
                     className="h-6 w-6"
-                    onClick={() => copyToClipboard(key.accessKeyId, 'Access Key ID')}
+                    onClick={() =>
+                      copyToClipboard(key.accessKeyId, "Access Key ID")
+                    }
                   >
                     <Copy className="h-3 w-3" />
                   </Button>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>Created {formatDistanceToNow(new Date(key.createDate))} ago</span>
-                  <Badge variant={key.status === 'Active' ? 'default' : 'secondary'}>
+                  <span>
+                    Created {formatDistanceToNow(new Date(key.createDate))} ago
+                  </span>
+                  <Badge
+                    variant={key.status === "Active" ? "default" : "secondary"}
+                  >
                     {key.status}
                   </Badge>
                 </div>
@@ -171,10 +180,12 @@ aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleToggleStatus(key.accessKeyId, key.status)}
+                  onClick={() =>
+                    handleToggleStatus(key.accessKeyId, key.status)
+                  }
                   disabled={updateMutation.isPending}
                 >
-                  {key.status === 'Active' ? (
+                  {key.status === "Active" ? (
                     <ToggleRight className="h-4 w-4" />
                   ) : (
                     <ToggleLeft className="h-4 w-4" />
@@ -198,7 +209,8 @@ aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
-            IAM users can have a maximum of 2 access keys. Delete an existing key to create a new one.
+            IAM users can have a maximum of 2 access keys. Delete an existing
+            key to create a new one.
           </AlertDescription>
         </Alert>
       )}
@@ -209,8 +221,8 @@ aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
           <DialogHeader>
             <DialogTitle>Access Key Created Successfully</DialogTitle>
             <DialogDescription>
-              This is the only time you can view or download the secret access key.
-              Save it securely now.
+              This is the only time you can view or download the secret access
+              key. Save it securely now.
             </DialogDescription>
           </DialogHeader>
           {newAccessKey && (
@@ -218,8 +230,8 @@ aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  Make sure to copy or download your secret access key now.
-                  You won't be able to see it again!
+                  Make sure to copy or download your secret access key now. You
+                  won't be able to see it again!
                 </AlertDescription>
               </Alert>
               <div className="space-y-3">
@@ -232,14 +244,21 @@ aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => copyToClipboard(newAccessKey.accessKeyId, 'Access Key ID')}
+                      onClick={() =>
+                        copyToClipboard(
+                          newAccessKey.accessKeyId,
+                          "Access Key ID",
+                        )
+                      }
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Secret Access Key</label>
+                  <label className="text-sm font-medium">
+                    Secret Access Key
+                  </label>
                   <div className="flex items-center gap-2 mt-1">
                     <code className="flex-1 p-2 bg-muted rounded text-sm font-mono">
                       {newAccessKey.secretAccessKey}
@@ -247,7 +266,12 @@ aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => copyToClipboard(newAccessKey.secretAccessKey!, 'Secret Access Key')}
+                      onClick={() =>
+                        copyToClipboard(
+                          newAccessKey.secretAccessKey!,
+                          "Secret Access Key",
+                        )
+                      }
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -274,13 +298,17 @@ aws_secret_access_key = ${newAccessKey.secretAccessKey}`;
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!keyToDelete} onOpenChange={() => setKeyToDelete(null)}>
+      <AlertDialog
+        open={!!keyToDelete}
+        onOpenChange={() => setKeyToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Access Key</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this access key? This action cannot be undone.
-              Any applications using this key will lose access.
+              Are you sure you want to delete this access key? This action
+              cannot be undone. Any applications using this key will lose
+              access.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

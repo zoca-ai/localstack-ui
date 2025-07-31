@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCreateStack } from '@/hooks/use-cloudformation';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useCreateStack } from "@/hooks/use-cloudformation";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,21 +11,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
-import { Plus, Upload } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+import { Plus, Upload } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function CreateStackDialog() {
   const [open, setOpen] = useState(false);
-  const [stackName, setStackName] = useState('');
-  const [templateBody, setTemplateBody] = useState('');
-  const [templateUrl, setTemplateUrl] = useState('');
-  const [templateSource, setTemplateSource] = useState<'body' | 'url'>('body');
+  const [stackName, setStackName] = useState("");
+  const [templateBody, setTemplateBody] = useState("");
+  const [templateUrl, setTemplateUrl] = useState("");
+  const [templateSource, setTemplateSource] = useState<"body" | "url">("body");
   const [capabilities, setCapabilities] = useState({
     CAPABILITY_IAM: false,
     CAPABILITY_NAMED_IAM: false,
@@ -36,24 +36,24 @@ export function CreateStackDialog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!stackName) {
-      toast.error('Stack name is required');
+      toast.error("Stack name is required");
       return;
     }
 
-    if (templateSource === 'body' && !templateBody) {
-      toast.error('Template body is required');
+    if (templateSource === "body" && !templateBody) {
+      toast.error("Template body is required");
       return;
     }
 
-    if (templateSource === 'url' && !templateUrl) {
-      toast.error('Template URL is required');
+    if (templateSource === "url" && !templateUrl) {
+      toast.error("Template URL is required");
       return;
     }
 
     // Validate JSON/YAML template if body is provided
-    if (templateSource === 'body') {
+    if (templateSource === "body") {
       try {
         // Try to parse as JSON first
         JSON.parse(templateBody);
@@ -70,12 +70,13 @@ export function CreateStackDialog() {
     try {
       await createStack.mutateAsync({
         stackName,
-        templateBody: templateSource === 'body' ? templateBody : undefined,
-        templateURL: templateSource === 'url' ? templateUrl : undefined,
-        capabilities: enabledCapabilities.length > 0 ? enabledCapabilities : undefined,
+        templateBody: templateSource === "body" ? templateBody : undefined,
+        templateURL: templateSource === "url" ? templateUrl : undefined,
+        capabilities:
+          enabledCapabilities.length > 0 ? enabledCapabilities : undefined,
         disableRollback,
       });
-      
+
       toast.success(`Stack "${stackName}" creation initiated`);
       setOpen(false);
       resetForm();
@@ -85,10 +86,10 @@ export function CreateStackDialog() {
   };
 
   const resetForm = () => {
-    setStackName('');
-    setTemplateBody('');
-    setTemplateUrl('');
-    setTemplateSource('body');
+    setStackName("");
+    setTemplateBody("");
+    setTemplateUrl("");
+    setTemplateSource("body");
     setCapabilities({
       CAPABILITY_IAM: false,
       CAPABILITY_NAMED_IAM: false,
@@ -152,12 +153,17 @@ export function CreateStackDialog() {
               </p>
             </div>
 
-            <Tabs value={templateSource} onValueChange={(value) => setTemplateSource(value as 'body' | 'url')}>
+            <Tabs
+              value={templateSource}
+              onValueChange={(value) =>
+                setTemplateSource(value as "body" | "url")
+              }
+            >
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="body">Template Body</TabsTrigger>
                 <TabsTrigger value="url">Template URL</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="body" className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="templateBody">Template (JSON/YAML) *</Label>
@@ -165,7 +171,9 @@ export function CreateStackDialog() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => document.getElementById('file-upload')?.click()}
+                    onClick={() =>
+                      document.getElementById("file-upload")?.click()
+                    }
                   >
                     <Upload className="mr-2 h-4 w-4" />
                     Upload File
@@ -187,7 +195,7 @@ export function CreateStackDialog() {
                   className="font-mono text-sm"
                 />
               </TabsContent>
-              
+
               <TabsContent value="url" className="space-y-2">
                 <Label htmlFor="templateUrl">Template URL *</Label>
                 <Input
@@ -209,8 +217,11 @@ export function CreateStackDialog() {
                   <Checkbox
                     id="cap-iam"
                     checked={capabilities.CAPABILITY_IAM}
-                    onCheckedChange={(checked) => 
-                      setCapabilities(prev => ({ ...prev, CAPABILITY_IAM: !!checked }))
+                    onCheckedChange={(checked) =>
+                      setCapabilities((prev) => ({
+                        ...prev,
+                        CAPABILITY_IAM: !!checked,
+                      }))
                     }
                   />
                   <Label htmlFor="cap-iam" className="text-sm font-normal">
@@ -221,11 +232,17 @@ export function CreateStackDialog() {
                   <Checkbox
                     id="cap-named-iam"
                     checked={capabilities.CAPABILITY_NAMED_IAM}
-                    onCheckedChange={(checked) => 
-                      setCapabilities(prev => ({ ...prev, CAPABILITY_NAMED_IAM: !!checked }))
+                    onCheckedChange={(checked) =>
+                      setCapabilities((prev) => ({
+                        ...prev,
+                        CAPABILITY_NAMED_IAM: !!checked,
+                      }))
                     }
                   />
-                  <Label htmlFor="cap-named-iam" className="text-sm font-normal">
+                  <Label
+                    htmlFor="cap-named-iam"
+                    className="text-sm font-normal"
+                  >
                     CAPABILITY_NAMED_IAM - Allow creation of named IAM resources
                   </Label>
                 </div>
@@ -233,11 +250,17 @@ export function CreateStackDialog() {
                   <Checkbox
                     id="cap-auto-expand"
                     checked={capabilities.CAPABILITY_AUTO_EXPAND}
-                    onCheckedChange={(checked) => 
-                      setCapabilities(prev => ({ ...prev, CAPABILITY_AUTO_EXPAND: !!checked }))
+                    onCheckedChange={(checked) =>
+                      setCapabilities((prev) => ({
+                        ...prev,
+                        CAPABILITY_AUTO_EXPAND: !!checked,
+                      }))
                     }
                   />
-                  <Label htmlFor="cap-auto-expand" className="text-sm font-normal">
+                  <Label
+                    htmlFor="cap-auto-expand"
+                    className="text-sm font-normal"
+                  >
                     CAPABILITY_AUTO_EXPAND - Allow macros to expand
                   </Label>
                 </div>
@@ -267,7 +290,7 @@ export function CreateStackDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={createStack.isPending}>
-              {createStack.isPending ? 'Creating...' : 'Create Stack'}
+              {createStack.isPending ? "Creating..." : "Create Stack"}
             </Button>
           </DialogFooter>
         </form>

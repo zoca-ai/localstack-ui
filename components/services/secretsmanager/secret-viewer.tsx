@@ -1,23 +1,33 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSecret } from '@/hooks/use-secrets-manager';
+import { useState, useEffect } from "react";
+import { useSecret } from "@/hooks/use-secrets-manager";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Secret } from '@/types';
-import { Eye, EyeOff, Copy, Check, AlertCircle, Key, Calendar, Clock, Tag } from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Secret } from "@/types";
+import {
+  Eye,
+  EyeOff,
+  Copy,
+  Check,
+  AlertCircle,
+  Key,
+  Calendar,
+  Clock,
+  Tag,
+} from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
 
 interface SecretViewerProps {
   secret: Secret | null;
@@ -26,11 +36,20 @@ interface SecretViewerProps {
   onEdit: () => void;
 }
 
-export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewerProps) {
+export function SecretViewer({
+  secret,
+  open,
+  onOpenChange,
+  onEdit,
+}: SecretViewerProps) {
   const [copied, setCopied] = useState(false);
-  const { data: secretData, isLoading, error } = useSecret(
+  const {
+    data: secretData,
+    isLoading,
+    error,
+  } = useSecret(
     secret?.name || null,
-    true // Always fetch value when viewing
+    true, // Always fetch value when viewing
   );
 
   // Reset copied state when secret changes
@@ -75,7 +94,7 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
             <div className="flex-1">
               <DialogTitle className="text-xl">{secret.name}</DialogTitle>
               <DialogDescription className="mt-1">
-                {secret.description || 'No description provided'}
+                {secret.description || "No description provided"}
               </DialogDescription>
             </div>
           </div>
@@ -93,30 +112,32 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
                 <p className="text-xs text-muted-foreground">Created</p>
                 <p className="text-sm font-medium">
                   {secret.createdDate
-                    ? formatDistanceToNow(new Date(secret.createdDate)) + ' ago'
-                    : 'Unknown'}
+                    ? formatDistanceToNow(new Date(secret.createdDate)) + " ago"
+                    : "Unknown"}
                 </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Last Modified</p>
                 <p className="text-sm font-medium">
                   {secret.lastChangedDate
-                    ? formatDistanceToNow(new Date(secret.lastChangedDate)) + ' ago'
-                    : 'Never'}
+                    ? formatDistanceToNow(new Date(secret.lastChangedDate)) +
+                      " ago"
+                    : "Never"}
                 </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Last Accessed</p>
                 <p className="text-sm font-medium">
                   {secret.lastAccessedDate
-                    ? formatDistanceToNow(new Date(secret.lastAccessedDate)) + ' ago'
-                    : 'Never'}
+                    ? formatDistanceToNow(new Date(secret.lastAccessedDate)) +
+                      " ago"
+                    : "Never"}
                 </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Version</p>
                 <p className="text-sm font-medium">
-                  {secret.versionId || 'Current'}
+                  {secret.versionId || "Current"}
                 </p>
               </div>
             </div>
@@ -148,9 +169,9 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
                 <Key className="h-4 w-4 text-muted-foreground" />
                 <h3 className="text-sm font-semibold">Secret Value</h3>
               </div>
-              <Button 
-                variant="default" 
-                size="sm" 
+              <Button
+                variant="default"
+                size="sm"
                 onClick={onEdit}
                 className="gap-2"
               >
@@ -178,13 +199,17 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
                   {isJSON(secretData.value.secretString) ? (
                     <Tabs defaultValue="formatted" className="w-full">
                       <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="formatted">Formatted JSON</TabsTrigger>
+                        <TabsTrigger value="formatted">
+                          Formatted JSON
+                        </TabsTrigger>
                         <TabsTrigger value="raw">Raw</TabsTrigger>
                       </TabsList>
                       <TabsContent value="formatted" className="mt-3">
                         <div className="relative">
                           <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-[400px] text-sm font-mono whitespace-pre-wrap break-words">
-                            <code>{formatSecretValue(secretData.value.secretString)}</code>
+                            <code>
+                              {formatSecretValue(secretData.value.secretString)}
+                            </code>
                           </pre>
                           <Button
                             variant="secondary"
@@ -273,9 +298,7 @@ export function SecretViewer({ secret, open, onOpenChange, onEdit }: SecretViewe
               ) : (
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    No secret value available
-                  </AlertDescription>
+                  <AlertDescription>No secret value available</AlertDescription>
                 </Alert>
               )}
             </>

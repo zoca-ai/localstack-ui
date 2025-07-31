@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,28 +8,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  MoreHorizontal, 
-  Search, 
-  User, 
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  MoreHorizontal,
+  Search,
+  User,
   Key,
   Shield,
   Users,
-  Clock
-} from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
-import { useIAMUsers } from '@/hooks/use-iam';
+  Clock,
+} from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
+import { useIAMUsers } from "@/hooks/use-iam";
 
 interface UserListProps {
   onViewUser: (userName: string) => void;
@@ -37,13 +37,18 @@ interface UserListProps {
   onDeleteUser: (userName: string) => void;
 }
 
-export function UserList({ onViewUser, onCreateUser, onDeleteUser }: UserListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+export function UserList({
+  onViewUser,
+  onCreateUser,
+  onDeleteUser,
+}: UserListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: users, isLoading, error } = useIAMUsers();
 
-  const filteredUsers = users?.filter((user: any) =>
-    user.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.arn.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = users?.filter(
+    (user: any) =>
+      user.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.arn.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (error) {
@@ -91,18 +96,35 @@ export function UserList({ onViewUser, onCreateUser, onDeleteUser }: UserListPro
             {isLoading ? (
               [...Array(3)].map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-64" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-64" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-12" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-12" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-12" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-8" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : filteredUsers?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={7}
+                  className="text-center text-muted-foreground"
+                >
                   No users found
                 </TableCell>
               </TableRow>
@@ -145,23 +167,30 @@ export function UserList({ onViewUser, onCreateUser, onDeleteUser }: UserListPro
                       <Clock className="h-3 w-3" />
                       <span className="text-xs">
                         {user.passwordLastUsed
-                          ? formatDistanceToNow(new Date(user.passwordLastUsed)) + ' ago'
-                          : 'Never'}
+                          ? formatDistanceToNow(
+                              new Date(user.passwordLastUsed),
+                            ) + " ago"
+                          : "Never"}
                       </span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenuTrigger
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Button variant="ghost" size="sm">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          onViewUser(user.userName);
-                        }}>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewUser(user.userName);
+                          }}
+                        >
                           View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem

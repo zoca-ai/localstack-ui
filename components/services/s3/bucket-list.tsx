@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useS3Buckets, useDeleteBucket } from '@/hooks/use-s3';
+import { useState } from "react";
+import { useS3Buckets, useDeleteBucket } from "@/hooks/use-s3";
 import {
   Table,
   TableBody,
@@ -9,15 +9,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,9 +27,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { MoreVertical, Trash2, FolderOpen } from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
+} from "@/components/ui/alert-dialog";
+import { MoreVertical, Trash2, FolderOpen } from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
 
 interface BucketListProps {
   onSelectBucket: (bucketName: string) => void;
@@ -42,7 +42,7 @@ export function BucketList({ onSelectBucket }: BucketListProps) {
 
   const handleDeleteBucket = async () => {
     if (!bucketToDelete) return;
-    
+
     await deleteBucket.mutateAsync(bucketToDelete);
     setBucketToDelete(null);
   };
@@ -93,7 +93,9 @@ export function BucketList({ onSelectBucket }: BucketListProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onSelectBucket(bucket.name)}>
+                    <DropdownMenuItem
+                      onClick={() => onSelectBucket(bucket.name)}
+                    >
                       <FolderOpen className="mr-2 h-4 w-4" />
                       Browse Objects
                     </DropdownMenuItem>
@@ -112,13 +114,17 @@ export function BucketList({ onSelectBucket }: BucketListProps) {
         </TableBody>
       </Table>
 
-      <AlertDialog open={!!bucketToDelete} onOpenChange={() => setBucketToDelete(null)}>
+      <AlertDialog
+        open={!!bucketToDelete}
+        onOpenChange={() => setBucketToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Bucket</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the bucket &quot;{bucketToDelete}&quot;? This action
-              cannot be undone. The bucket must be empty to be deleted.
+              Are you sure you want to delete the bucket &quot;{bucketToDelete}
+              &quot;? This action cannot be undone. The bucket must be empty to
+              be deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

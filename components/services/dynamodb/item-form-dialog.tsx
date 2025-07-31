@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { usePutItem } from '@/hooks/use-dynamodb';
+import { useState, useEffect } from "react";
+import { usePutItem } from "@/hooks/use-dynamodb";
 import {
   Dialog,
   DialogContent,
@@ -9,13 +9,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface ItemFormDialogProps {
   open: boolean;
@@ -23,9 +23,9 @@ interface ItemFormDialogProps {
   tableName: string;
   keySchema?: Array<{
     attributeName: string;
-    keyType: 'HASH' | 'RANGE';
+    keyType: "HASH" | "RANGE";
   }>;
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   item?: any;
 }
 
@@ -37,18 +37,18 @@ export function ItemFormDialog({
   mode,
   item,
 }: ItemFormDialogProps) {
-  const [jsonInput, setJsonInput] = useState('{}');
-  const [jsonError, setJsonError] = useState('');
+  const [jsonInput, setJsonInput] = useState("{}");
+  const [jsonError, setJsonError] = useState("");
   const putItem = usePutItem();
 
   useEffect(() => {
-    if (mode === 'edit' && item) {
+    if (mode === "edit" && item) {
       setJsonInput(JSON.stringify(item, null, 2));
-    } else if (mode === 'create') {
+    } else if (mode === "create") {
       // Pre-populate with key attributes
       const template: Record<string, any> = {};
       keySchema?.forEach((key) => {
-        template[key.attributeName] = '';
+        template[key.attributeName] = "";
       });
       setJsonInput(JSON.stringify(template, null, 2));
     }
@@ -57,10 +57,10 @@ export function ItemFormDialog({
   const validateJson = (value: string) => {
     try {
       JSON.parse(value);
-      setJsonError('');
+      setJsonError("");
       return true;
     } catch (e) {
-      setJsonError('Invalid JSON format');
+      setJsonError("Invalid JSON format");
       return false;
     }
   };
@@ -77,13 +77,13 @@ export function ItemFormDialog({
 
       // Validate that key attributes are present
       const missingKeys = keySchema?.filter(
-        (key) => !itemData[key.attributeName]
+        (key) => !itemData[key.attributeName],
       );
       if (missingKeys && missingKeys.length > 0) {
         setJsonError(
           `Missing required key attributes: ${missingKeys
             .map((k) => k.attributeName)
-            .join(', ')}`
+            .join(", ")}`,
         );
         return;
       }
@@ -93,13 +93,13 @@ export function ItemFormDialog({
         {
           onSuccess: () => {
             onOpenChange(false);
-            setJsonInput('{}');
-            setJsonError('');
+            setJsonInput("{}");
+            setJsonError("");
           },
-        }
+        },
       );
     } catch (error) {
-      setJsonError('Failed to parse JSON');
+      setJsonError("Failed to parse JSON");
     }
   };
 
@@ -109,12 +109,12 @@ export function ItemFormDialog({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>
-              {mode === 'create' ? 'Create Item' : 'Edit Item'}
+              {mode === "create" ? "Create Item" : "Edit Item"}
             </DialogTitle>
             <DialogDescription>
-              {mode === 'create'
-                ? 'Add a new item to the DynamoDB table.'
-                : 'Modify the existing item in the DynamoDB table.'}
+              {mode === "create"
+                ? "Add a new item to the DynamoDB table."
+                : "Modify the existing item in the DynamoDB table."}
             </DialogDescription>
           </DialogHeader>
 
@@ -159,17 +159,14 @@ export function ItemFormDialog({
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!!jsonError || putItem.isPending}
-            >
+            <Button type="submit" disabled={!!jsonError || putItem.isPending}>
               {putItem.isPending
-                ? mode === 'create'
-                  ? 'Creating...'
-                  : 'Updating...'
-                : mode === 'create'
-                ? 'Create Item'
-                : 'Update Item'}
+                ? mode === "create"
+                  ? "Creating..."
+                  : "Updating..."
+                : mode === "create"
+                  ? "Create Item"
+                  : "Update Item"}
             </Button>
           </DialogFooter>
         </form>

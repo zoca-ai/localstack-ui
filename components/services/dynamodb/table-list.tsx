@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useDynamoDBTables, useDeleteTable } from '@/hooks/use-dynamodb';
+import { useState } from "react";
+import { useDynamoDBTables, useDeleteTable } from "@/hooks/use-dynamodb";
 import {
   Table,
   TableBody,
@@ -9,11 +9,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,35 +24,35 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Search, Trash2, Eye, Database } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { formatBytes } from '@/lib/utils';
-import { DynamoDBTable } from '@/types';
+} from "@/components/ui/alert-dialog";
+import { Search, Trash2, Eye, Database } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { formatBytes } from "@/lib/utils";
+import { DynamoDBTable } from "@/types";
 
 interface TableListProps {
   onSelectTable: (tableName: string) => void;
 }
 
 export function TableList({ onSelectTable }: TableListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: tables, isLoading, error } = useDynamoDBTables();
   const deleteTable = useDeleteTable();
 
   const filteredTables = tables?.filter((table) =>
-    table.tableName.toLowerCase().includes(searchQuery.toLowerCase())
+    table.tableName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      ACTIVE: { variant: 'default' as const, label: 'Active' },
-      CREATING: { variant: 'secondary' as const, label: 'Creating' },
-      UPDATING: { variant: 'secondary' as const, label: 'Updating' },
-      DELETING: { variant: 'destructive' as const, label: 'Deleting' },
+      ACTIVE: { variant: "default" as const, label: "Active" },
+      CREATING: { variant: "secondary" as const, label: "Creating" },
+      UPDATING: { variant: "secondary" as const, label: "Updating" },
+      DELETING: { variant: "destructive" as const, label: "Deleting" },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || {
-      variant: 'outline' as const,
+      variant: "outline" as const,
       label: status,
     };
 
@@ -75,7 +75,9 @@ export function TableList({ onSelectTable }: TableListProps) {
   if (error) {
     return (
       <div className="text-center py-8">
-        <p className="text-destructive">Failed to load tables: {error.message}</p>
+        <p className="text-destructive">
+          Failed to load tables: {error.message}
+        </p>
       </div>
     );
   }
@@ -133,7 +135,7 @@ export function TableList({ onSelectTable }: TableListProps) {
                     ? formatDistanceToNow(new Date(table.creationDateTime), {
                         addSuffix: true,
                       })
-                    : '-'}
+                    : "-"}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
@@ -162,9 +164,9 @@ export function TableList({ onSelectTable }: TableListProps) {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Table</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to delete the table "{table.tableName}"? This
-                            action cannot be undone and all items in the table will be permanently
-                            deleted.
+                            Are you sure you want to delete the table "
+                            {table.tableName}"? This action cannot be undone and
+                            all items in the table will be permanently deleted.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

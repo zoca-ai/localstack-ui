@@ -1,22 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useApiResources, useCreateResource, useDeleteResource } from '@/hooks/use-apigateway';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { 
-  ChevronRight, 
-  ChevronDown, 
-  FolderOpen, 
-  FileCode, 
-  Plus, 
+import { useState } from "react";
+import {
+  useApiResources,
+  useCreateResource,
+  useDeleteResource,
+} from "@/hooks/use-apigateway";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import {
+  ChevronRight,
+  ChevronDown,
+  FolderOpen,
+  FileCode,
+  Plus,
   Trash2,
-  Globe
-} from 'lucide-react';
+  Globe,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +28,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,7 +38,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
 interface ResourceTreeProps {
   apiId: string;
@@ -49,21 +53,29 @@ interface ResourceNodeProps {
   onRefresh: () => void;
 }
 
-function ResourceNode({ resource, allResources, apiId, level, onRefresh }: ResourceNodeProps) {
+function ResourceNode({
+  resource,
+  allResources,
+  apiId,
+  level,
+  onRefresh,
+}: ResourceNodeProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [newPathPart, setNewPathPart] = useState('');
+  const [newPathPart, setNewPathPart] = useState("");
   const createResource = useCreateResource();
   const deleteResource = useDeleteResource();
 
-  const children = allResources.filter(r => r.parentId === resource.id);
+  const children = allResources.filter((r) => r.parentId === resource.id);
   const hasChildren = children.length > 0;
-  const hasMethods = resource.resourceMethods && Object.keys(resource.resourceMethods).length > 0;
+  const hasMethods =
+    resource.resourceMethods &&
+    Object.keys(resource.resourceMethods).length > 0;
 
   const handleCreate = async () => {
     if (!newPathPart) {
-      toast.error('Path part is required');
+      toast.error("Path part is required");
       return;
     }
 
@@ -75,7 +87,7 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
       });
       toast.success(`Resource "${newPathPart}" created successfully`);
       setShowCreateDialog(false);
-      setNewPathPart('');
+      setNewPathPart("");
       onRefresh();
     } catch (error: any) {
       toast.error(`Failed to create resource: ${error.message}`);
@@ -88,7 +100,7 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
         restApiId: apiId,
         resourceId: resource.id,
       });
-      toast.success('Resource deleted successfully');
+      toast.success("Resource deleted successfully");
       setShowDeleteDialog(false);
       onRefresh();
     } catch (error: any) {
@@ -102,7 +114,10 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
         className={`flex items-center gap-2 p-2 hover:bg-muted/50 rounded cursor-pointer`}
         style={{ paddingLeft: `${level * 20}px` }}
       >
-        <div className="flex items-center gap-2 flex-1" onClick={() => setIsExpanded(!isExpanded)}>
+        <div
+          className="flex items-center gap-2 flex-1"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
           {hasChildren ? (
             isExpanded ? (
               <ChevronDown className="h-4 w-4" />
@@ -120,7 +135,7 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
           <span className="text-sm font-medium">{resource.path}</span>
           {hasMethods && (
             <div className="flex gap-1">
-              {Object.keys(resource.resourceMethods).map(method => (
+              {Object.keys(resource.resourceMethods).map((method) => (
                 <span
                   key={method}
                   className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary rounded font-semibold"
@@ -142,7 +157,7 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
           >
             <Plus className="h-3 w-3" />
           </Button>
-          {resource.path !== '/' && (
+          {resource.path !== "/" && (
             <Button
               variant="ghost"
               size="sm"
@@ -159,7 +174,7 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
 
       {isExpanded && hasChildren && (
         <div>
-          {children.map(child => (
+          {children.map((child) => (
             <ResourceNode
               key={child.id}
               resource={child}
@@ -190,16 +205,19 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
                 onChange={(e) => setNewPathPart(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Use curly braces for path parameters: {'{id}'}
+                Use curly braces for path parameters: {"{id}"}
               </p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowCreateDialog(false)}
+            >
               Cancel
             </Button>
             <Button onClick={handleCreate} disabled={createResource.isPending}>
-              {createResource.isPending ? 'Creating...' : 'Create'}
+              {createResource.isPending ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -210,13 +228,16 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Resource</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the resource "{resource.path}"? 
+              Are you sure you want to delete the resource "{resource.path}"?
               This will also delete all child resources and methods.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -227,7 +248,12 @@ function ResourceNode({ resource, allResources, apiId, level, onRefresh }: Resou
 }
 
 export function ResourceTree({ apiId, rootResourceId }: ResourceTreeProps) {
-  const { data: resources, isLoading, error, refetch } = useApiResources(apiId, true);
+  const {
+    data: resources,
+    isLoading,
+    error,
+    refetch,
+  } = useApiResources(apiId, true);
 
   if (isLoading) {
     return (
@@ -246,8 +272,9 @@ export function ResourceTree({ apiId, rootResourceId }: ResourceTreeProps) {
     );
   }
 
-  const rootResource = resources?.find(r => r.id === rootResourceId) || 
-                      resources?.find(r => r.path === '/');
+  const rootResource =
+    resources?.find((r) => r.id === rootResourceId) ||
+    resources?.find((r) => r.path === "/");
 
   return (
     <Card className="p-4">
@@ -257,7 +284,7 @@ export function ResourceTree({ apiId, rootResourceId }: ResourceTreeProps) {
           Resources
         </h3>
       </div>
-      
+
       <div className="space-y-1">
         {rootResource ? (
           <ResourceNode

@@ -1,19 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudWatchLogsClient } from '@/lib/aws-config';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudWatchLogsClient } from "@/lib/aws-config";
 import {
   DescribeLogGroupsCommand,
   CreateLogGroupCommand,
   type DescribeLogGroupsCommandInput,
   type CreateLogGroupCommandInput,
-} from '@aws-sdk/client-cloudwatch-logs';
+} from "@aws-sdk/client-cloudwatch-logs";
 
 // GET /api/cloudwatch/log-groups - List all log groups
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const logGroupNamePrefix = searchParams.get('prefix') || undefined;
-    const nextToken = searchParams.get('nextToken') || undefined;
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50;
+    const logGroupNamePrefix = searchParams.get("prefix") || undefined;
+    const nextToken = searchParams.get("nextToken") || undefined;
+    const limit = searchParams.get("limit")
+      ? parseInt(searchParams.get("limit")!)
+      : 50;
 
     const params: DescribeLogGroupsCommandInput = {
       logGroupNamePrefix,
@@ -29,10 +31,10 @@ export async function GET(request: NextRequest) {
       nextToken: response.nextToken,
     });
   } catch (error: any) {
-    console.error('Error listing log groups:', error);
+    console.error("Error listing log groups:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to list log groups' },
-      { status: 500 }
+      { error: error.message || "Failed to list log groups" },
+      { status: 500 },
     );
   }
 }
@@ -45,8 +47,8 @@ export async function POST(request: NextRequest) {
 
     if (!logGroupName) {
       return NextResponse.json(
-        { error: 'Log group name is required' },
-        { status: 400 }
+        { error: "Log group name is required" },
+        { status: 400 },
       );
     }
 
@@ -61,7 +63,9 @@ export async function POST(request: NextRequest) {
 
     // If retention is specified, set it in a separate call
     if (retentionInDays) {
-      const { PutRetentionPolicyCommand } = await import('@aws-sdk/client-cloudwatch-logs');
+      const { PutRetentionPolicyCommand } = await import(
+        "@aws-sdk/client-cloudwatch-logs"
+      );
       const retentionCommand = new PutRetentionPolicyCommand({
         logGroupName,
         retentionInDays,
@@ -70,14 +74,14 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Log group created successfully',
+      message: "Log group created successfully",
       logGroupName,
     });
   } catch (error: any) {
-    console.error('Error creating log group:', error);
+    console.error("Error creating log group:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create log group' },
-      { status: 500 }
+      { error: error.message || "Failed to create log group" },
+      { status: 500 },
     );
   }
 }

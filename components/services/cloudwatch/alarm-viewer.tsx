@@ -1,24 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { Bell, BellOff } from 'lucide-react';
+import { useState } from "react";
+import { format } from "date-fns";
+import { Bell, BellOff } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -26,20 +21,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
+} from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   useCloudWatchAlarm,
   useCloudWatchAlarmHistory,
   useUpdateCloudWatchAlarmState,
-} from '@/hooks/use-cloudwatch';
+} from "@/hooks/use-cloudwatch";
 
 interface AlarmViewerProps {
   alarmName: string;
@@ -47,31 +42,43 @@ interface AlarmViewerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps) {
-  const [activeTab, setActiveTab] = useState('details');
-  const [historyFilter, setHistoryFilter] = useState<string>('all');
+export function AlarmViewer({
+  alarmName,
+  open,
+  onOpenChange,
+}: AlarmViewerProps) {
+  const [activeTab, setActiveTab] = useState("details");
+  const [historyFilter, setHistoryFilter] = useState<string>("all");
 
-  const { data: alarm, isLoading: isLoadingAlarm } = useCloudWatchAlarm(alarmName, open);
-  const { data: history, isLoading: isLoadingHistory } = useCloudWatchAlarmHistory(
+  const { data: alarm, isLoading: isLoadingAlarm } = useCloudWatchAlarm(
     alarmName,
-    historyFilter !== 'all' ? { historyItemType: historyFilter as any } : undefined,
-    open && activeTab === 'history'
+    open,
   );
+  const { data: history, isLoading: isLoadingHistory } =
+    useCloudWatchAlarmHistory(
+      alarmName,
+      historyFilter !== "all"
+        ? { historyItemType: historyFilter as any }
+        : undefined,
+      open && activeTab === "history",
+    );
   const updateAlarmStateMutation = useUpdateCloudWatchAlarmState();
 
   const handleToggleActions = async () => {
     if (alarm) {
       await updateAlarmStateMutation.mutateAsync({
         alarmName,
-        action: alarm.actionsEnabled ? 'disableActions' : 'enableActions',
+        action: alarm.actionsEnabled ? "disableActions" : "enableActions",
       });
     }
   };
 
-  const handleSetState = async (state: 'OK' | 'ALARM' | 'INSUFFICIENT_DATA') => {
+  const handleSetState = async (
+    state: "OK" | "ALARM" | "INSUFFICIENT_DATA",
+  ) => {
     await updateAlarmStateMutation.mutateAsync({
       alarmName,
-      action: 'setState',
+      action: "setState",
       stateValue: state,
       stateReason: `Manually set to ${state} state`,
     });
@@ -79,11 +86,18 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
 
   const getStateBadge = (state?: string) => {
     switch (state) {
-      case 'OK':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">OK</Badge>;
-      case 'ALARM':
+      case "OK":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-50 text-green-700 border-green-200"
+          >
+            OK
+          </Badge>
+        );
+      case "ALARM":
         return <Badge variant="destructive">ALARM</Badge>;
-      case 'INSUFFICIENT_DATA':
+      case "INSUFFICIENT_DATA":
         return <Badge variant="secondary">INSUFFICIENT DATA</Badge>;
       default:
         return <Badge variant="outline">UNKNOWN</Badge>;
@@ -105,7 +119,11 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="flex-1 overflow-hidden"
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
@@ -150,9 +168,10 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                     <div className="flex items-center gap-2">
                       {getStateBadge(alarm.stateValue)}
                       <p className="text-sm text-muted-foreground">
-                        since {alarm.stateUpdatedTimestamp
-                          ? format(new Date(alarm.stateUpdatedTimestamp), 'PPp')
-                          : '-'}
+                        since{" "}
+                        {alarm.stateUpdatedTimestamp
+                          ? format(new Date(alarm.stateUpdatedTimestamp), "PPp")
+                          : "-"}
                       </p>
                     </div>
                   </div>
@@ -160,7 +179,7 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                     <p className="text-sm font-medium text-muted-foreground">
                       State Reason
                     </p>
-                    <p className="text-sm">{alarm.stateReason || '-'}</p>
+                    <p className="text-sm">{alarm.stateReason || "-"}</p>
                   </div>
                 </div>
 
@@ -171,21 +190,21 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleSetState('OK')}
+                    onClick={() => handleSetState("OK")}
                   >
                     Set to OK
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleSetState('ALARM')}
+                    onClick={() => handleSetState("ALARM")}
                   >
                     Set to ALARM
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleSetState('INSUFFICIENT_DATA')}
+                    onClick={() => handleSetState("INSUFFICIENT_DATA")}
                   >
                     Set to Insufficient Data
                   </Button>
@@ -210,7 +229,9 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                       <p className="text-sm font-medium text-muted-foreground">
                         Statistic
                       </p>
-                      <p className="text-sm">{alarm.statistic || alarm.extendedStatistic}</p>
+                      <p className="text-sm">
+                        {alarm.statistic || alarm.extendedStatistic}
+                      </p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-muted-foreground">
@@ -251,14 +272,17 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                         Evaluation Periods
                       </p>
                       <p className="text-sm">
-                        {alarm.datapointsToAlarm || alarm.evaluationPeriods} out of {alarm.evaluationPeriods}
+                        {alarm.datapointsToAlarm || alarm.evaluationPeriods} out
+                        of {alarm.evaluationPeriods}
                       </p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-muted-foreground">
                         Treat Missing Data
                       </p>
-                      <p className="text-sm">{alarm.treatMissingData || 'missing'}</p>
+                      <p className="text-sm">
+                        {alarm.treatMissingData || "missing"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -272,7 +296,9 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                   </div>
                 )}
 
-                {(alarm.alarmActions?.length || alarm.okActions?.length || alarm.insufficientDataActions?.length) ? (
+                {alarm.alarmActions?.length ||
+                alarm.okActions?.length ||
+                alarm.insufficientDataActions?.length ? (
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Actions</h3>
                     {alarm.alarmActions?.length ? (
@@ -282,7 +308,9 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                         </p>
                         <div className="space-y-1">
                           {alarm.alarmActions.map((action, idx) => (
-                            <p key={idx} className="text-sm font-mono">{action}</p>
+                            <p key={idx} className="text-sm font-mono">
+                              {action}
+                            </p>
                           ))}
                         </div>
                       </div>
@@ -294,7 +322,9 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                         </p>
                         <div className="space-y-1">
                           {alarm.okActions.map((action, idx) => (
-                            <p key={idx} className="text-sm font-mono">{action}</p>
+                            <p key={idx} className="text-sm font-mono">
+                              {action}
+                            </p>
                           ))}
                         </div>
                       </div>
@@ -306,7 +336,9 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                         </p>
                         <div className="space-y-1">
                           {alarm.insufficientDataActions.map((action, idx) => (
-                            <p key={idx} className="text-sm font-mono">{action}</p>
+                            <p key={idx} className="text-sm font-mono">
+                              {action}
+                            </p>
                           ))}
                         </div>
                       </div>
@@ -317,7 +349,10 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
             ) : null}
           </TabsContent>
 
-          <TabsContent value="history" className="space-y-4 overflow-hidden flex flex-col">
+          <TabsContent
+            value="history"
+            className="space-y-4 overflow-hidden flex flex-col"
+          >
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
                 Alarm state and configuration history
@@ -328,7 +363,9 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All History</SelectItem>
-                  <SelectItem value="ConfigurationUpdate">Configuration Updates</SelectItem>
+                  <SelectItem value="ConfigurationUpdate">
+                    Configuration Updates
+                  </SelectItem>
                   <SelectItem value="StateUpdate">State Updates</SelectItem>
                   <SelectItem value="Action">Actions</SelectItem>
                 </SelectContent>
@@ -360,8 +397,8 @@ export function AlarmViewer({ alarmName, open, onOpenChange }: AlarmViewerProps)
                           <TableRow key={index}>
                             <TableCell>
                               {item.timestamp
-                                ? format(new Date(item.timestamp), 'PPp')
-                                : '-'}
+                                ? format(new Date(item.timestamp), "PPp")
+                                : "-"}
                             </TableCell>
                             <TableCell>
                               <Badge variant="outline">

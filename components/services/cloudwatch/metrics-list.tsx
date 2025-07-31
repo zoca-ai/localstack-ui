@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Search, RefreshCw, BarChart3 } from 'lucide-react';
+import { useState } from "react";
+import { Search, RefreshCw, BarChart3 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -9,38 +9,49 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useCloudWatchMetrics } from '@/hooks/use-cloudwatch';
-import type { CloudWatchMetric } from '@/types';
+} from "@/components/ui/select";
+import { useCloudWatchMetrics } from "@/hooks/use-cloudwatch";
+import type { CloudWatchMetric } from "@/types";
 
 interface MetricsListProps {
   onSelectMetric: (metric: CloudWatchMetric) => void;
 }
 
 export function MetricsList({ onSelectMetric }: MetricsListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [namespaceFilter, setNamespaceFilter] = useState<string>('all');
-  
-  const { data: metrics, isLoading, refetch } = useCloudWatchMetrics({
-    namespace: namespaceFilter !== 'all' ? namespaceFilter : undefined,
+  const [searchQuery, setSearchQuery] = useState("");
+  const [namespaceFilter, setNamespaceFilter] = useState<string>("all");
+
+  const {
+    data: metrics,
+    isLoading,
+    refetch,
+  } = useCloudWatchMetrics({
+    namespace: namespaceFilter !== "all" ? namespaceFilter : undefined,
   });
 
-  const namespaces = [...new Set(metrics?.map(m => m.namespace).filter((ns): ns is string => Boolean(ns)) || [])];
+  const namespaces = [
+    ...new Set(
+      metrics
+        ?.map((m) => m.namespace)
+        .filter((ns): ns is string => Boolean(ns)) || [],
+    ),
+  ];
 
-  const filteredMetrics = metrics?.filter(metric =>
-    metric.metricName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    metric.namespace?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredMetrics = metrics?.filter(
+    (metric) =>
+      metric.metricName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      metric.namespace?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (isLoading) {
@@ -116,7 +127,11 @@ export function MetricsList({ onSelectMetric }: MetricsListProps) {
                     {metric.dimensions && metric.dimensions.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
                         {metric.dimensions.map((dim, idx) => (
-                          <Badge key={idx} variant="secondary" className="text-xs">
+                          <Badge
+                            key={idx}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {dim.name}: {dim.value}
                           </Badge>
                         ))}

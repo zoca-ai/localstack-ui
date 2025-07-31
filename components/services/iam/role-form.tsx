@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,18 +8,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Plus, X, Info, ShieldCheck } from 'lucide-react';
-import { useCreateIAMRole } from '@/hooks/use-iam';
-import { PolicyEditor } from './policy-editor';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Plus, X, Info, ShieldCheck } from "lucide-react";
+import { useCreateIAMRole } from "@/hooks/use-iam";
+import { PolicyEditor } from "./policy-editor";
 
 interface RoleFormProps {
   open: boolean;
@@ -33,101 +33,101 @@ interface Tag {
 
 const TRUST_POLICY_TEMPLATES = {
   ec2: {
-    name: 'EC2 Service',
+    name: "EC2 Service",
     policy: {
-      Version: '2012-10-17',
+      Version: "2012-10-17",
       Statement: [
         {
-          Effect: 'Allow',
+          Effect: "Allow",
           Principal: {
-            Service: 'ec2.amazonaws.com'
+            Service: "ec2.amazonaws.com",
           },
-          Action: 'sts:AssumeRole'
-        }
-      ]
-    }
+          Action: "sts:AssumeRole",
+        },
+      ],
+    },
   },
   lambda: {
-    name: 'Lambda Service',
+    name: "Lambda Service",
     policy: {
-      Version: '2012-10-17',
+      Version: "2012-10-17",
       Statement: [
         {
-          Effect: 'Allow',
+          Effect: "Allow",
           Principal: {
-            Service: 'lambda.amazonaws.com'
+            Service: "lambda.amazonaws.com",
           },
-          Action: 'sts:AssumeRole'
-        }
-      ]
-    }
+          Action: "sts:AssumeRole",
+        },
+      ],
+    },
   },
   user: {
-    name: 'IAM User',
+    name: "IAM User",
     policy: {
-      Version: '2012-10-17',
+      Version: "2012-10-17",
       Statement: [
         {
-          Effect: 'Allow',
+          Effect: "Allow",
           Principal: {
-            AWS: 'arn:aws:iam::000000000000:root'
+            AWS: "arn:aws:iam::000000000000:root",
           },
-          Action: 'sts:AssumeRole'
-        }
-      ]
-    }
+          Action: "sts:AssumeRole",
+        },
+      ],
+    },
   },
   custom: {
-    name: 'Custom',
-    policy: null
-  }
+    name: "Custom",
+    policy: null,
+  },
 };
 
 export function RoleForm({ open, onOpenChange }: RoleFormProps) {
-  const [activeTab, setActiveTab] = useState('basic');
-  const [roleName, setRoleName] = useState('');
-  const [description, setDescription] = useState('');
-  const [path, setPath] = useState('/');
-  const [maxSessionDuration, setMaxSessionDuration] = useState('3600');
+  const [activeTab, setActiveTab] = useState("basic");
+  const [roleName, setRoleName] = useState("");
+  const [description, setDescription] = useState("");
+  const [path, setPath] = useState("/");
+  const [maxSessionDuration, setMaxSessionDuration] = useState("3600");
   const [tags, setTags] = useState<Tag[]>([]);
-  const [newTagKey, setNewTagKey] = useState('');
-  const [newTagValue, setNewTagValue] = useState('');
-  const [trustPolicyType, setTrustPolicyType] = useState('ec2');
+  const [newTagKey, setNewTagKey] = useState("");
+  const [newTagValue, setNewTagValue] = useState("");
+  const [trustPolicyType, setTrustPolicyType] = useState("ec2");
   const [trustPolicy, setTrustPolicy] = useState(
-    JSON.stringify(TRUST_POLICY_TEMPLATES.ec2.policy, null, 2)
+    JSON.stringify(TRUST_POLICY_TEMPLATES.ec2.policy, null, 2),
   );
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const createMutation = useCreateIAMRole();
 
   const handleSubmit = async () => {
-    setError('');
+    setError("");
 
     if (!roleName) {
-      setError('Role name is required');
+      setError("Role name is required");
       return;
     }
 
     if (!/^[\w+=,.@-]+$/.test(roleName)) {
-      setError('Role name can only contain alphanumeric characters and +=,.@-');
+      setError("Role name can only contain alphanumeric characters and +=,.@-");
       return;
     }
 
     if (!trustPolicy) {
-      setError('Trust policy is required');
+      setError("Trust policy is required");
       return;
     }
 
     try {
       JSON.parse(trustPolicy);
     } catch (e) {
-      setError('Invalid JSON in trust policy');
+      setError("Invalid JSON in trust policy");
       return;
     }
 
     const duration = parseInt(maxSessionDuration);
     if (isNaN(duration) || duration < 3600 || duration > 43200) {
-      setError('Max session duration must be between 1 and 12 hours');
+      setError("Max session duration must be between 1 and 12 hours");
       return;
     }
 
@@ -148,45 +148,49 @@ export function RoleForm({ open, onOpenChange }: RoleFormProps) {
   };
 
   const resetForm = () => {
-    setActiveTab('basic');
-    setRoleName('');
-    setDescription('');
-    setPath('/');
-    setMaxSessionDuration('3600');
+    setActiveTab("basic");
+    setRoleName("");
+    setDescription("");
+    setPath("/");
+    setMaxSessionDuration("3600");
     setTags([]);
-    setNewTagKey('');
-    setNewTagValue('');
-    setTrustPolicyType('ec2');
+    setNewTagKey("");
+    setNewTagValue("");
+    setTrustPolicyType("ec2");
     setTrustPolicy(JSON.stringify(TRUST_POLICY_TEMPLATES.ec2.policy, null, 2));
-    setError('');
+    setError("");
   };
 
   const addTag = () => {
     if (newTagKey && newTagValue) {
-      if (tags.some(tag => tag.key === newTagKey)) {
-        setError('Tag key already exists');
+      if (tags.some((tag) => tag.key === newTagKey)) {
+        setError("Tag key already exists");
         return;
       }
       setTags([...tags, { key: newTagKey, value: newTagValue }]);
-      setNewTagKey('');
-      setNewTagValue('');
-      setError('');
+      setNewTagKey("");
+      setNewTagValue("");
+      setError("");
     }
   };
 
   const removeTag = (key: string) => {
-    setTags(tags.filter(tag => tag.key !== key));
+    setTags(tags.filter((tag) => tag.key !== key));
   };
 
   const handleTrustPolicyTypeChange = (type: string) => {
     setTrustPolicyType(type);
-    if (type !== 'custom' && TRUST_POLICY_TEMPLATES[type as keyof typeof TRUST_POLICY_TEMPLATES].policy) {
+    if (
+      type !== "custom" &&
+      TRUST_POLICY_TEMPLATES[type as keyof typeof TRUST_POLICY_TEMPLATES].policy
+    ) {
       setTrustPolicy(
         JSON.stringify(
-          TRUST_POLICY_TEMPLATES[type as keyof typeof TRUST_POLICY_TEMPLATES].policy,
+          TRUST_POLICY_TEMPLATES[type as keyof typeof TRUST_POLICY_TEMPLATES]
+            .policy,
           null,
-          2
-        )
+          2,
+        ),
       );
     }
   };
@@ -200,7 +204,8 @@ export function RoleForm({ open, onOpenChange }: RoleFormProps) {
             Create IAM Role
           </DialogTitle>
           <DialogDescription>
-            Create a new IAM role to delegate permissions to AWS services or users.
+            Create a new IAM role to delegate permissions to AWS services or
+            users.
           </DialogDescription>
         </DialogHeader>
 
@@ -289,13 +294,17 @@ export function RoleForm({ open, onOpenChange }: RoleFormProps) {
                     placeholder="Key"
                     value={newTagKey}
                     onChange={(e) => setNewTagKey(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addTag())
+                    }
                   />
                   <Input
                     placeholder="Value"
                     value={newTagValue}
                     onChange={(e) => setNewTagValue(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addTag())
+                    }
                   />
                   <Button
                     type="button"
@@ -314,15 +323,23 @@ export function RoleForm({ open, onOpenChange }: RoleFormProps) {
           <TabsContent value="trust" className="space-y-4">
             <div className="space-y-2">
               <Label>Trust Policy Type</Label>
-              <RadioGroup value={trustPolicyType} onValueChange={handleTrustPolicyTypeChange}>
-                {Object.entries(TRUST_POLICY_TEMPLATES).map(([key, template]) => (
-                  <div key={key} className="flex items-center space-x-2">
-                    <RadioGroupItem value={key} id={key} />
-                    <Label htmlFor={key} className="font-normal cursor-pointer">
-                      {template.name}
-                    </Label>
-                  </div>
-                ))}
+              <RadioGroup
+                value={trustPolicyType}
+                onValueChange={handleTrustPolicyTypeChange}
+              >
+                {Object.entries(TRUST_POLICY_TEMPLATES).map(
+                  ([key, template]) => (
+                    <div key={key} className="flex items-center space-x-2">
+                      <RadioGroupItem value={key} id={key} />
+                      <Label
+                        htmlFor={key}
+                        className="font-normal cursor-pointer"
+                      >
+                        {template.name}
+                      </Label>
+                    </div>
+                  ),
+                )}
               </RadioGroup>
             </div>
 
@@ -358,11 +375,8 @@ export function RoleForm({ open, onOpenChange }: RoleFormProps) {
           >
             Cancel
           </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={createMutation.isPending}
-          >
-            {createMutation.isPending ? 'Creating...' : 'Create Role'}
+          <Button onClick={handleSubmit} disabled={createMutation.isPending}>
+            {createMutation.isPending ? "Creating..." : "Create Role"}
           </Button>
         </DialogFooter>
       </DialogContent>

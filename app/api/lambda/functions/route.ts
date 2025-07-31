@@ -1,27 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import {
   ListFunctionsCommand,
   GetFunctionCommand,
   GetFunctionConfigurationCommand,
-} from '@aws-sdk/client-lambda';
-import { lambdaClient } from '@/lib/aws-config';
+} from "@aws-sdk/client-lambda";
+import { lambdaClient } from "@/lib/aws-config";
 
 // GET /api/lambda/functions - List all functions or get function details
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const functionName = searchParams.get('functionName');
+    const functionName = searchParams.get("functionName");
 
     if (functionName) {
       // Get specific function details
       try {
         const [configResponse, functionResponse] = await Promise.all([
-          lambdaClient.send(new GetFunctionConfigurationCommand({
-            FunctionName: functionName,
-          })),
-          lambdaClient.send(new GetFunctionCommand({
-            FunctionName: functionName,
-          })),
+          lambdaClient.send(
+            new GetFunctionConfigurationCommand({
+              FunctionName: functionName,
+            }),
+          ),
+          lambdaClient.send(
+            new GetFunctionCommand({
+              FunctionName: functionName,
+            }),
+          ),
         ]);
 
         const functionData = {
@@ -53,10 +57,10 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ function: functionData });
       } catch (error: any) {
-        if (error.name === 'ResourceNotFoundException') {
+        if (error.name === "ResourceNotFoundException") {
           return NextResponse.json(
             { error: `Function ${functionName} not found` },
-            { status: 404 }
+            { status: 404 },
           );
         }
         throw error;
@@ -88,10 +92,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ functions });
     }
   } catch (error: any) {
-    console.error('Error with Lambda functions:', error);
+    console.error("Error with Lambda functions:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to process Lambda request' },
-      { status: 500 }
+      { error: error.message || "Failed to process Lambda request" },
+      { status: 500 },
     );
   }
 }

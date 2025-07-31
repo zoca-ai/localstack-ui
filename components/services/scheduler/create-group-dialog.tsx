@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCreateScheduleGroup } from '@/hooks/use-scheduler';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useCreateScheduleGroup } from "@/hooks/use-scheduler";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,22 +11,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 export function CreateGroupDialog() {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const createGroup = useCreateScheduleGroup();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name) {
-      toast.error('Group name is required');
+      toast.error("Group name is required");
       return;
     }
 
@@ -34,7 +34,7 @@ export function CreateGroupDialog() {
       await createGroup.mutateAsync({ name });
       toast.success(`Schedule group "${name}" created successfully`);
       setOpen(false);
-      setName('');
+      setName("");
     } catch (error: any) {
       toast.error(`Failed to create group: ${error.message}`);
     }
@@ -77,13 +77,13 @@ export function CreateGroupDialog() {
               variant="outline"
               onClick={() => {
                 setOpen(false);
-                setName('');
+                setName("");
               }}
             >
               Cancel
             </Button>
             <Button type="submit" disabled={createGroup.isPending}>
-              {createGroup.isPending ? 'Creating...' : 'Create Group'}
+              {createGroup.isPending ? "Creating..." : "Create Group"}
             </Button>
           </DialogFooter>
         </form>

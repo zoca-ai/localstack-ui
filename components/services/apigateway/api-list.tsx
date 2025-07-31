@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRestApis, useDeleteRestApi } from '@/hooks/use-apigateway';
+import { useState } from "react";
+import { useRestApis, useDeleteRestApi } from "@/hooks/use-apigateway";
 import {
   Table,
   TableBody,
@@ -9,13 +9,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { Search, Trash2, Globe, Shield, Zap } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { Search, Trash2, Globe, Shield, Zap } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,20 +25,24 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { CreateApiDialog } from './create-api-dialog';
-import { ApiViewer } from './api-viewer';
+} from "@/components/ui/alert-dialog";
+import { CreateApiDialog } from "./create-api-dialog";
+import { ApiViewer } from "./api-viewer";
 
 export function ApiList() {
   const { data: apis, isLoading, error } = useRestApis();
   const deleteApi = useDeleteRestApi();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedApi, setSelectedApi] = useState<string | null>(null);
-  const [apiToDelete, setApiToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [apiToDelete, setApiToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
-  const filteredApis = apis?.filter(api =>
-    api.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredApis =
+    apis?.filter((api) =>
+      api.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+    ) || [];
 
   const handleDelete = async () => {
     if (!apiToDelete) return;
@@ -53,9 +57,9 @@ export function ApiList() {
   };
 
   const getEndpointIcon = (endpointType?: string) => {
-    if (endpointType?.includes('EDGE')) {
+    if (endpointType?.includes("EDGE")) {
       return <Zap className="h-4 w-4 text-yellow-500" />;
-    } else if (endpointType?.includes('PRIVATE')) {
+    } else if (endpointType?.includes("PRIVATE")) {
       return <Shield className="h-4 w-4 text-blue-500" />;
     } else {
       return <Globe className="h-4 w-4 text-green-500" />;
@@ -73,9 +77,7 @@ export function ApiList() {
 
   if (error) {
     return (
-      <div className="text-red-500">
-        Error loading APIs: {error.message}
-      </div>
+      <div className="text-red-500">Error loading APIs: {error.message}</div>
     );
   }
 
@@ -109,7 +111,10 @@ export function ApiList() {
           <TableBody>
             {filteredApis.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground"
+                >
                   No APIs found
                 </TableCell>
               </TableRow>
@@ -135,18 +140,16 @@ export function ApiList() {
                     <div className="flex items-center gap-2">
                       {getEndpointIcon(api.endpointConfiguration?.types?.[0])}
                       <Badge variant="outline">
-                        {api.endpointConfiguration?.types?.[0] || 'REGIONAL'}
+                        {api.endpointConfiguration?.types?.[0] || "REGIONAL"}
                       </Badge>
                     </div>
                   </TableCell>
                   <TableCell>
                     {api.createdDate
                       ? new Date(api.createdDate).toLocaleString()
-                      : '-'}
+                      : "-"}
                   </TableCell>
-                  <TableCell>
-                    {api.version || '-'}
-                  </TableCell>
+                  <TableCell>{api.version || "-"}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
@@ -154,8 +157,8 @@ export function ApiList() {
                       onClick={(e) => {
                         e.stopPropagation();
                         setApiToDelete({
-                          id: api.id || '',
-                          name: api.name || 'Unnamed API'
+                          id: api.id || "",
+                          name: api.name || "Unnamed API",
                         });
                       }}
                     >
@@ -177,18 +180,25 @@ export function ApiList() {
         />
       )}
 
-      <AlertDialog open={!!apiToDelete} onOpenChange={(open) => !open && setApiToDelete(null)}>
+      <AlertDialog
+        open={!!apiToDelete}
+        onOpenChange={(open) => !open && setApiToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete API</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the API "{apiToDelete?.name}"? 
-              This will delete all resources, methods, and deployments. This action cannot be undone.
+              Are you sure you want to delete the API "{apiToDelete?.name}"?
+              This will delete all resources, methods, and deployments. This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete API
             </AlertDialogAction>
           </AlertDialogFooter>

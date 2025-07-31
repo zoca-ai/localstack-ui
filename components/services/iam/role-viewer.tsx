@@ -1,12 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   ShieldCheck,
   Shield,
@@ -14,12 +19,12 @@ import {
   Copy,
   AlertTriangle,
   RefreshCw,
-  Edit
-} from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
-import { useIAMRole } from '@/hooks/use-iam';
-import { toast } from 'sonner';
-import { PolicyEditor } from './policy-editor';
+  Edit,
+} from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
+import { useIAMRole } from "@/hooks/use-iam";
+import { toast } from "sonner";
+import { PolicyEditor } from "./policy-editor";
 
 interface RoleViewerProps {
   roleName: string;
@@ -28,13 +33,13 @@ interface RoleViewerProps {
 }
 
 export function RoleViewer({ roleName, open, onOpenChange }: RoleViewerProps) {
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState("details");
   const [editingTrustPolicy, setEditingTrustPolicy] = useState(false);
   const { data: role, isLoading, error, refetch } = useIAMRole(roleName, open);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    toast.success("Copied to clipboard");
   };
 
   const formatJson = (jsonString: string) => {
@@ -84,18 +89,26 @@ export function RoleViewer({ roleName, open, onOpenChange }: RoleViewerProps) {
               ) : role ? (
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-medium mb-2">Role Information</h3>
+                    <h3 className="text-sm font-medium mb-2">
+                      Role Information
+                    </h3>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Role Name</span>
+                        <span className="text-sm text-muted-foreground">
+                          Role Name
+                        </span>
                         <code className="text-sm">{role.roleName}</code>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Role ID</span>
+                        <span className="text-sm text-muted-foreground">
+                          Role ID
+                        </span>
                         <code className="text-sm">{role.roleId}</code>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">ARN</span>
+                        <span className="text-sm text-muted-foreground">
+                          ARN
+                        </span>
                         <div className="flex items-center gap-2">
                           <code className="text-xs">{role.arn}</code>
                           <Button
@@ -109,25 +122,33 @@ export function RoleViewer({ roleName, open, onOpenChange }: RoleViewerProps) {
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Path</span>
+                        <span className="text-sm text-muted-foreground">
+                          Path
+                        </span>
                         <code className="text-sm">{role.path}</code>
                       </div>
                       {role.description && (
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Description</span>
+                          <span className="text-sm text-muted-foreground">
+                            Description
+                          </span>
                           <span className="text-sm">{role.description}</span>
                         </div>
                       )}
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Max Session Duration</span>
+                        <span className="text-sm text-muted-foreground">
+                          Max Session Duration
+                        </span>
                         <span className="text-sm">
-                          {role.maxSessionDuration 
+                          {role.maxSessionDuration
                             ? `${role.maxSessionDuration / 3600} hours`
-                            : '1 hour'}
+                            : "1 hour"}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Created</span>
+                        <span className="text-sm text-muted-foreground">
+                          Created
+                        </span>
                         <span className="text-sm">
                           {formatDistanceToNow(new Date(role.createDate))} ago
                         </span>
@@ -157,14 +178,16 @@ export function RoleViewer({ roleName, open, onOpenChange }: RoleViewerProps) {
               ) : role ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium">Assume Role Policy Document</h3>
+                    <h3 className="text-sm font-medium">
+                      Assume Role Policy Document
+                    </h3>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setEditingTrustPolicy(!editingTrustPolicy)}
                     >
                       <Edit className="h-4 w-4 mr-2" />
-                      {editingTrustPolicy ? 'Cancel' : 'Edit'}
+                      {editingTrustPolicy ? "Cancel" : "Edit"}
                     </Button>
                   </div>
                   {editingTrustPolicy ? (
@@ -173,7 +196,7 @@ export function RoleViewer({ roleName, open, onOpenChange }: RoleViewerProps) {
                       onSave={(newPolicy) => {
                         // TODO: Implement update trust policy
                         setEditingTrustPolicy(false);
-                        toast.success('Trust policy updated');
+                        toast.success("Trust policy updated");
                       }}
                       onCancel={() => setEditingTrustPolicy(false)}
                     />
@@ -186,7 +209,9 @@ export function RoleViewer({ roleName, open, onOpenChange }: RoleViewerProps) {
                         variant="ghost"
                         size="icon"
                         className="absolute top-2 right-2"
-                        onClick={() => copyToClipboard(role.assumeRolePolicyDocument)}
+                        onClick={() =>
+                          copyToClipboard(role.assumeRolePolicyDocument)
+                        }
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
@@ -201,7 +226,8 @@ export function RoleViewer({ roleName, open, onOpenChange }: RoleViewerProps) {
                 <div className="space-y-2">
                   <Skeleton className="h-20 w-full" />
                 </div>
-              ) : role?.attachedPolicies?.length === 0 && role?.inlinePolicies?.length === 0 ? (
+              ) : role?.attachedPolicies?.length === 0 &&
+                role?.inlinePolicies?.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p>No policies attached to this role</p>
@@ -211,28 +237,37 @@ export function RoleViewer({ roleName, open, onOpenChange }: RoleViewerProps) {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {role?.attachedPolicies && role.attachedPolicies.length > 0 && (
-                    <div>
-                      <h3 className="text-sm font-medium mb-2">Attached Managed Policies</h3>
-                      <div className="space-y-2">
-                        {role.attachedPolicies.map((policy: any) => (
-                          <div
-                            key={policy.policyArn}
-                            className="flex items-center justify-between p-3 border rounded-lg"
-                          >
-                            <div>
-                              <p className="font-medium">{policy.policyName}</p>
-                              <code className="text-xs text-muted-foreground">{policy.policyArn}</code>
+                  {role?.attachedPolicies &&
+                    role.attachedPolicies.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-medium mb-2">
+                          Attached Managed Policies
+                        </h3>
+                        <div className="space-y-2">
+                          {role.attachedPolicies.map((policy: any) => (
+                            <div
+                              key={policy.policyArn}
+                              className="flex items-center justify-between p-3 border rounded-lg"
+                            >
+                              <div>
+                                <p className="font-medium">
+                                  {policy.policyName}
+                                </p>
+                                <code className="text-xs text-muted-foreground">
+                                  {policy.policyArn}
+                                </code>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {role?.inlinePolicies && role.inlinePolicies.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium mb-2">Inline Policies</h3>
+                      <h3 className="text-sm font-medium mb-2">
+                        Inline Policies
+                      </h3>
                       <div className="space-y-2">
                         {role.inlinePolicies.map((policyName: string) => (
                           <div

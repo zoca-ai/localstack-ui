@@ -29,10 +29,7 @@ import { AlarmsList } from "@/components/services/cloudwatch/alarms-list";
 import { AlarmForm } from "@/components/services/cloudwatch/alarm-form";
 import { AlarmViewer } from "@/components/services/cloudwatch/alarm-viewer";
 import { MetricsList } from "@/components/services/cloudwatch/metrics-list";
-import type {
-  CloudWatchAlarm,
-  CloudWatchMetric,
-} from "@/types";
+import type { CloudWatchAlarm, CloudWatchMetric } from "@/types";
 
 export default function CloudWatchPage() {
   const [activeTab, setActiveTab] = useState("metrics");

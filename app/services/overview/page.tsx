@@ -23,7 +23,9 @@ export default function OverviewPage() {
           </p>
         </div>
         <Button
-          onClick={() => queryClient.invalidateQueries({ queryKey: ["localstack-health"] })}
+          onClick={() =>
+            queryClient.invalidateQueries({ queryKey: ["localstack-health"] })
+          }
           variant="outline"
           size="sm"
         >
@@ -49,4 +51,3 @@ export default function OverviewPage() {
     </div>
   );
 }
-

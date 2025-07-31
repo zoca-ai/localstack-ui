@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useEventBuses, useDeleteEventBus } from '@/hooks/use-eventbridge';
+import { useState } from "react";
+import { useEventBuses, useDeleteEventBus } from "@/hooks/use-eventbridge";
 import {
   Table,
   TableBody,
@@ -9,13 +9,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { Search, Trash2, Calendar } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { Search, Trash2, Calendar } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,20 +25,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { CreateBusDialog } from './create-bus-dialog';
-import { BusViewer } from './bus-viewer';
+} from "@/components/ui/alert-dialog";
+import { CreateBusDialog } from "./create-bus-dialog";
+import { BusViewer } from "./bus-viewer";
 
 export function BusList() {
   const { data: buses, isLoading, error } = useEventBuses();
   const deleteBus = useDeleteEventBus();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedBus, setSelectedBus] = useState<string | null>(null);
   const [busToDelete, setBusToDelete] = useState<string | null>(null);
 
-  const filteredBuses = buses?.filter(bus =>
-    bus.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredBuses =
+    buses?.filter((bus) =>
+      bus.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+    ) || [];
 
   const handleDelete = async () => {
     if (!busToDelete) return;
@@ -98,7 +99,10 @@ export function BusList() {
           <TableBody>
             {filteredBuses.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   No event buses found
                 </TableCell>
               </TableRow>
@@ -117,18 +121,18 @@ export function BusList() {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={bus.state === 'ACTIVE' ? 'default' : 'secondary'}
+                      variant={bus.state === "ACTIVE" ? "default" : "secondary"}
                     >
-                      {bus.state || 'ACTIVE'}
+                      {bus.state || "ACTIVE"}
                     </Badge>
                   </TableCell>
                   <TableCell className="max-w-md truncate">
-                    {bus.description || '-'}
+                    {bus.description || "-"}
                   </TableCell>
                   <TableCell>
                     {bus.creationTime
                       ? new Date(bus.creationTime).toLocaleString()
-                      : '-'}
+                      : "-"}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
@@ -138,7 +142,7 @@ export function BusList() {
                         e.stopPropagation();
                         setBusToDelete(bus.name || null);
                       }}
-                      disabled={bus.name === 'default'}
+                      disabled={bus.name === "default"}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -158,17 +162,24 @@ export function BusList() {
         />
       )}
 
-      <AlertDialog open={!!busToDelete} onOpenChange={(open) => !open && setBusToDelete(null)}>
+      <AlertDialog
+        open={!!busToDelete}
+        onOpenChange={(open) => !open && setBusToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Event Bus</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the event bus "{busToDelete}"? This action cannot be undone.
+              Are you sure you want to delete the event bus "{busToDelete}"?
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

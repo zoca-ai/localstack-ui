@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudWatchClient } from '@/lib/aws-config';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudWatchClient } from "@/lib/aws-config";
 import {
   DescribeAlarmsCommand,
   DeleteAlarmsCommand,
@@ -11,12 +11,12 @@ import {
   type SetAlarmStateCommandInput,
   type EnableAlarmActionsCommandInput,
   type DisableAlarmActionsCommandInput,
-} from '@aws-sdk/client-cloudwatch';
+} from "@aws-sdk/client-cloudwatch";
 
 // GET /api/cloudwatch/alarms/[name] - Get a specific alarm
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ name: string }> }
+  context: { params: Promise<{ name: string }> },
 ) {
   try {
     const params = await context.params;
@@ -33,18 +33,15 @@ export async function GET(
     const alarm = response.MetricAlarms?.[0] || response.CompositeAlarms?.[0];
 
     if (!alarm) {
-      return NextResponse.json(
-        { error: 'Alarm not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Alarm not found" }, { status: 404 });
     }
 
     return NextResponse.json(alarm);
   } catch (error: any) {
-    console.error('Error getting alarm:', error);
+    console.error("Error getting alarm:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to get alarm' },
-      { status: 500 }
+      { error: error.message || "Failed to get alarm" },
+      { status: 500 },
     );
   }
 }
@@ -52,7 +49,7 @@ export async function GET(
 // PUT /api/cloudwatch/alarms/[name] - Update alarm state or actions
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ name: string }> }
+  context: { params: Promise<{ name: string }> },
 ) {
   try {
     const params = await context.params;
@@ -61,11 +58,11 @@ export async function PUT(
     const { action, stateValue, stateReason, stateReasonData } = body;
 
     switch (action) {
-      case 'setState':
+      case "setState":
         if (!stateValue || !stateReason) {
           return NextResponse.json(
-            { error: 'State value and reason are required' },
-            { status: 400 }
+            { error: "State value and reason are required" },
+            { status: 400 },
           );
         }
 
@@ -80,7 +77,7 @@ export async function PUT(
         await cloudWatchClient.send(setStateCommand);
         break;
 
-      case 'enableActions':
+      case "enableActions":
         const enableParams: EnableAlarmActionsCommandInput = {
           AlarmNames: [alarmName],
         };
@@ -89,7 +86,7 @@ export async function PUT(
         await cloudWatchClient.send(enableCommand);
         break;
 
-      case 'disableActions':
+      case "disableActions":
         const disableParams: DisableAlarmActionsCommandInput = {
           AlarmNames: [alarmName],
         };
@@ -99,10 +96,7 @@ export async function PUT(
         break;
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid action' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
 
     return NextResponse.json({
@@ -110,10 +104,10 @@ export async function PUT(
       alarmName,
     });
   } catch (error: any) {
-    console.error('Error updating alarm:', error);
+    console.error("Error updating alarm:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update alarm' },
-      { status: 500 }
+      { error: error.message || "Failed to update alarm" },
+      { status: 500 },
     );
   }
 }
@@ -121,7 +115,7 @@ export async function PUT(
 // DELETE /api/cloudwatch/alarms/[name] - Delete an alarm
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ name: string }> }
+  context: { params: Promise<{ name: string }> },
 ) {
   try {
     const params = await context.params;
@@ -135,14 +129,14 @@ export async function DELETE(
     await cloudWatchClient.send(command);
 
     return NextResponse.json({
-      message: 'Alarm deleted successfully',
+      message: "Alarm deleted successfully",
       alarmName,
     });
   } catch (error: any) {
-    console.error('Error deleting alarm:', error);
+    console.error("Error deleting alarm:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete alarm' },
-      { status: 500 }
+      { error: error.message || "Failed to delete alarm" },
+      { status: 500 },
     );
   }
 }

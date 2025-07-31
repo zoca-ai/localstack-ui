@@ -1,12 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   FileText,
   Clock,
@@ -15,12 +20,12 @@ import {
   RefreshCw,
   Edit,
   History,
-  Link
-} from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
-import { useIAMPolicy, useUpdateIAMPolicy } from '@/hooks/use-iam';
-import { toast } from 'sonner';
-import { PolicyEditor } from './policy-editor';
+  Link,
+} from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
+import { useIAMPolicy, useUpdateIAMPolicy } from "@/hooks/use-iam";
+import { toast } from "sonner";
+import { PolicyEditor } from "./policy-editor";
 
 interface PolicyViewerProps {
   policyArn: string;
@@ -28,16 +33,25 @@ interface PolicyViewerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function PolicyViewer({ policyArn, open, onOpenChange }: PolicyViewerProps) {
-  const [activeTab, setActiveTab] = useState('details');
+export function PolicyViewer({
+  policyArn,
+  open,
+  onOpenChange,
+}: PolicyViewerProps) {
+  const [activeTab, setActiveTab] = useState("details");
   const [editingPolicy, setEditingPolicy] = useState(false);
-  const [newPolicyDocument, setNewPolicyDocument] = useState('');
-  const { data: policy, isLoading, error, refetch } = useIAMPolicy(policyArn, open);
+  const [newPolicyDocument, setNewPolicyDocument] = useState("");
+  const {
+    data: policy,
+    isLoading,
+    error,
+    refetch,
+  } = useIAMPolicy(policyArn, open);
   const updateMutation = useUpdateIAMPolicy();
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    toast.success("Copied to clipboard");
   };
 
   const formatJson = (jsonString: string) => {
@@ -48,7 +62,7 @@ export function PolicyViewer({ policyArn, open, onOpenChange }: PolicyViewerProp
     }
   };
 
-  const isAWSManaged = policy?.arn?.includes(':aws:policy/');
+  const isAWSManaged = policy?.arn?.includes(":aws:policy/");
 
   const handleUpdatePolicy = async () => {
     try {
@@ -71,7 +85,7 @@ export function PolicyViewer({ policyArn, open, onOpenChange }: PolicyViewerProp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            IAM Policy: {policy?.policyName || 'Loading...'}
+            IAM Policy: {policy?.policyName || "Loading..."}
           </DialogTitle>
         </DialogHeader>
 
@@ -102,18 +116,26 @@ export function PolicyViewer({ policyArn, open, onOpenChange }: PolicyViewerProp
               ) : policy ? (
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-medium mb-2">Policy Information</h3>
+                    <h3 className="text-sm font-medium mb-2">
+                      Policy Information
+                    </h3>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Policy Name</span>
+                        <span className="text-sm text-muted-foreground">
+                          Policy Name
+                        </span>
                         <code className="text-sm">{policy.policyName}</code>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Policy ID</span>
+                        <span className="text-sm text-muted-foreground">
+                          Policy ID
+                        </span>
                         <code className="text-sm">{policy.policyId}</code>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">ARN</span>
+                        <span className="text-sm text-muted-foreground">
+                          ARN
+                        </span>
                         <div className="flex items-center gap-2">
                           <code className="text-xs">{policy.arn}</code>
                           <Button
@@ -127,36 +149,48 @@ export function PolicyViewer({ policyArn, open, onOpenChange }: PolicyViewerProp
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Type</span>
-                        <Badge variant={isAWSManaged ? 'secondary' : 'default'}>
-                          {isAWSManaged ? 'AWS Managed' : 'Customer Managed'}
+                        <span className="text-sm text-muted-foreground">
+                          Type
+                        </span>
+                        <Badge variant={isAWSManaged ? "secondary" : "default"}>
+                          {isAWSManaged ? "AWS Managed" : "Customer Managed"}
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Path</span>
+                        <span className="text-sm text-muted-foreground">
+                          Path
+                        </span>
                         <code className="text-sm">{policy.path}</code>
                       </div>
                       {policy.description && (
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Description</span>
+                          <span className="text-sm text-muted-foreground">
+                            Description
+                          </span>
                           <span className="text-sm">{policy.description}</span>
                         </div>
                       )}
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Attached To</span>
+                        <span className="text-sm text-muted-foreground">
+                          Attached To
+                        </span>
                         <Badge variant="outline" className="gap-1">
                           <Link className="h-3 w-3" />
                           {policy.attachmentCount || 0} entities
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Created</span>
+                        <span className="text-sm text-muted-foreground">
+                          Created
+                        </span>
                         <span className="text-sm">
                           {formatDistanceToNow(new Date(policy.createDate))} ago
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Last Updated</span>
+                        <span className="text-sm text-muted-foreground">
+                          Last Updated
+                        </span>
                         <span className="text-sm">
                           {formatDistanceToNow(new Date(policy.updateDate))} ago
                         </span>
@@ -194,15 +228,17 @@ export function PolicyViewer({ policyArn, open, onOpenChange }: PolicyViewerProp
                         onClick={() => {
                           if (editingPolicy) {
                             setEditingPolicy(false);
-                            setNewPolicyDocument('');
+                            setNewPolicyDocument("");
                           } else {
                             setEditingPolicy(true);
-                            setNewPolicyDocument(formatJson(policy.policyDocument || ''));
+                            setNewPolicyDocument(
+                              formatJson(policy.policyDocument || ""),
+                            );
                           }
                         }}
                       >
                         <Edit className="h-4 w-4 mr-2" />
-                        {editingPolicy ? 'Cancel' : 'Edit'}
+                        {editingPolicy ? "Cancel" : "Edit"}
                       </Button>
                     </div>
                   )}
@@ -212,12 +248,12 @@ export function PolicyViewer({ policyArn, open, onOpenChange }: PolicyViewerProp
                       onSave={handleUpdatePolicy}
                       onCancel={() => {
                         setEditingPolicy(false);
-                        setNewPolicyDocument('');
+                        setNewPolicyDocument("");
                       }}
                     />
                   ) : (
                     <PolicyEditor
-                      initialValue={formatJson(policy.policyDocument || '')}
+                      initialValue={formatJson(policy.policyDocument || "")}
                       onSave={() => {}}
                       readOnly
                     />
@@ -246,13 +282,19 @@ export function PolicyViewer({ policyArn, open, onOpenChange }: PolicyViewerProp
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="font-medium">Version {version.versionId}</p>
+                          <p className="font-medium">
+                            Version {version.versionId}
+                          </p>
                           {version.isDefaultVersion && (
-                            <Badge variant="default" className="text-xs">Default</Badge>
+                            <Badge variant="default" className="text-xs">
+                              Default
+                            </Badge>
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          Created {formatDistanceToNow(new Date(version.createDate))} ago
+                          Created{" "}
+                          {formatDistanceToNow(new Date(version.createDate))}{" "}
+                          ago
                         </p>
                       </div>
                     </div>

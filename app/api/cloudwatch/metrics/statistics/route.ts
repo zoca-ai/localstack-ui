@@ -1,29 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudWatchClient } from '@/lib/aws-config';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudWatchClient } from "@/lib/aws-config";
 import {
   GetMetricStatisticsCommand,
   GetMetricDataCommand,
   type GetMetricStatisticsCommandInput,
   type GetMetricDataCommandInput,
   type MetricDataQuery,
-} from '@aws-sdk/client-cloudwatch';
+} from "@aws-sdk/client-cloudwatch";
 
 // GET /api/cloudwatch/metrics/statistics - Get metric statistics
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const namespace = searchParams.get('namespace');
-    const metricName = searchParams.get('metricName');
-    const startTime = searchParams.get('startTime');
-    const endTime = searchParams.get('endTime');
-    const period = searchParams.get('period');
-    const statistics = searchParams.getAll('statistics');
-    const unit = searchParams.get('unit') || undefined;
+    const namespace = searchParams.get("namespace");
+    const metricName = searchParams.get("metricName");
+    const startTime = searchParams.get("startTime");
+    const endTime = searchParams.get("endTime");
+    const period = searchParams.get("period");
+    const statistics = searchParams.getAll("statistics");
+    const unit = searchParams.get("unit") || undefined;
 
-    if (!namespace || !metricName || !startTime || !endTime || !period || statistics.length === 0) {
+    if (
+      !namespace ||
+      !metricName ||
+      !startTime ||
+      !endTime ||
+      !period ||
+      statistics.length === 0
+    ) {
       return NextResponse.json(
-        { error: 'Missing required parameters' },
-        { status: 400 }
+        { error: "Missing required parameters" },
+        { status: 400 },
       );
     }
 
@@ -38,7 +45,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Add dimensions if provided
-    const dimensions = searchParams.get('dimensions');
+    const dimensions = searchParams.get("dimensions");
     if (dimensions) {
       try {
         params.Dimensions = JSON.parse(dimensions);
@@ -55,10 +62,10 @@ export async function GET(request: NextRequest) {
       datapoints: response.Datapoints || [],
     });
   } catch (error: any) {
-    console.error('Error getting metric statistics:', error);
+    console.error("Error getting metric statistics:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to get metric statistics' },
-      { status: 500 }
+      { error: error.message || "Failed to get metric statistics" },
+      { status: 500 },
     );
   }
 }
@@ -67,36 +74,54 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { metricDataQueries, startTime, endTime, nextToken, scanBy, maxDatapoints } = body;
+    const {
+      metricDataQueries,
+      startTime,
+      endTime,
+      nextToken,
+      scanBy,
+      maxDatapoints,
+    } = body;
 
-    if (!metricDataQueries || !Array.isArray(metricDataQueries) || !startTime || !endTime) {
+    if (
+      !metricDataQueries ||
+      !Array.isArray(metricDataQueries) ||
+      !startTime ||
+      !endTime
+    ) {
       return NextResponse.json(
-        { error: 'metricDataQueries, startTime, and endTime are required' },
-        { status: 400 }
+        { error: "metricDataQueries, startTime, and endTime are required" },
+        { status: 400 },
       );
     }
 
     // Format metric data queries
-    const formattedQueries: MetricDataQuery[] = metricDataQueries.map(query => ({
-      Id: query.id,
-      MetricStat: query.metricStat ? {
-        Metric: {
-          Namespace: query.metricStat.metric.namespace,
-          MetricName: query.metricStat.metric.metricName,
-          Dimensions: query.metricStat.metric.dimensions?.map((d: any) => ({
-            Name: d.name,
-            Value: d.value,
-          })),
-        },
-        Period: query.metricStat.period,
-        Stat: query.metricStat.stat,
-        Unit: query.metricStat.unit,
-      } : undefined,
-      Expression: query.expression,
-      Label: query.label,
-      ReturnData: query.returnData !== false,
-      Period: query.period,
-    }));
+    const formattedQueries: MetricDataQuery[] = metricDataQueries.map(
+      (query) => ({
+        Id: query.id,
+        MetricStat: query.metricStat
+          ? {
+              Metric: {
+                Namespace: query.metricStat.metric.namespace,
+                MetricName: query.metricStat.metric.metricName,
+                Dimensions: query.metricStat.metric.dimensions?.map(
+                  (d: any) => ({
+                    Name: d.name,
+                    Value: d.value,
+                  }),
+                ),
+              },
+              Period: query.metricStat.period,
+              Stat: query.metricStat.stat,
+              Unit: query.metricStat.unit,
+            }
+          : undefined,
+        Expression: query.expression,
+        Label: query.label,
+        ReturnData: query.returnData !== false,
+        Period: query.period,
+      }),
+    );
 
     const params: GetMetricDataCommandInput = {
       MetricDataQueries: formattedQueries,
@@ -116,10 +141,10 @@ export async function POST(request: NextRequest) {
       messages: response.Messages,
     });
   } catch (error: any) {
-    console.error('Error getting metric data:', error);
+    console.error("Error getting metric data:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to get metric data' },
-      { status: 500 }
+      { error: error.message || "Failed to get metric data" },
+      { status: 500 },
     );
   }
 }

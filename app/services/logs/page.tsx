@@ -38,12 +38,14 @@ export default function CloudWatchLogsPage() {
     useCloudWatchLogGroups();
 
   const totalLogGroups = logGroups?.length || 0;
-  const totalLogStreams = logGroups?.reduce((total, group) => {
-    return total + (group.storedBytes ? 1 : 0);
-  }, 0) || 0;
-  const totalStorageSize = logGroups?.reduce((total, group) => {
-    return total + (group.storedBytes || 0);
-  }, 0) || 0;
+  const totalLogStreams =
+    logGroups?.reduce((total, group) => {
+      return total + (group.storedBytes ? 1 : 0);
+    }, 0) || 0;
+  const totalStorageSize =
+    logGroups?.reduce((total, group) => {
+      return total + (group.storedBytes || 0);
+    }, 0) || 0;
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({

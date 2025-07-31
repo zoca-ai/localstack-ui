@@ -1,12 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   User,
   Shield,
@@ -16,12 +21,12 @@ import {
   Copy,
   AlertTriangle,
   Plus,
-  RefreshCw
-} from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
-import { useIAMUser } from '@/hooks/use-iam';
-import { toast } from 'sonner';
-import { AccessKeyManager } from './access-key-manager';
+  RefreshCw,
+} from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
+import { useIAMUser } from "@/hooks/use-iam";
+import { toast } from "sonner";
+import { AccessKeyManager } from "./access-key-manager";
 
 interface UserViewerProps {
   userName: string;
@@ -30,12 +35,12 @@ interface UserViewerProps {
 }
 
 export function UserViewer({ userName, open, onOpenChange }: UserViewerProps) {
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState("details");
   const { data: user, isLoading, error, refetch } = useIAMUser(userName, open);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    toast.success("Copied to clipboard");
   };
 
   if (!open) return null;
@@ -82,18 +87,26 @@ export function UserViewer({ userName, open, onOpenChange }: UserViewerProps) {
               ) : user ? (
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-medium mb-2">User Information</h3>
+                    <h3 className="text-sm font-medium mb-2">
+                      User Information
+                    </h3>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">User Name</span>
+                        <span className="text-sm text-muted-foreground">
+                          User Name
+                        </span>
                         <code className="text-sm">{user.userName}</code>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">User ID</span>
+                        <span className="text-sm text-muted-foreground">
+                          User ID
+                        </span>
                         <code className="text-sm">{user.userId}</code>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">ARN</span>
+                        <span className="text-sm text-muted-foreground">
+                          ARN
+                        </span>
                         <div className="flex items-center gap-2">
                           <code className="text-xs">{user.arn}</code>
                           <Button
@@ -107,26 +120,41 @@ export function UserViewer({ userName, open, onOpenChange }: UserViewerProps) {
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Path</span>
+                        <span className="text-sm text-muted-foreground">
+                          Path
+                        </span>
                         <code className="text-sm">{user.path}</code>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Created</span>
+                        <span className="text-sm text-muted-foreground">
+                          Created
+                        </span>
                         <span className="text-sm">
                           {formatDistanceToNow(new Date(user.createDate))} ago
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Console Access</span>
-                        <Badge variant={user.hasConsoleAccess ? 'default' : 'secondary'}>
-                          {user.hasConsoleAccess ? 'Enabled' : 'Disabled'}
+                        <span className="text-sm text-muted-foreground">
+                          Console Access
+                        </span>
+                        <Badge
+                          variant={
+                            user.hasConsoleAccess ? "default" : "secondary"
+                          }
+                        >
+                          {user.hasConsoleAccess ? "Enabled" : "Disabled"}
                         </Badge>
                       </div>
                       {user.passwordLastUsed && (
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Last Login</span>
+                          <span className="text-sm text-muted-foreground">
+                            Last Login
+                          </span>
                           <span className="text-sm">
-                            {formatDistanceToNow(new Date(user.passwordLastUsed))} ago
+                            {formatDistanceToNow(
+                              new Date(user.passwordLastUsed),
+                            )}{" "}
+                            ago
                           </span>
                         </div>
                       )}
@@ -154,7 +182,8 @@ export function UserViewer({ userName, open, onOpenChange }: UserViewerProps) {
                 <div className="space-y-2">
                   <Skeleton className="h-20 w-full" />
                 </div>
-              ) : user?.attachedPolicies?.length === 0 && user?.inlinePolicies?.length === 0 ? (
+              ) : user?.attachedPolicies?.length === 0 &&
+                user?.inlinePolicies?.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p>No policies attached to this user</p>
@@ -165,28 +194,37 @@ export function UserViewer({ userName, open, onOpenChange }: UserViewerProps) {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {user?.attachedPolicies && user.attachedPolicies.length > 0 && (
-                    <div>
-                      <h3 className="text-sm font-medium mb-2">Attached Managed Policies</h3>
-                      <div className="space-y-2">
-                        {user.attachedPolicies.map((policy: any) => (
-                          <div
-                            key={policy.policyArn}
-                            className="flex items-center justify-between p-3 border rounded-lg"
-                          >
-                            <div>
-                              <p className="font-medium">{policy.policyName}</p>
-                              <code className="text-xs text-muted-foreground">{policy.policyArn}</code>
+                  {user?.attachedPolicies &&
+                    user.attachedPolicies.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-medium mb-2">
+                          Attached Managed Policies
+                        </h3>
+                        <div className="space-y-2">
+                          {user.attachedPolicies.map((policy: any) => (
+                            <div
+                              key={policy.policyArn}
+                              className="flex items-center justify-between p-3 border rounded-lg"
+                            >
+                              <div>
+                                <p className="font-medium">
+                                  {policy.policyName}
+                                </p>
+                                <code className="text-xs text-muted-foreground">
+                                  {policy.policyArn}
+                                </code>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {user?.inlinePolicies && user.inlinePolicies.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium mb-2">Inline Policies</h3>
+                      <h3 className="text-sm font-medium mb-2">
+                        Inline Policies
+                      </h3>
                       <div className="space-y-2">
                         {user.inlinePolicies.map((policyName: string) => (
                           <div
@@ -226,7 +264,9 @@ export function UserViewer({ userName, open, onOpenChange }: UserViewerProps) {
                     >
                       <div>
                         <p className="font-medium">{group.GroupName}</p>
-                        <code className="text-xs text-muted-foreground">{group.Arn}</code>
+                        <code className="text-xs text-muted-foreground">
+                          {group.Arn}
+                        </code>
                       </div>
                     </div>
                   ))}

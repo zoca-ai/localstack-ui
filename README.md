@@ -21,35 +21,40 @@ A modern web-based interface for managing and monitoring LocalStack AWS services
 ## Quick Start
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd localstack-ui
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Adjust the values in `.env.local` if your LocalStack instance runs on a different endpoint.
 
 4. **Start LocalStack** (if not already running)
+
    ```bash
    docker run -d -p 4566:4566 -p 4571:4571 localstack/localstack
    ```
 
 5. **Run the development server**
+
    ```bash
    npm run dev
    ```
 
 6. **Open the application**
-   
+
    Navigate to [http://localhost:4563](http://localhost:4563)
 
 ## Available Scripts
@@ -65,16 +70,16 @@ npm run format       # Format code with Prettier
 
 ## Supported Services
 
-| Service | Status | Features |
-|---------|--------|----------|
-| S3 | ✅ Complete | Create/delete buckets, upload/download objects, manage permissions |
-| Secrets Manager | ✅ Complete | Create/update/delete secrets, view secret values |
-| Lambda | ✅ Read-only | List functions, view configurations |
-| DynamoDB | ⏳ Planned | - |
-| SQS | ⏳ Planned | - |
-| SNS | ⏳ Planned | - |
-| CloudFormation | ⏳ Planned | - |
-| CloudWatch | ⏳ Planned | - |
+| Service         | Status       | Features                                                           |
+| --------------- | ------------ | ------------------------------------------------------------------ |
+| S3              | ✅ Complete  | Create/delete buckets, upload/download objects, manage permissions |
+| Secrets Manager | ✅ Complete  | Create/update/delete secrets, view secret values                   |
+| Lambda          | ✅ Read-only | List functions, view configurations                                |
+| DynamoDB        | ⏳ Planned   | -                                                                  |
+| SQS             | ⏳ Planned   | -                                                                  |
+| SNS             | ⏳ Planned   | -                                                                  |
+| CloudFormation  | ⏳ Planned   | -                                                                  |
+| CloudWatch      | ⏳ Planned   | -                                                                  |
 
 ## Architecture
 
@@ -97,12 +102,12 @@ localstack-ui/
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NEXT_PUBLIC_LOCALSTACK_ENDPOINT` | LocalStack endpoint URL | `http://localhost:4566` |
-| `NEXT_PUBLIC_AWS_REGION` | AWS region for LocalStack | `us-east-1` |
-| `AWS_ACCESS_KEY_ID` | AWS access key (use 'test' for LocalStack) | `test` |
-| `AWS_SECRET_ACCESS_KEY` | AWS secret key (use 'test' for LocalStack) | `test` |
+| Variable                          | Description                                | Default                 |
+| --------------------------------- | ------------------------------------------ | ----------------------- |
+| `NEXT_PUBLIC_LOCALSTACK_ENDPOINT` | LocalStack endpoint URL                    | `http://localhost:4566` |
+| `NEXT_PUBLIC_AWS_REGION`          | AWS region for LocalStack                  | `us-east-1`             |
+| `AWS_ACCESS_KEY_ID`               | AWS access key (use 'test' for LocalStack) | `test`                  |
+| `AWS_SECRET_ACCESS_KEY`           | AWS secret key (use 'test' for LocalStack) | `test`                  |
 
 ### LocalStack Configuration
 
@@ -145,11 +150,13 @@ See [CLAUDE.md](./CLAUDE.md) for detailed instructions on adding support for new
 If you can't connect to LocalStack:
 
 1. Verify LocalStack is running:
+
    ```bash
    curl http://localhost:4566/_localstack/health
    ```
 
 2. Check Docker containers:
+
    ```bash
    docker ps
    ```
@@ -162,17 +169,20 @@ If you can't connect to LocalStack:
 ### CORS Errors
 
 If you encounter CORS errors, ensure you're:
+
 - Using the Next.js API routes (`/api/*`) instead of direct client-side AWS SDK calls
 - LocalStack endpoint is correctly configured in your environment variables
 
 ### Build Errors
 
 1. Clear Next.js cache:
+
    ```bash
    rm -rf .next
    ```
 
 2. Reinstall dependencies:
+
    ```bash
    rm -rf node_modules package-lock.json
    npm install

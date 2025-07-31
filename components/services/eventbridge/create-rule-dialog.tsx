@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCreateEventRule } from '@/hooks/use-eventbridge';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useCreateEventRule } from "@/hooks/use-eventbridge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,50 +11,52 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 interface CreateRuleDialogProps {
   eventBusName?: string;
 }
 
-export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogProps) {
+export function CreateRuleDialog({
+  eventBusName = "default",
+}: CreateRuleDialogProps) {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [ruleType, setRuleType] = useState<'event' | 'schedule'>('event');
-  const [eventPattern, setEventPattern] = useState('');
-  const [scheduleExpression, setScheduleExpression] = useState('');
-  const [state, setState] = useState<'ENABLED' | 'DISABLED'>('ENABLED');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [ruleType, setRuleType] = useState<"event" | "schedule">("event");
+  const [eventPattern, setEventPattern] = useState("");
+  const [scheduleExpression, setScheduleExpression] = useState("");
+  const [state, setState] = useState<"ENABLED" | "DISABLED">("ENABLED");
   const createRule = useCreateEventRule();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name) {
-      toast.error('Rule name is required');
+      toast.error("Rule name is required");
       return;
     }
 
-    if (ruleType === 'event' && !eventPattern) {
-      toast.error('Event pattern is required for event rules');
+    if (ruleType === "event" && !eventPattern) {
+      toast.error("Event pattern is required for event rules");
       return;
     }
 
-    if (ruleType === 'schedule' && !scheduleExpression) {
-      toast.error('Schedule expression is required for scheduled rules');
+    if (ruleType === "schedule" && !scheduleExpression) {
+      toast.error("Schedule expression is required for scheduled rules");
       return;
     }
 
@@ -62,12 +64,13 @@ export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogP
       await createRule.mutateAsync({
         name,
         description: description || undefined,
-        eventPattern: ruleType === 'event' ? eventPattern : undefined,
-        scheduleExpression: ruleType === 'schedule' ? scheduleExpression : undefined,
+        eventPattern: ruleType === "event" ? eventPattern : undefined,
+        scheduleExpression:
+          ruleType === "schedule" ? scheduleExpression : undefined,
         state,
         eventBusName,
       });
-      
+
       toast.success(`Rule "${name}" created successfully`);
       setOpen(false);
       resetForm();
@@ -77,12 +80,12 @@ export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogP
   };
 
   const resetForm = () => {
-    setName('');
-    setDescription('');
-    setRuleType('event');
-    setEventPattern('');
-    setScheduleExpression('');
-    setState('ENABLED');
+    setName("");
+    setDescription("");
+    setRuleType("event");
+    setEventPattern("");
+    setScheduleExpression("");
+    setState("ENABLED");
   };
 
   const sampleEventPattern = `{
@@ -120,7 +123,7 @@ export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogP
                 required
               />
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="description">Description (optional)</Label>
               <Textarea
@@ -134,7 +137,12 @@ export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogP
 
             <div className="grid gap-2">
               <Label>Rule Type</Label>
-              <RadioGroup value={ruleType} onValueChange={(value) => setRuleType(value as 'event' | 'schedule')}>
+              <RadioGroup
+                value={ruleType}
+                onValueChange={(value) =>
+                  setRuleType(value as "event" | "schedule")
+                }
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="event" id="event" />
                   <Label htmlFor="event">Event Pattern</Label>
@@ -146,7 +154,7 @@ export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogP
               </RadioGroup>
             </div>
 
-            {ruleType === 'event' && (
+            {ruleType === "event" && (
               <div className="grid gap-2">
                 <Label htmlFor="eventPattern">Event Pattern (JSON)</Label>
                 <Textarea
@@ -160,7 +168,7 @@ export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogP
               </div>
             )}
 
-            {ruleType === 'schedule' && (
+            {ruleType === "schedule" && (
               <div className="grid gap-2">
                 <Label htmlFor="scheduleExpression">Schedule Expression</Label>
                 <Input
@@ -170,14 +178,20 @@ export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogP
                   onChange={(e) => setScheduleExpression(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Use rate() for simple intervals or cron() for complex schedules
+                  Use rate() for simple intervals or cron() for complex
+                  schedules
                 </p>
               </div>
             )}
 
             <div className="grid gap-2">
               <Label htmlFor="state">Initial State</Label>
-              <Select value={state} onValueChange={(value) => setState(value as 'ENABLED' | 'DISABLED')}>
+              <Select
+                value={state}
+                onValueChange={(value) =>
+                  setState(value as "ENABLED" | "DISABLED")
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -200,7 +214,7 @@ export function CreateRuleDialog({ eventBusName = 'default' }: CreateRuleDialogP
               Cancel
             </Button>
             <Button type="submit" disabled={createRule.isPending}>
-              {createRule.isPending ? 'Creating...' : 'Create Rule'}
+              {createRule.isPending ? "Creating..." : "Create Rule"}
             </Button>
           </DialogFooter>
         </form>

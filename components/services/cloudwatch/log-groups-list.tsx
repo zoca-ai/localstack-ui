@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { Search, Plus, Trash2, Eye, RefreshCw } from 'lucide-react';
+import { useState } from "react";
+import { format } from "date-fns";
+import { Search, Plus, Trash2, Eye, RefreshCw } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -10,10 +10,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,25 +23,31 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { formatBytes } from '@/lib/utils';
-import { useCloudWatchLogGroups, useDeleteCloudWatchLogGroup } from '@/hooks/use-cloudwatch';
-import type { CloudWatchLogGroup } from '@/types';
+} from "@/components/ui/alert-dialog";
+import { formatBytes } from "@/lib/utils";
+import {
+  useCloudWatchLogGroups,
+  useDeleteCloudWatchLogGroup,
+} from "@/hooks/use-cloudwatch";
+import type { CloudWatchLogGroup } from "@/types";
 
 interface LogGroupsListProps {
   onSelectLogGroup: (logGroup: CloudWatchLogGroup) => void;
   onCreateLogGroup: () => void;
 }
 
-export function LogGroupsList({ onSelectLogGroup, onCreateLogGroup }: LogGroupsListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+export function LogGroupsList({
+  onSelectLogGroup,
+  onCreateLogGroup,
+}: LogGroupsListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
   const [deleteLogGroup, setDeleteLogGroup] = useState<string | null>(null);
-  
+
   const { data: logGroups, isLoading, refetch } = useCloudWatchLogGroups();
   const deleteLogGroupMutation = useDeleteCloudWatchLogGroup();
 
-  const filteredLogGroups = logGroups?.filter(logGroup =>
-    logGroup.logGroupName.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredLogGroups = logGroups?.filter((logGroup) =>
+    logGroup.logGroupName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleDelete = async () => {
@@ -110,15 +116,17 @@ export function LogGroupsList({ onSelectLogGroup, onCreateLogGroup }: LogGroupsL
                     {logGroup.logGroupName}
                   </TableCell>
                   <TableCell>
-                    {logGroup.retentionInDays || 'Never expire'}
+                    {logGroup.retentionInDays || "Never expire"}
                   </TableCell>
                   <TableCell>
-                    {logGroup.storedBytes ? formatBytes(logGroup.storedBytes) : '0 B'}
+                    {logGroup.storedBytes
+                      ? formatBytes(logGroup.storedBytes)
+                      : "0 B"}
                   </TableCell>
                   <TableCell>
                     {logGroup.creationTime
-                      ? format(new Date(logGroup.creationTime), 'PPp')
-                      : '-'}
+                      ? format(new Date(logGroup.creationTime), "PPp")
+                      : "-"}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -151,13 +159,16 @@ export function LogGroupsList({ onSelectLogGroup, onCreateLogGroup }: LogGroupsL
         </Table>
       </div>
 
-      <AlertDialog open={!!deleteLogGroup} onOpenChange={() => setDeleteLogGroup(null)}>
+      <AlertDialog
+        open={!!deleteLogGroup}
+        onOpenChange={() => setDeleteLogGroup(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the log group "{deleteLogGroup}" and all its log streams.
-              This action cannot be undone.
+              This will permanently delete the log group "{deleteLogGroup}" and
+              all its log streams. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

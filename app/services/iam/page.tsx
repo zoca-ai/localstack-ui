@@ -68,7 +68,8 @@ export default function IAMPage() {
   // Data queries
   const { data: users, isLoading: isLoadingUsers } = useIAMUsers();
   const { data: roles, isLoading: isLoadingRoles } = useIAMRoles();
-  const { data: policies, isLoading: isLoadingPolicies } = useIAMPolicies('Local');
+  const { data: policies, isLoading: isLoadingPolicies } =
+    useIAMPolicies("Local");
 
   // Delete mutations
   const deleteUserMutation = useDeleteIAMUser();
@@ -106,7 +107,8 @@ export default function IAMPage() {
   const totalUsers = users?.length || 0;
   const totalRoles = roles?.length || 0;
   const totalPolicies = policies?.length || 0;
-  const usersWithAccessKeys = users?.filter((u: any) => u.hasAccessKeys).length || 0;
+  const usersWithAccessKeys =
+    users?.filter((u: any) => u.hasAccessKeys).length || 0;
 
   return (
     <ServicePageLayout
@@ -158,15 +160,15 @@ export default function IAMPage() {
         <CardContent className="p-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="w-full justify-start rounded-none border-b h-auto p-0">
-              <TabsTrigger 
-                value="users" 
+              <TabsTrigger
+                value="users"
                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
               >
                 <Users className="mr-2 h-4 w-4" />
                 Users
               </TabsTrigger>
-              <TabsTrigger 
-                value="roles" 
+              <TabsTrigger
+                value="roles"
                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary px-6"
               >
                 <ShieldCheck className="mr-2 h-4 w-4" />

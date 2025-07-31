@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,26 +8,26 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  MoreHorizontal, 
-  Search, 
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  MoreHorizontal,
+  Search,
   ShieldCheck,
   Shield,
-  Clock
-} from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
-import { useIAMRoles } from '@/hooks/use-iam';
+  Clock,
+} from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
+import { useIAMRoles } from "@/hooks/use-iam";
 
 interface RoleListProps {
   onViewRole: (roleName: string) => void;
@@ -35,14 +35,19 @@ interface RoleListProps {
   onDeleteRole: (roleName: string) => void;
 }
 
-export function RoleList({ onViewRole, onCreateRole, onDeleteRole }: RoleListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+export function RoleList({
+  onViewRole,
+  onCreateRole,
+  onDeleteRole,
+}: RoleListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: roles, isLoading, error } = useIAMRoles();
 
-  const filteredRoles = roles?.filter((role: any) =>
-    role.roleName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    role.arn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    role.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredRoles = roles?.filter(
+    (role: any) =>
+      role.roleName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      role.arn.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      role.description?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (error) {
@@ -89,17 +94,32 @@ export function RoleList({ onViewRole, onCreateRole, onDeleteRole }: RoleListPro
             {isLoading ? (
               [...Array(3)].map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-48" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-12" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-8" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : filteredRoles?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground"
+                >
                   No roles found
                 </TableCell>
               </TableRow>
@@ -118,7 +138,7 @@ export function RoleList({ onViewRole, onCreateRole, onDeleteRole }: RoleListPro
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-muted-foreground line-clamp-1">
-                      {role.description || 'No description'}
+                      {role.description || "No description"}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -129,9 +149,9 @@ export function RoleList({ onViewRole, onCreateRole, onDeleteRole }: RoleListPro
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-muted-foreground">
-                      {role.maxSessionDuration 
+                      {role.maxSessionDuration
                         ? `${role.maxSessionDuration / 3600}h`
-                        : '1h'}
+                        : "1h"}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -144,16 +164,21 @@ export function RoleList({ onViewRole, onCreateRole, onDeleteRole }: RoleListPro
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenuTrigger
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Button variant="ghost" size="sm">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          onViewRole(role.roleName);
-                        }}>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewRole(role.roleName);
+                          }}
+                        >
                           View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem

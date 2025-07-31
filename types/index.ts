@@ -3,14 +3,14 @@ export interface Service {
   name: string;
   displayName: string;
   icon: string;
-  status: 'running' | 'stopped' | 'error' | 'unknown';
+  status: "running" | "stopped" | "error" | "unknown";
   description: string;
   enabled: boolean;
   href?: string;
 }
 
 export interface LocalStackHealth {
-  status: 'healthy' | 'unhealthy' | 'unknown';
+  status: "healthy" | "unhealthy" | "unknown";
   endpoint: string;
   version?: string;
   lastChecked: Date;
@@ -33,14 +33,14 @@ export interface S3Object {
 
 export interface DynamoDBTable {
   tableName: string;
-  tableStatus: 'CREATING' | 'ACTIVE' | 'DELETING' | 'UPDATING';
+  tableStatus: "CREATING" | "ACTIVE" | "DELETING" | "UPDATING";
   creationDateTime: Date;
   itemCount: number;
   tableSizeBytes: number;
   tableArn?: string;
   keySchema?: Array<{
     attributeName: string;
-    keyType: 'HASH' | 'RANGE';
+    keyType: "HASH" | "RANGE";
   }>;
 }
 
@@ -114,7 +114,7 @@ export interface LambdaFunction {
   environment?: {
     variables?: Record<string, string>;
   };
-  state?: 'Pending' | 'Active' | 'Inactive' | 'Failed';
+  state?: "Pending" | "Active" | "Inactive" | "Failed";
   stateReason?: string;
   stateReasonCode?: string;
   vpcConfig?: {
@@ -218,7 +218,7 @@ export interface IAMAccessKey {
   accessKeyId: string;
   secretAccessKey?: string; // Only shown once when created
   userName: string;
-  status: 'Active' | 'Inactive';
+  status: "Active" | "Inactive";
   createDate: Date;
 }
 
@@ -295,7 +295,7 @@ export interface CloudWatchAlarm {
   okActions?: string[];
   alarmActions?: string[];
   insufficientDataActions?: string[];
-  stateValue?: 'OK' | 'ALARM' | 'INSUFFICIENT_DATA';
+  stateValue?: "OK" | "ALARM" | "INSUFFICIENT_DATA";
   stateReason?: string;
   stateReasonData?: string;
   stateUpdatedTimestamp?: Date;
@@ -321,7 +321,7 @@ export interface CloudWatchAlarm {
 export interface CloudWatchAlarmHistory {
   alarmName?: string;
   timestamp?: Date;
-  historyItemType?: 'ConfigurationUpdate' | 'StateUpdate' | 'Action';
+  historyItemType?: "ConfigurationUpdate" | "StateUpdate" | "Action";
   historySummary?: string;
   historyData?: string;
 }
@@ -349,7 +349,7 @@ export interface MetricDataResult {
   label?: string;
   timestamps?: Date[];
   values?: number[];
-  statusCode?: 'Complete' | 'InternalError' | 'PartialData';
+  statusCode?: "Complete" | "InternalError" | "PartialData";
   messages?: string[];
 }
 
@@ -362,7 +362,7 @@ export interface EventBusInfo {
   deadLetterConfig?: {
     arn?: string;
   };
-  state?: 'ACTIVE' | 'CREATING' | 'UPDATING' | 'DELETING';
+  state?: "ACTIVE" | "CREATING" | "UPDATING" | "DELETING";
   creationTime?: Date;
   lastModifiedTime?: Date;
 }
@@ -371,7 +371,10 @@ export interface EventRule {
   name?: string;
   arn?: string;
   eventPattern?: string;
-  state?: 'ENABLED' | 'DISABLED' | 'ENABLED_WITH_ALL_CLOUDTRAIL_MANAGEMENT_EVENTS';
+  state?:
+    | "ENABLED"
+    | "DISABLED"
+    | "ENABLED_WITH_ALL_CLOUDTRAIL_MANAGEMENT_EVENTS";
   description?: string;
   scheduleExpression?: string;
   roleArn?: string;
@@ -412,7 +415,7 @@ export interface ScheduleInfo {
   arn?: string;
   name?: string;
   groupName?: string;
-  state?: 'ENABLED' | 'DISABLED';
+  state?: "ENABLED" | "DISABLED";
   description?: string;
   scheduleExpression?: string;
   scheduleExpressionTimezone?: string;
@@ -420,13 +423,13 @@ export interface ScheduleInfo {
   endDate?: Date;
   target?: ScheduleTarget;
   flexibleTimeWindow?: {
-    mode: 'OFF' | 'FLEXIBLE';
+    mode: "OFF" | "FLEXIBLE";
     maximumWindowInMinutes?: number;
   };
   creationDate?: Date;
   lastModificationDate?: Date;
   kmsKeyArn?: string;
-  actionAfterCompletion?: 'NONE' | 'DELETE';
+  actionAfterCompletion?: "NONE" | "DELETE";
 }
 
 export interface ScheduleTarget {
@@ -452,7 +455,7 @@ export interface ScheduleTarget {
 export interface ScheduleGroup {
   arn?: string;
   name?: string;
-  state?: 'ACTIVE' | 'DELETING';
+  state?: "ACTIVE" | "DELETING";
   creationDate?: Date;
   lastModificationDate?: Date;
 }
@@ -473,12 +476,37 @@ export interface CloudFormationStack {
   deletionTime?: Date;
   lastUpdatedTime?: Date;
   rollbackConfiguration?: any;
-  stackStatus: 'CREATE_IN_PROGRESS' | 'CREATE_FAILED' | 'CREATE_COMPLETE' | 'ROLLBACK_IN_PROGRESS' | 'ROLLBACK_FAILED' | 'ROLLBACK_COMPLETE' | 'DELETE_IN_PROGRESS' | 'DELETE_FAILED' | 'DELETE_COMPLETE' | 'UPDATE_IN_PROGRESS' | 'UPDATE_COMPLETE_CLEANUP_IN_PROGRESS' | 'UPDATE_COMPLETE' | 'UPDATE_FAILED' | 'UPDATE_ROLLBACK_IN_PROGRESS' | 'UPDATE_ROLLBACK_FAILED' | 'UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS' | 'UPDATE_ROLLBACK_COMPLETE' | 'REVIEW_IN_PROGRESS' | 'IMPORT_IN_PROGRESS' | 'IMPORT_COMPLETE' | 'IMPORT_ROLLBACK_IN_PROGRESS' | 'IMPORT_ROLLBACK_FAILED' | 'IMPORT_ROLLBACK_COMPLETE';
+  stackStatus:
+    | "CREATE_IN_PROGRESS"
+    | "CREATE_FAILED"
+    | "CREATE_COMPLETE"
+    | "ROLLBACK_IN_PROGRESS"
+    | "ROLLBACK_FAILED"
+    | "ROLLBACK_COMPLETE"
+    | "DELETE_IN_PROGRESS"
+    | "DELETE_FAILED"
+    | "DELETE_COMPLETE"
+    | "UPDATE_IN_PROGRESS"
+    | "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    | "UPDATE_COMPLETE"
+    | "UPDATE_FAILED"
+    | "UPDATE_ROLLBACK_IN_PROGRESS"
+    | "UPDATE_ROLLBACK_FAILED"
+    | "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS"
+    | "UPDATE_ROLLBACK_COMPLETE"
+    | "REVIEW_IN_PROGRESS"
+    | "IMPORT_IN_PROGRESS"
+    | "IMPORT_COMPLETE"
+    | "IMPORT_ROLLBACK_IN_PROGRESS"
+    | "IMPORT_ROLLBACK_FAILED"
+    | "IMPORT_ROLLBACK_COMPLETE";
   stackStatusReason?: string;
   disableRollback?: boolean;
   notificationARNs?: string[];
   timeoutInMinutes?: number;
-  capabilities?: Array<'CAPABILITY_IAM' | 'CAPABILITY_NAMED_IAM' | 'CAPABILITY_AUTO_EXPAND'>;
+  capabilities?: Array<
+    "CAPABILITY_IAM" | "CAPABILITY_NAMED_IAM" | "CAPABILITY_AUTO_EXPAND"
+  >;
   outputs?: Array<{
     outputKey?: string;
     outputValue?: string;
@@ -494,7 +522,7 @@ export interface CloudFormationStack {
   parentId?: string;
   rootId?: string;
   driftInformation?: {
-    stackDriftStatus: 'DRIFTED' | 'IN_SYNC' | 'UNKNOWN' | 'NOT_CHECKED';
+    stackDriftStatus: "DRIFTED" | "IN_SYNC" | "UNKNOWN" | "NOT_CHECKED";
     lastCheckTimestamp?: Date;
   };
   retainExceptOnCreate?: boolean;
@@ -507,12 +535,38 @@ export interface CloudFormationResource {
   physicalResourceId?: string;
   resourceType: string;
   timestamp: Date;
-  resourceStatus: 'CREATE_IN_PROGRESS' | 'CREATE_FAILED' | 'CREATE_COMPLETE' | 'DELETE_IN_PROGRESS' | 'DELETE_FAILED' | 'DELETE_COMPLETE' | 'DELETE_SKIPPED' | 'UPDATE_IN_PROGRESS' | 'UPDATE_FAILED' | 'UPDATE_COMPLETE' | 'IMPORT_FAILED' | 'IMPORT_COMPLETE' | 'IMPORT_IN_PROGRESS' | 'IMPORT_ROLLBACK_IN_PROGRESS' | 'IMPORT_ROLLBACK_FAILED' | 'IMPORT_ROLLBACK_COMPLETE' | 'UPDATE_ROLLBACK_IN_PROGRESS' | 'UPDATE_ROLLBACK_COMPLETE' | 'UPDATE_ROLLBACK_FAILED' | 'ROLLBACK_IN_PROGRESS' | 'ROLLBACK_COMPLETE' | 'ROLLBACK_FAILED';
+  resourceStatus:
+    | "CREATE_IN_PROGRESS"
+    | "CREATE_FAILED"
+    | "CREATE_COMPLETE"
+    | "DELETE_IN_PROGRESS"
+    | "DELETE_FAILED"
+    | "DELETE_COMPLETE"
+    | "DELETE_SKIPPED"
+    | "UPDATE_IN_PROGRESS"
+    | "UPDATE_FAILED"
+    | "UPDATE_COMPLETE"
+    | "IMPORT_FAILED"
+    | "IMPORT_COMPLETE"
+    | "IMPORT_IN_PROGRESS"
+    | "IMPORT_ROLLBACK_IN_PROGRESS"
+    | "IMPORT_ROLLBACK_FAILED"
+    | "IMPORT_ROLLBACK_COMPLETE"
+    | "UPDATE_ROLLBACK_IN_PROGRESS"
+    | "UPDATE_ROLLBACK_COMPLETE"
+    | "UPDATE_ROLLBACK_FAILED"
+    | "ROLLBACK_IN_PROGRESS"
+    | "ROLLBACK_COMPLETE"
+    | "ROLLBACK_FAILED";
   resourceStatusReason?: string;
   description?: string;
   metadata?: string;
   driftInformation?: {
-    stackResourceDriftStatus: 'IN_SYNC' | 'MODIFIED' | 'DELETED' | 'NOT_CHECKED';
+    stackResourceDriftStatus:
+      | "IN_SYNC"
+      | "MODIFIED"
+      | "DELETED"
+      | "NOT_CHECKED";
     lastCheckTimestamp?: Date;
   };
   moduleInfo?: {
@@ -550,9 +604,9 @@ export interface RestApi {
   warnings?: string[];
   binaryMediaTypes?: string[];
   minimumCompressionSize?: number;
-  apiKeySource?: 'HEADER' | 'AUTHORIZER';
+  apiKeySource?: "HEADER" | "AUTHORIZER";
   endpointConfiguration?: {
-    types?: Array<'REGIONAL' | 'EDGE' | 'PRIVATE'>;
+    types?: Array<"REGIONAL" | "EDGE" | "PRIVATE">;
     vpcEndpointIds?: string[];
   };
   policy?: string;
@@ -590,16 +644,16 @@ export interface ApiMethodResponse {
 }
 
 export interface ApiIntegration {
-  type?: 'HTTP' | 'AWS' | 'MOCK' | 'HTTP_PROXY' | 'AWS_PROXY';
+  type?: "HTTP" | "AWS" | "MOCK" | "HTTP_PROXY" | "AWS_PROXY";
   httpMethod?: string;
   uri?: string;
-  connectionType?: 'INTERNET' | 'VPC_LINK';
+  connectionType?: "INTERNET" | "VPC_LINK";
   connectionId?: string;
   credentials?: string;
   requestParameters?: Record<string, string>;
   requestTemplates?: Record<string, string>;
   passthroughBehavior?: string;
-  contentHandling?: 'CONVERT_TO_BINARY' | 'CONVERT_TO_TEXT';
+  contentHandling?: "CONVERT_TO_BINARY" | "CONVERT_TO_TEXT";
   timeoutInMillis?: number;
   cacheNamespace?: string;
   cacheKeyParameters?: string[];
@@ -614,7 +668,7 @@ export interface ApiIntegrationResponse {
   selectionPattern?: string;
   responseParameters?: Record<string, string>;
   responseTemplates?: Record<string, string>;
-  contentHandling?: 'CONVERT_TO_BINARY' | 'CONVERT_TO_TEXT';
+  contentHandling?: "CONVERT_TO_BINARY" | "CONVERT_TO_TEXT";
 }
 
 export interface ApiDeployment {
@@ -641,7 +695,12 @@ export interface ApiStage {
   description?: string;
   cacheClusterEnabled?: boolean;
   cacheClusterSize?: string;
-  cacheClusterStatus?: 'CREATE_IN_PROGRESS' | 'AVAILABLE' | 'DELETE_IN_PROGRESS' | 'NOT_AVAILABLE' | 'FLUSH_IN_PROGRESS';
+  cacheClusterStatus?:
+    | "CREATE_IN_PROGRESS"
+    | "AVAILABLE"
+    | "DELETE_IN_PROGRESS"
+    | "NOT_AVAILABLE"
+    | "FLUSH_IN_PROGRESS";
   methodSettings?: Record<string, ApiMethodSetting>;
   variables?: Record<string, string>;
   documentationVersion?: string;
@@ -672,5 +731,8 @@ export interface ApiMethodSetting {
   cacheTtlInSeconds?: number;
   cacheDataEncrypted?: boolean;
   requireAuthorizationForCacheControl?: boolean;
-  unauthorizedCacheControlHeaderStrategy?: 'FAIL_WITH_403' | 'SUCCEED_WITH_RESPONSE_HEADER' | 'SUCCEED_WITHOUT_RESPONSE_HEADER';
+  unauthorizedCacheControlHeaderStrategy?:
+    | "FAIL_WITH_403"
+    | "SUCCEED_WITH_RESPONSE_HEADER"
+    | "SUCCEED_WITHOUT_RESPONSE_HEADER";
 }

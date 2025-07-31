@@ -1,29 +1,35 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudWatchLogsClient } from '@/lib/aws-config';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudWatchLogsClient } from "@/lib/aws-config";
 import {
   GetLogEventsCommand,
   PutLogEventsCommand,
   type GetLogEventsCommandInput,
   type PutLogEventsCommandInput,
   type InputLogEvent,
-} from '@aws-sdk/client-cloudwatch-logs';
+} from "@aws-sdk/client-cloudwatch-logs";
 
 // GET /api/cloudwatch/log-groups/[name]/streams/[streamName]/events - Get log events
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ name: string; streamName: string }> }
+  context: { params: Promise<{ name: string; streamName: string }> },
 ) {
   try {
     const params = await context.params;
     const logGroupName = decodeURIComponent(params.name);
     const logStreamName = decodeURIComponent(params.streamName);
     const searchParams = request.nextUrl.searchParams;
-    
-    const startTime = searchParams.get('startTime') ? parseInt(searchParams.get('startTime')!) : undefined;
-    const endTime = searchParams.get('endTime') ? parseInt(searchParams.get('endTime')!) : undefined;
-    const nextToken = searchParams.get('nextToken') || undefined;
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 100;
-    const startFromHead = searchParams.get('startFromHead') === 'true';
+
+    const startTime = searchParams.get("startTime")
+      ? parseInt(searchParams.get("startTime")!)
+      : undefined;
+    const endTime = searchParams.get("endTime")
+      ? parseInt(searchParams.get("endTime")!)
+      : undefined;
+    const nextToken = searchParams.get("nextToken") || undefined;
+    const limit = searchParams.get("limit")
+      ? parseInt(searchParams.get("limit")!)
+      : 100;
+    const startFromHead = searchParams.get("startFromHead") === "true";
 
     const eventsParams: GetLogEventsCommandInput = {
       logGroupName,
@@ -44,10 +50,10 @@ export async function GET(
       nextBackwardToken: response.nextBackwardToken,
     });
   } catch (error: any) {
-    console.error('Error getting log events:', error);
+    console.error("Error getting log events:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to get log events' },
-      { status: 500 }
+      { error: error.message || "Failed to get log events" },
+      { status: 500 },
     );
   }
 }
@@ -55,7 +61,7 @@ export async function GET(
 // POST /api/cloudwatch/log-groups/[name]/streams/[streamName]/events - Put log events
 export async function POST(
   request: NextRequest,
-  context: { params: Promise<{ name: string; streamName: string }> }
+  context: { params: Promise<{ name: string; streamName: string }> },
 ) {
   try {
     const params = await context.params;
@@ -66,13 +72,13 @@ export async function POST(
 
     if (!events || !Array.isArray(events) || events.length === 0) {
       return NextResponse.json(
-        { error: 'Events array is required' },
-        { status: 400 }
+        { error: "Events array is required" },
+        { status: 400 },
       );
     }
 
     // Format events for AWS
-    const logEvents: InputLogEvent[] = events.map(event => ({
+    const logEvents: InputLogEvent[] = events.map((event) => ({
       timestamp: event.timestamp || Date.now(),
       message: event.message,
     }));
@@ -88,15 +94,15 @@ export async function POST(
     const response = await cloudWatchLogsClient.send(command);
 
     return NextResponse.json({
-      message: 'Log events added successfully',
+      message: "Log events added successfully",
       nextSequenceToken: response.nextSequenceToken,
       rejectedLogEventsInfo: response.rejectedLogEventsInfo,
     });
   } catch (error: any) {
-    console.error('Error putting log events:', error);
+    console.error("Error putting log events:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to put log events' },
-      { status: 500 }
+      { error: error.message || "Failed to put log events" },
+      { status: 500 },
     );
   }
 }

@@ -1,18 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { iamClient } from '@/lib/aws-config';
-import { 
-  GetRoleCommand, 
-  UpdateRoleCommand, 
+import { NextRequest, NextResponse } from "next/server";
+import { iamClient } from "@/lib/aws-config";
+import {
+  GetRoleCommand,
+  UpdateRoleCommand,
   DeleteRoleCommand,
   UpdateAssumeRolePolicyCommand,
   ListAttachedRolePoliciesCommand,
-  ListRolePoliciesCommand
-} from '@aws-sdk/client-iam';
+  ListRolePoliciesCommand,
+} from "@aws-sdk/client-iam";
 
 // GET /api/iam/roles/[roleName] - Get role details
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ roleName: string }> }
+  { params }: { params: Promise<{ roleName: string }> },
 ) {
   try {
     const { roleName } = await params;
@@ -23,18 +23,19 @@ export async function GET(
     const role = roleResponse.Role;
 
     if (!role) {
-      return NextResponse.json(
-        { error: 'Role not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Role not found" }, { status: 404 });
     }
 
     // Get attached policies
-    const attachedPoliciesCmd = new ListAttachedRolePoliciesCommand({ RoleName: roleName });
+    const attachedPoliciesCmd = new ListAttachedRolePoliciesCommand({
+      RoleName: roleName,
+    });
     const attachedPoliciesResp = await iamClient.send(attachedPoliciesCmd);
 
     // Get inline policies
-    const inlinePoliciesCmd = new ListRolePoliciesCommand({ RoleName: roleName });
+    const inlinePoliciesCmd = new ListRolePoliciesCommand({
+      RoleName: roleName,
+    });
     const inlinePoliciesResp = await iamClient.send(inlinePoliciesCmd);
 
     const roleDetails = {
@@ -43,27 +44,36 @@ export async function GET(
       arn: role.Arn!,
       path: role.Path!,
       createDate: role.CreateDate!,
-      assumeRolePolicyDocument: decodeURIComponent(role.AssumeRolePolicyDocument || ''),
+      assumeRolePolicyDocument: decodeURIComponent(
+        role.AssumeRolePolicyDocument || "",
+      ),
       description: role.Description,
       maxSessionDuration: role.MaxSessionDuration,
-      permissionsBoundary: role.PermissionsBoundary ? {
-        permissionsBoundaryType: role.PermissionsBoundary.PermissionsBoundaryType,
-        permissionsBoundaryArn: role.PermissionsBoundary.PermissionsBoundaryArn
-      } : undefined,
-      tags: role.Tags?.map(tag => ({
+      permissionsBoundary: role.PermissionsBoundary
+        ? {
+            permissionsBoundaryType:
+              role.PermissionsBoundary.PermissionsBoundaryType,
+            permissionsBoundaryArn:
+              role.PermissionsBoundary.PermissionsBoundaryArn,
+          }
+        : undefined,
+      tags: role.Tags?.map((tag) => ({
         key: tag.Key!,
-        value: tag.Value!
+        value: tag.Value!,
       })),
       attachedPolicies: attachedPoliciesResp.AttachedPolicies || [],
-      inlinePolicies: inlinePoliciesResp.PolicyNames || []
+      inlinePolicies: inlinePoliciesResp.PolicyNames || [],
     };
 
     return NextResponse.json(roleDetails);
   } catch (error) {
-    console.error('Error getting IAM role:', error);
+    console.error("Error getting IAM role:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to get IAM role' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error ? error.message : "Failed to get IAM role",
+      },
+      { status: 500 },
     );
   }
 }
@@ -71,7 +81,7 @@ export async function GET(
 // PUT /api/iam/roles/[roleName] - Update role
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ roleName: string }> }
+  { params }: { params: Promise<{ roleName: string }> },
 ) {
   try {
     const { roleName } = await params;
@@ -83,7 +93,7 @@ export async function PUT(
       const updateCmd = new UpdateRoleCommand({
         RoleName: roleName,
         Description: description,
-        MaxSessionDuration: maxSessionDuration
+        MaxSessionDuration: maxSessionDuration,
       });
       await iamClient.send(updateCmd);
     }
@@ -95,24 +105,27 @@ export async function PUT(
         JSON.parse(assumeRolePolicyDocument);
       } catch (e) {
         return NextResponse.json(
-          { error: 'Invalid JSON in assume role policy document' },
-          { status: 400 }
+          { error: "Invalid JSON in assume role policy document" },
+          { status: 400 },
         );
       }
 
       const updatePolicyCmd = new UpdateAssumeRolePolicyCommand({
         RoleName: roleName,
-        PolicyDocument: assumeRolePolicyDocument
+        PolicyDocument: assumeRolePolicyDocument,
       });
       await iamClient.send(updatePolicyCmd);
     }
 
-    return NextResponse.json({ message: 'Role updated successfully' });
+    return NextResponse.json({ message: "Role updated successfully" });
   } catch (error) {
-    console.error('Error updating IAM role:', error);
+    console.error("Error updating IAM role:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update IAM role' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error ? error.message : "Failed to update IAM role",
+      },
+      { status: 500 },
     );
   }
 }
@@ -120,7 +133,7 @@ export async function PUT(
 // DELETE /api/iam/roles/[roleName] - Delete role
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ roleName: string }> }
+  { params }: { params: Promise<{ roleName: string }> },
 ) {
   try {
     const { roleName } = await params;
@@ -133,12 +146,15 @@ export async function DELETE(
     const command = new DeleteRoleCommand({ RoleName: roleName });
     await iamClient.send(command);
 
-    return NextResponse.json({ message: 'Role deleted successfully' });
+    return NextResponse.json({ message: "Role deleted successfully" });
   } catch (error) {
-    console.error('Error deleting IAM role:', error);
+    console.error("Error deleting IAM role:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete IAM role' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error ? error.message : "Failed to delete IAM role",
+      },
+      { status: 500 },
     );
   }
 }

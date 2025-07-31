@@ -1,16 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Secret, SecretValue, SecretVersion } from '@/types';
-import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Secret, SecretValue, SecretVersion } from "@/types";
+import { toast } from "sonner";
 
 // List all secrets
 export function useSecrets() {
   return useQuery({
-    queryKey: ['secrets'],
+    queryKey: ["secrets"],
     queryFn: async () => {
-      const response = await fetch('/api/secrets-manager/secrets');
+      const response = await fetch("/api/secrets-manager/secrets");
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch secrets');
+        throw new Error(error.error || "Failed to fetch secrets");
       }
       const data = await response.json();
       return data.secrets as Secret[];
@@ -19,23 +19,26 @@ export function useSecrets() {
 }
 
 // Get secret details with optional value
-export function useSecret(secretId: string | null, includeValue: boolean = false) {
+export function useSecret(
+  secretId: string | null,
+  includeValue: boolean = false,
+) {
   return useQuery({
-    queryKey: ['secret', secretId, includeValue],
+    queryKey: ["secret", secretId, includeValue],
     queryFn: async () => {
       if (!secretId) return null;
-      
+
       const params = new URLSearchParams({
         secretId,
         includeValue: includeValue.toString(),
       });
-      
+
       const response = await fetch(`/api/secrets-manager/secrets?${params}`);
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch secret');
+        throw new Error(error.error || "Failed to fetch secret");
       }
-      
+
       return response.json();
     },
     enabled: !!secretId,
@@ -60,25 +63,31 @@ export function useCreateSecret() {
       secretBinary?: string;
       tags?: Record<string, string>;
     }) => {
-      const response = await fetch('/api/secrets-manager/secrets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description, secretString, secretBinary, tags }),
+      const response = await fetch("/api/secrets-manager/secrets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          description,
+          secretString,
+          secretBinary,
+          tags,
+        }),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create secret');
+        throw new Error(error.error || "Failed to create secret");
       }
-      
+
       return response.json();
     },
     onSuccess: (_, { name }) => {
-      queryClient.invalidateQueries({ queryKey: ['secrets'] });
+      queryClient.invalidateQueries({ queryKey: ["secrets"] });
       toast.success(`Secret "${name}" created successfully`);
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to create secret');
+      toast.error(error.message || "Failed to create secret");
     },
   });
 }
@@ -97,26 +106,26 @@ export function useUpdateSecretValue() {
       secretString?: string;
       secretBinary?: string;
     }) => {
-      const response = await fetch('/api/secrets-manager/secrets', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/secrets-manager/secrets", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ secretId, secretString, secretBinary }),
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to update secret');
+        throw new Error(error.error || "Failed to update secret");
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['secret', data.name] });
-      queryClient.invalidateQueries({ queryKey: ['secret-versions'] });
-      toast.success('Secret value updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["secret", data.name] });
+      queryClient.invalidateQueries({ queryKey: ["secret-versions"] });
+      toast.success("Secret value updated successfully");
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to update secret');
+      toast.error(error.message || "Failed to update secret");
     },
   });
 }
@@ -137,27 +146,27 @@ export function useDeleteSecret() {
         secretId,
         forceDelete: forceDelete.toString(),
       });
-      
+
       const response = await fetch(`/api/secrets-manager/secrets?${params}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to delete secret');
+        throw new Error(error.error || "Failed to delete secret");
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['secrets'] });
+      queryClient.invalidateQueries({ queryKey: ["secrets"] });
       const message = data.deletionDate
         ? `Secret scheduled for deletion on ${new Date(data.deletionDate).toLocaleDateString()}`
-        : 'Secret deleted permanently';
+        : "Secret deleted permanently";
       toast.success(message);
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to delete secret');
+      toast.error(error.message || "Failed to delete secret");
     },
   });
 }
@@ -165,18 +174,18 @@ export function useDeleteSecret() {
 // List secret versions
 export function useSecretVersions(secretId: string | null) {
   return useQuery({
-    queryKey: ['secret-versions', secretId],
+    queryKey: ["secret-versions", secretId],
     queryFn: async () => {
       if (!secretId) return [];
-      
+
       const params = new URLSearchParams({ secretId });
       const response = await fetch(`/api/secrets-manager/versions?${params}`);
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch versions');
+        throw new Error(error.error || "Failed to fetch versions");
       }
-      
+
       const data = await response.json();
       return data.versions as SecretVersion[];
     },
@@ -185,21 +194,24 @@ export function useSecretVersions(secretId: string | null) {
 }
 
 // Get specific version value
-export function useSecretVersionValue(secretId: string | null, versionId: string | null) {
+export function useSecretVersionValue(
+  secretId: string | null,
+  versionId: string | null,
+) {
   return useQuery({
-    queryKey: ['secret-version-value', secretId, versionId],
+    queryKey: ["secret-version-value", secretId, versionId],
     queryFn: async () => {
       if (!secretId || !versionId) return null;
-      
+
       const params = new URLSearchParams({ secretId, versionId });
       const response = await fetch(`/api/secrets-manager/versions?${params}`);
-      
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch version value');
+        throw new Error(error.error || "Failed to fetch version value");
       }
-      
-      return await response.json() as SecretValue;
+
+      return (await response.json()) as SecretValue;
     },
     enabled: !!secretId && !!versionId,
   });

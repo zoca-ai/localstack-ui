@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudWatchLogsClient } from '@/lib/aws-config';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudWatchLogsClient } from "@/lib/aws-config";
 import {
   DeleteLogGroupCommand,
   DescribeLogGroupsCommand,
@@ -7,12 +7,12 @@ import {
   type DeleteLogGroupCommandInput,
   type DescribeLogGroupsCommandInput,
   type PutRetentionPolicyCommandInput,
-} from '@aws-sdk/client-cloudwatch-logs';
+} from "@aws-sdk/client-cloudwatch-logs";
 
 // GET /api/cloudwatch/log-groups/[name] - Get a specific log group
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ name: string }> }
+  context: { params: Promise<{ name: string }> },
 ) {
   try {
     const params = await context.params;
@@ -26,21 +26,23 @@ export async function GET(
     const command = new DescribeLogGroupsCommand(describeParams);
     const response = await cloudWatchLogsClient.send(command);
 
-    const logGroup = response.logGroups?.find(lg => lg.logGroupName === logGroupName);
+    const logGroup = response.logGroups?.find(
+      (lg) => lg.logGroupName === logGroupName,
+    );
 
     if (!logGroup) {
       return NextResponse.json(
-        { error: 'Log group not found' },
-        { status: 404 }
+        { error: "Log group not found" },
+        { status: 404 },
       );
     }
 
     return NextResponse.json(logGroup);
   } catch (error: any) {
-    console.error('Error getting log group:', error);
+    console.error("Error getting log group:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to get log group' },
-      { status: 500 }
+      { error: error.message || "Failed to get log group" },
+      { status: 500 },
     );
   }
 }
@@ -48,7 +50,7 @@ export async function GET(
 // PUT /api/cloudwatch/log-groups/[name] - Update a log group (retention policy)
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ name: string }> }
+  context: { params: Promise<{ name: string }> },
 ) {
   try {
     const params = await context.params;
@@ -67,14 +69,14 @@ export async function PUT(
     }
 
     return NextResponse.json({
-      message: 'Log group updated successfully',
+      message: "Log group updated successfully",
       logGroupName,
     });
   } catch (error: any) {
-    console.error('Error updating log group:', error);
+    console.error("Error updating log group:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update log group' },
-      { status: 500 }
+      { error: error.message || "Failed to update log group" },
+      { status: 500 },
     );
   }
 }
@@ -82,7 +84,7 @@ export async function PUT(
 // DELETE /api/cloudwatch/log-groups/[name] - Delete a log group
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ name: string }> }
+  context: { params: Promise<{ name: string }> },
 ) {
   try {
     const params = await context.params;
@@ -96,14 +98,14 @@ export async function DELETE(
     await cloudWatchLogsClient.send(command);
 
     return NextResponse.json({
-      message: 'Log group deleted successfully',
+      message: "Log group deleted successfully",
       logGroupName,
     });
   } catch (error: any) {
-    console.error('Error deleting log group:', error);
+    console.error("Error deleting log group:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete log group' },
-      { status: 500 }
+      { error: error.message || "Failed to delete log group" },
+      { status: 500 },
     );
   }
 }

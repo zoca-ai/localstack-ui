@@ -1,18 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { iamClient } from '@/lib/aws-config';
-import { 
-  GetPolicyCommand, 
+import { NextRequest, NextResponse } from "next/server";
+import { iamClient } from "@/lib/aws-config";
+import {
+  GetPolicyCommand,
   GetPolicyVersionCommand,
   CreatePolicyVersionCommand,
   DeletePolicyCommand,
-  ListPolicyVersionsCommand
-} from '@aws-sdk/client-iam';
-import { IAMPolicyVersion } from '@/types';
+  ListPolicyVersionsCommand,
+} from "@aws-sdk/client-iam";
+import { IAMPolicyVersion } from "@/types";
 
 // GET /api/iam/policies/[policyArn] - Get policy details
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ policyArn: string }> }
+  { params }: { params: Promise<{ policyArn: string }> },
 ) {
   try {
     const { policyArn: encodedArn } = await params;
@@ -24,30 +24,31 @@ export async function GET(
     const policy = policyResponse.Policy;
 
     if (!policy) {
-      return NextResponse.json(
-        { error: 'Policy not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Policy not found" }, { status: 404 });
     }
 
     // Get policy document
     const getPolicyVersionCmd = new GetPolicyVersionCommand({
       PolicyArn: policyArn,
-      VersionId: policy.DefaultVersionId
+      VersionId: policy.DefaultVersionId,
     });
     const versionResponse = await iamClient.send(getPolicyVersionCmd);
     const policyVersion = versionResponse.PolicyVersion;
 
     // Get all versions
-    const listVersionsCmd = new ListPolicyVersionsCommand({ PolicyArn: policyArn });
+    const listVersionsCmd = new ListPolicyVersionsCommand({
+      PolicyArn: policyArn,
+    });
     const versionsResponse = await iamClient.send(listVersionsCmd);
-    
-    const versions: IAMPolicyVersion[] = (versionsResponse.Versions || []).map(v => ({
-      versionId: v.VersionId!,
-      isDefaultVersion: v.IsDefaultVersion!,
-      createDate: v.CreateDate!,
-      document: '' // We'll only fetch the document for the default version
-    }));
+
+    const versions: IAMPolicyVersion[] = (versionsResponse.Versions || []).map(
+      (v) => ({
+        versionId: v.VersionId!,
+        isDefaultVersion: v.IsDefaultVersion!,
+        createDate: v.CreateDate!,
+        document: "", // We'll only fetch the document for the default version
+      }),
+    );
 
     const policyDetails = {
       policyName: policy.PolicyName!,
@@ -61,20 +62,23 @@ export async function GET(
       description: policy.Description,
       createDate: policy.CreateDate!,
       updateDate: policy.UpdateDate!,
-      policyDocument: decodeURIComponent(policyVersion?.Document || ''),
+      policyDocument: decodeURIComponent(policyVersion?.Document || ""),
       versions,
-      tags: policy.Tags?.map(tag => ({
+      tags: policy.Tags?.map((tag) => ({
         key: tag.Key!,
-        value: tag.Value!
-      }))
+        value: tag.Value!,
+      })),
     };
 
     return NextResponse.json(policyDetails);
   } catch (error) {
-    console.error('Error getting IAM policy:', error);
+    console.error("Error getting IAM policy:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to get IAM policy' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error ? error.message : "Failed to get IAM policy",
+      },
+      { status: 500 },
     );
   }
 }
@@ -82,7 +86,7 @@ export async function GET(
 // PUT /api/iam/policies/[policyArn] - Update policy (create new version)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ policyArn: string }> }
+  { params }: { params: Promise<{ policyArn: string }> },
 ) {
   try {
     const { policyArn: encodedArn } = await params;
@@ -92,8 +96,8 @@ export async function PUT(
 
     if (!policyDocument) {
       return NextResponse.json(
-        { error: 'Policy document is required' },
-        { status: 400 }
+        { error: "Policy document is required" },
+        { status: 400 },
       );
     }
 
@@ -102,28 +106,33 @@ export async function PUT(
       JSON.parse(policyDocument);
     } catch (e) {
       return NextResponse.json(
-        { error: 'Invalid JSON in policy document' },
-        { status: 400 }
+        { error: "Invalid JSON in policy document" },
+        { status: 400 },
       );
     }
 
     const command = new CreatePolicyVersionCommand({
       PolicyArn: policyArn,
       PolicyDocument: policyDocument,
-      SetAsDefault: setAsDefault
+      SetAsDefault: setAsDefault,
     });
 
     const response = await iamClient.send(command);
 
-    return NextResponse.json({ 
-      message: 'Policy updated successfully',
-      versionId: response.PolicyVersion?.VersionId
+    return NextResponse.json({
+      message: "Policy updated successfully",
+      versionId: response.PolicyVersion?.VersionId,
     });
   } catch (error) {
-    console.error('Error updating IAM policy:', error);
+    console.error("Error updating IAM policy:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update IAM policy' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to update IAM policy",
+      },
+      { status: 500 },
     );
   }
 }
@@ -131,7 +140,7 @@ export async function PUT(
 // DELETE /api/iam/policies/[policyArn] - Delete policy
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ policyArn: string }> }
+  { params }: { params: Promise<{ policyArn: string }> },
 ) {
   try {
     const { policyArn: encodedArn } = await params;
@@ -141,12 +150,17 @@ export async function DELETE(
     const command = new DeletePolicyCommand({ PolicyArn: policyArn });
     await iamClient.send(command);
 
-    return NextResponse.json({ message: 'Policy deleted successfully' });
+    return NextResponse.json({ message: "Policy deleted successfully" });
   } catch (error) {
-    console.error('Error deleting IAM policy:', error);
+    console.error("Error deleting IAM policy:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete IAM policy' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete IAM policy",
+      },
+      { status: 500 },
     );
   }
 }

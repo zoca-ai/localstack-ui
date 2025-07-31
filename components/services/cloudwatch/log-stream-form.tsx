@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,15 +12,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useCreateCloudWatchLogStream } from '@/hooks/use-cloudwatch';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useCreateCloudWatchLogStream } from "@/hooks/use-cloudwatch";
 
 const formSchema = z.object({
-  logStreamName: z.string()
-    .min(1, 'Log stream name is required')
-    .max(512, 'Log stream name must be less than 512 characters')
-    .regex(/^[\.\-_/#A-Za-z0-9]+$/, 'Log stream name contains invalid characters'),
+  logStreamName: z
+    .string()
+    .min(1, "Log stream name is required")
+    .max(512, "Log stream name must be less than 512 characters")
+    .regex(
+      /^[\.\-_/#A-Za-z0-9]+$/,
+      "Log stream name contains invalid characters",
+    ),
 });
 
 interface LogStreamFormProps {
@@ -29,13 +33,17 @@ interface LogStreamFormProps {
   onCancel?: () => void;
 }
 
-export function LogStreamForm({ logGroupName, onSuccess, onCancel }: LogStreamFormProps) {
+export function LogStreamForm({
+  logGroupName,
+  onSuccess,
+  onCancel,
+}: LogStreamFormProps) {
   const createLogStreamMutation = useCreateCloudWatchLogStream();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      logStreamName: '',
+      logStreamName: "",
     },
   });
 
@@ -62,10 +70,7 @@ export function LogStreamForm({ logGroupName, onSuccess, onCancel }: LogStreamFo
               <FormItem>
                 <FormLabel>Log Stream Name</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="my-application-instance-1"
-                    {...field}
-                  />
+                  <Input placeholder="my-application-instance-1" {...field} />
                 </FormControl>
                 <FormDescription>
                   A unique name for the log stream within this log group
@@ -76,11 +81,20 @@ export function LogStreamForm({ logGroupName, onSuccess, onCancel }: LogStreamFo
           />
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" size="sm" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onCancel}
+            >
               Cancel
             </Button>
-            <Button type="submit" size="sm" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? 'Creating...' : 'Create Stream'}
+            <Button
+              type="submit"
+              size="sm"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? "Creating..." : "Create Stream"}
             </Button>
           </div>
         </form>

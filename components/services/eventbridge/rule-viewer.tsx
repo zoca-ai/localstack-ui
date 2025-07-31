@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useEventRule, useEventTargets } from '@/hooks/use-eventbridge';
+import { useEventRule, useEventTargets } from "@/hooks/use-eventbridge";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { FileCode, Clock, Target, Calendar } from 'lucide-react';
-import { TargetList } from './target-list';
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { FileCode, Clock, Target, Calendar } from "lucide-react";
+import { TargetList } from "./target-list";
 
 interface RuleViewerProps {
   ruleName: string;
@@ -21,9 +21,21 @@ interface RuleViewerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function RuleViewer({ ruleName, eventBusName = 'default', open, onOpenChange }: RuleViewerProps) {
-  const { data: rule, isLoading: ruleLoading } = useEventRule(ruleName, eventBusName, open);
-  const { data: targets, isLoading: targetsLoading } = useEventTargets(ruleName, eventBusName);
+export function RuleViewer({
+  ruleName,
+  eventBusName = "default",
+  open,
+  onOpenChange,
+}: RuleViewerProps) {
+  const { data: rule, isLoading: ruleLoading } = useEventRule(
+    ruleName,
+    eventBusName,
+    open,
+  );
+  const { data: targets, isLoading: targetsLoading } = useEventTargets(
+    ruleName,
+    eventBusName,
+  );
 
   if (ruleLoading) {
     return (
@@ -61,11 +73,11 @@ export function RuleViewer({ ruleName, eventBusName = 'default', open, onOpenCha
             <TabsTrigger value="pattern">Pattern</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="targets" className="space-y-4">
             <TargetList ruleName={ruleName} eventBusName={eventBusName} />
           </TabsContent>
-          
+
           <TabsContent value="pattern" className="space-y-4">
             {rule?.eventPattern && (
               <Card className="p-4">
@@ -78,7 +90,7 @@ export function RuleViewer({ ruleName, eventBusName = 'default', open, onOpenCha
                 </pre>
               </Card>
             )}
-            
+
             {rule?.scheduleExpression && (
               <Card className="p-4">
                 <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -91,7 +103,7 @@ export function RuleViewer({ ruleName, eventBusName = 'default', open, onOpenCha
               </Card>
             )}
           </TabsContent>
-          
+
           <TabsContent value="details" className="space-y-4">
             <Card className="p-4">
               <h3 className="text-sm font-semibold mb-3">Rule Information</h3>
@@ -102,27 +114,39 @@ export function RuleViewer({ ruleName, eventBusName = 'default', open, onOpenCha
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">State</span>
-                  <Badge variant={rule?.state === 'ENABLED' ? 'default' : 'secondary'}>
+                  <Badge
+                    variant={
+                      rule?.state === "ENABLED" ? "default" : "secondary"
+                    }
+                  >
                     {rule?.state}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Event Bus</span>
-                  <span className="text-sm font-medium">{rule?.eventBusName || eventBusName}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Event Bus
+                  </span>
+                  <span className="text-sm font-medium">
+                    {rule?.eventBusName || eventBusName}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Targets</span>
-                  <span className="text-sm font-medium">{targets?.length || 0}</span>
+                  <span className="text-sm font-medium">
+                    {targets?.length || 0}
+                  </span>
                 </div>
                 {rule?.description && (
                   <div className="pt-2">
-                    <span className="text-sm text-muted-foreground">Description</span>
+                    <span className="text-sm text-muted-foreground">
+                      Description
+                    </span>
                     <p className="text-sm mt-1">{rule.description}</p>
                   </div>
                 )}
               </div>
             </Card>
-            
+
             {rule?.arn && (
               <Card className="p-4">
                 <h3 className="text-sm font-semibold mb-3">ARN</h3>

@@ -1,32 +1,40 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { StackList } from '@/components/services/cloudformation/stack-list';
-import { ServicePageLayout } from '@/components/layout/service-page-layout';
-import { Layers, CheckCircle, AlertCircle, Clock, Info } from 'lucide-react';
-import { useStacks } from '@/hooks/use-cloudformation';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { StackList } from "@/components/services/cloudformation/stack-list";
+import { ServicePageLayout } from "@/components/layout/service-page-layout";
+import { Layers, CheckCircle, AlertCircle, Clock, Info } from "lucide-react";
+import { useStacks } from "@/hooks/use-cloudformation";
 
 export default function CloudFormationPage() {
   const { data: stacks } = useStacks();
 
   const totalStacks = stacks?.length || 0;
-  const completeStacks = stacks?.filter(s => 
-    s.stackStatus.includes('COMPLETE') && 
-    !s.stackStatus.includes('FAILED') && 
-    !s.stackStatus.includes('ROLLBACK')
-  ).length || 0;
-  const inProgressStacks = stacks?.filter(s => 
-    s.stackStatus.includes('IN_PROGRESS')
-  ).length || 0;
-  const failedStacks = stacks?.filter(s => 
-    s.stackStatus.includes('FAILED') || 
-    s.stackStatus.includes('ROLLBACK')
-  ).length || 0;
+  const completeStacks =
+    stacks?.filter(
+      (s) =>
+        s.stackStatus.includes("COMPLETE") &&
+        !s.stackStatus.includes("FAILED") &&
+        !s.stackStatus.includes("ROLLBACK"),
+    ).length || 0;
+  const inProgressStacks =
+    stacks?.filter((s) => s.stackStatus.includes("IN_PROGRESS")).length || 0;
+  const failedStacks =
+    stacks?.filter(
+      (s) =>
+        s.stackStatus.includes("FAILED") || s.stackStatus.includes("ROLLBACK"),
+    ).length || 0;
 
   return (
-    <ServicePageLayout 
-      title="CloudFormation" 
+    <ServicePageLayout
+      title="CloudFormation"
       description="Infrastructure as Code service"
       icon={Layers}
     >
@@ -38,12 +46,10 @@ export default function CloudFormationPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalStacks}</div>
-            <p className="text-xs text-muted-foreground">
-              All stacks
-            </p>
+            <p className="text-xs text-muted-foreground">All stacks</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Complete</CardTitle>
@@ -56,7 +62,7 @@ export default function CloudFormationPage() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">In Progress</CardTitle>
@@ -64,22 +70,20 @@ export default function CloudFormationPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{inProgressStacks}</div>
-            <p className="text-xs text-muted-foreground">
-              Currently deploying
-            </p>
+            <p className="text-xs text-muted-foreground">Currently deploying</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Failed</CardTitle>
             <AlertCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-500">{failedStacks}</div>
-            <p className="text-xs text-muted-foreground">
-              Deployment failed
-            </p>
+            <div className="text-2xl font-bold text-red-500">
+              {failedStacks}
+            </div>
+            <p className="text-xs text-muted-foreground">Deployment failed</p>
           </CardContent>
         </Card>
       </div>
@@ -87,9 +91,10 @@ export default function CloudFormationPage() {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          AWS CloudFormation lets you model, provision, and manage AWS and third-party resources 
-          by treating infrastructure as code. Create templates that describe your AWS resources 
-          and CloudFormation takes care of provisioning and configuring those resources for you.
+          AWS CloudFormation lets you model, provision, and manage AWS and
+          third-party resources by treating infrastructure as code. Create
+          templates that describe your AWS resources and CloudFormation takes
+          care of provisioning and configuring those resources for you.
         </AlertDescription>
       </Alert>
 

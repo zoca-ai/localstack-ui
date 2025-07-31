@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Check, Copy, FileJson } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, Check, Copy, FileJson } from "lucide-react";
+import { toast } from "sonner";
 
 interface PolicyEditorProps {
   initialValue?: string;
@@ -16,15 +16,15 @@ interface PolicyEditorProps {
   className?: string;
 }
 
-export function PolicyEditor({ 
-  initialValue = '', 
-  onSave, 
+export function PolicyEditor({
+  initialValue = "",
+  onSave,
   onCancel,
   readOnly = false,
-  className = ''
+  className = "",
 }: PolicyEditorProps) {
   const [policyDocument, setPolicyDocument] = useState(initialValue);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {
@@ -36,11 +36,11 @@ export function PolicyEditor({
       if (value.trim()) {
         JSON.parse(value);
         setIsValid(true);
-        setError('');
+        setError("");
       }
     } catch (e) {
       setIsValid(false);
-      setError('Invalid JSON format');
+      setError("Invalid JSON format");
     }
   };
 
@@ -54,20 +54,20 @@ export function PolicyEditor({
       const formatted = JSON.stringify(JSON.parse(policyDocument), null, 2);
       setPolicyDocument(formatted);
       setIsValid(true);
-      setError('');
+      setError("");
     } catch (e) {
-      setError('Cannot format invalid JSON');
+      setError("Cannot format invalid JSON");
     }
   };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(policyDocument);
-    toast.success('Policy copied to clipboard');
+    toast.success("Policy copied to clipboard");
   };
 
   const handleSave = () => {
     if (!isValid) {
-      setError('Please fix JSON errors before saving');
+      setError("Please fix JSON errors before saving");
       return;
     }
     onSave(policyDocument);
@@ -75,14 +75,14 @@ export function PolicyEditor({
 
   const getDefaultPolicy = () => {
     const defaultPolicy = {
-      Version: '2012-10-17',
+      Version: "2012-10-17",
       Statement: [
         {
-          Effect: 'Allow',
-          Action: ['s3:GetObject'],
-          Resource: ['arn:aws:s3:::example-bucket/*']
-        }
-      ]
+          Effect: "Allow",
+          Action: ["s3:GetObject"],
+          Resource: ["arn:aws:s3:::example-bucket/*"],
+        },
+      ],
     };
     setPolicyDocument(JSON.stringify(defaultPolicy, null, 2));
   };
@@ -94,18 +94,17 @@ export function PolicyEditor({
           <FileJson className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">Policy Document</span>
           {!readOnly && (
-            <Badge variant={isValid ? 'default' : 'destructive'} className="text-xs">
-              {isValid ? 'Valid JSON' : 'Invalid JSON'}
+            <Badge
+              variant={isValid ? "default" : "destructive"}
+              className="text-xs"
+            >
+              {isValid ? "Valid JSON" : "Invalid JSON"}
             </Badge>
           )}
         </div>
         <div className="flex items-center gap-2">
           {!readOnly && !policyDocument && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={getDefaultPolicy}
-            >
+            <Button variant="ghost" size="sm" onClick={getDefaultPolicy}>
               Use Template
             </Button>
           )}
@@ -119,11 +118,7 @@ export function PolicyEditor({
               >
                 Format
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={copyToClipboard}
-              >
+              <Button variant="ghost" size="sm" onClick={copyToClipboard}>
                 <Copy className="h-4 w-4" />
               </Button>
             </>
@@ -146,7 +141,7 @@ export function PolicyEditor({
   ]
 }`}
           className={`font-mono text-xs min-h-[300px] ${
-            !isValid && !readOnly ? 'border-red-500 focus:ring-red-500' : ''
+            !isValid && !readOnly ? "border-red-500 focus:ring-red-500" : ""
           }`}
           readOnly={readOnly}
         />

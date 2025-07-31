@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Dialog,
@@ -6,13 +6,13 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Copy, FileJson } from 'lucide-react';
-import { toast } from 'sonner';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Copy, FileJson } from "lucide-react";
+import { toast } from "sonner";
 
 interface ItemViewerDialogProps {
   open: boolean;
@@ -20,12 +20,16 @@ interface ItemViewerDialogProps {
   item: any;
 }
 
-export function ItemViewerDialog({ open, onOpenChange, item }: ItemViewerDialogProps) {
+export function ItemViewerDialog({
+  open,
+  onOpenChange,
+  item,
+}: ItemViewerDialogProps) {
   if (!item) return null;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(JSON.stringify(item, null, 2));
-    toast.success('Copied to clipboard');
+    toast.success("Copied to clipboard");
   };
 
   const renderValue = (value: any): React.ReactNode => {
@@ -33,15 +37,17 @@ export function ItemViewerDialog({ open, onOpenChange, item }: ItemViewerDialogP
       return <span className="text-muted-foreground">null</span>;
     }
 
-    if (typeof value === 'boolean') {
-      return <Badge variant={value ? 'default' : 'secondary'}>{String(value)}</Badge>;
+    if (typeof value === "boolean") {
+      return (
+        <Badge variant={value ? "default" : "secondary"}>{String(value)}</Badge>
+      );
     }
 
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       return <Badge variant="outline">{value}</Badge>;
     }
 
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return <span className="break-all">{value}</span>;
     }
 
@@ -63,7 +69,7 @@ export function ItemViewerDialog({ open, onOpenChange, item }: ItemViewerDialogP
       );
     }
 
-    if (typeof value === 'object') {
+    if (typeof value === "object") {
       const entries = Object.entries(value);
       return (
         <div className="space-y-1">

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useStacks, useDeleteStack } from '@/hooks/use-cloudformation';
+import { useState } from "react";
+import { useStacks, useDeleteStack } from "@/hooks/use-cloudformation";
 import {
   Table,
   TableBody,
@@ -9,13 +9,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { toast } from 'sonner';
-import { Search, Trash2, Layers, AlertCircle, CheckCircle, Clock, XCircle } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import {
+  Search,
+  Trash2,
+  Layers,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  XCircle,
+} from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,20 +33,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { CreateStackDialog } from './create-stack-dialog';
-import { StackViewer } from './stack-viewer';
+} from "@/components/ui/alert-dialog";
+import { CreateStackDialog } from "./create-stack-dialog";
+import { StackViewer } from "./stack-viewer";
 
 export function StackList() {
   const { data: stacks, isLoading, error } = useStacks();
   const deleteStack = useDeleteStack();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedStack, setSelectedStack] = useState<string | null>(null);
   const [stackToDelete, setStackToDelete] = useState<string | null>(null);
 
-  const filteredStacks = stacks?.filter(stack =>
-    stack.stackName.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredStacks =
+    stacks?.filter((stack) =>
+      stack.stackName.toLowerCase().includes(searchQuery.toLowerCase()),
+    ) || [];
 
   const handleDelete = async () => {
     if (!stackToDelete) return;
@@ -53,26 +62,36 @@ export function StackList() {
   };
 
   const getStatusIcon = (status: string) => {
-    if (status.includes('COMPLETE') && !status.includes('FAILED') && !status.includes('ROLLBACK')) {
+    if (
+      status.includes("COMPLETE") &&
+      !status.includes("FAILED") &&
+      !status.includes("ROLLBACK")
+    ) {
       return <CheckCircle className="h-4 w-4 text-green-500" />;
-    } else if (status.includes('IN_PROGRESS')) {
+    } else if (status.includes("IN_PROGRESS")) {
       return <Clock className="h-4 w-4 text-blue-500 animate-pulse" />;
-    } else if (status.includes('FAILED') || status.includes('ROLLBACK')) {
+    } else if (status.includes("FAILED") || status.includes("ROLLBACK")) {
       return <XCircle className="h-4 w-4 text-red-500" />;
     } else {
       return <AlertCircle className="h-4 w-4 text-yellow-500" />;
     }
   };
 
-  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-    if (status.includes('COMPLETE') && !status.includes('FAILED') && !status.includes('ROLLBACK')) {
-      return 'default';
-    } else if (status.includes('IN_PROGRESS')) {
-      return 'secondary';
-    } else if (status.includes('FAILED') || status.includes('ROLLBACK')) {
-      return 'destructive';
+  const getStatusVariant = (
+    status: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    if (
+      status.includes("COMPLETE") &&
+      !status.includes("FAILED") &&
+      !status.includes("ROLLBACK")
+    ) {
+      return "default";
+    } else if (status.includes("IN_PROGRESS")) {
+      return "secondary";
+    } else if (status.includes("FAILED") || status.includes("ROLLBACK")) {
+      return "destructive";
     } else {
-      return 'outline';
+      return "outline";
     }
   };
 
@@ -87,9 +106,7 @@ export function StackList() {
 
   if (error) {
     return (
-      <div className="text-red-500">
-        Error loading stacks: {error.message}
-      </div>
+      <div className="text-red-500">Error loading stacks: {error.message}</div>
     );
   }
 
@@ -123,7 +140,10 @@ export function StackList() {
           <TableBody>
             {filteredStacks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground"
+                >
                   No stacks found
                 </TableCell>
               </TableRow>
@@ -151,22 +171,26 @@ export function StackList() {
                   <TableCell>
                     {stack.creationTime
                       ? new Date(stack.creationTime).toLocaleString()
-                      : '-'}
+                      : "-"}
                   </TableCell>
                   <TableCell>
                     {stack.lastUpdatedTime
                       ? new Date(stack.lastUpdatedTime).toLocaleString()
-                      : '-'}
+                      : "-"}
                   </TableCell>
                   <TableCell>
                     {stack.driftInformation ? (
-                      <Badge variant={
-                        stack.driftInformation.stackDriftStatus === 'IN_SYNC' ? 'outline' : 'secondary'
-                      }>
+                      <Badge
+                        variant={
+                          stack.driftInformation.stackDriftStatus === "IN_SYNC"
+                            ? "outline"
+                            : "secondary"
+                        }
+                      >
                         {stack.driftInformation.stackDriftStatus}
                       </Badge>
                     ) : (
-                      '-'
+                      "-"
                     )}
                   </TableCell>
                   <TableCell className="text-right">
@@ -177,7 +201,7 @@ export function StackList() {
                         e.stopPropagation();
                         setStackToDelete(stack.stackName);
                       }}
-                      disabled={stack.stackStatus.includes('IN_PROGRESS')}
+                      disabled={stack.stackStatus.includes("IN_PROGRESS")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -197,18 +221,25 @@ export function StackList() {
         />
       )}
 
-      <AlertDialog open={!!stackToDelete} onOpenChange={(open) => !open && setStackToDelete(null)}>
+      <AlertDialog
+        open={!!stackToDelete}
+        onOpenChange={(open) => !open && setStackToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Stack</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the stack "{stackToDelete}"? 
-              This will delete all resources created by this stack. This action cannot be undone.
+              Are you sure you want to delete the stack "{stackToDelete}"? This
+              will delete all resources created by this stack. This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete Stack
             </AlertDialogAction>
           </AlertDialogFooter>

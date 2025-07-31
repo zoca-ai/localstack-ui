@@ -1,35 +1,41 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { iamClient } from '@/lib/aws-config';
-import { 
-  ListRolesCommand, 
+import { NextRequest, NextResponse } from "next/server";
+import { iamClient } from "@/lib/aws-config";
+import {
+  ListRolesCommand,
   CreateRoleCommand,
-  ListAttachedRolePoliciesCommand 
-} from '@aws-sdk/client-iam';
-import { IAMRole } from '@/types';
+  ListAttachedRolePoliciesCommand,
+} from "@aws-sdk/client-iam";
+import { IAMRole } from "@/types";
 
 // GET /api/iam/roles - List all IAM roles
 export async function GET() {
   try {
     const command = new ListRolesCommand({});
     const response = await iamClient.send(command);
-    
-    const roles: IAMRole[] = (response.Roles || []).map(role => ({
+
+    const roles: IAMRole[] = (response.Roles || []).map((role) => ({
       roleName: role.RoleName!,
       roleId: role.RoleId!,
       arn: role.Arn!,
       path: role.Path!,
       createDate: role.CreateDate!,
-      assumeRolePolicyDocument: decodeURIComponent(role.AssumeRolePolicyDocument || ''),
+      assumeRolePolicyDocument: decodeURIComponent(
+        role.AssumeRolePolicyDocument || "",
+      ),
       description: role.Description,
       maxSessionDuration: role.MaxSessionDuration,
-      permissionsBoundary: role.PermissionsBoundary ? {
-        permissionsBoundaryType: role.PermissionsBoundary.PermissionsBoundaryType,
-        permissionsBoundaryArn: role.PermissionsBoundary.PermissionsBoundaryArn
-      } : undefined,
-      tags: role.Tags?.map(tag => ({
+      permissionsBoundary: role.PermissionsBoundary
+        ? {
+            permissionsBoundaryType:
+              role.PermissionsBoundary.PermissionsBoundaryType,
+            permissionsBoundaryArn:
+              role.PermissionsBoundary.PermissionsBoundaryArn,
+          }
+        : undefined,
+      tags: role.Tags?.map((tag) => ({
         key: tag.Key!,
-        value: tag.Value!
-      }))
+        value: tag.Value!,
+      })),
     }));
 
     // For each role, get attached policies count
@@ -37,31 +43,38 @@ export async function GET() {
       roles.map(async (role) => {
         try {
           const policiesCmd = new ListAttachedRolePoliciesCommand({
-            RoleName: role.roleName
+            RoleName: role.roleName,
           });
           const policiesResp = await iamClient.send(policiesCmd);
-          const attachedPoliciesCount = policiesResp.AttachedPolicies?.length || 0;
+          const attachedPoliciesCount =
+            policiesResp.AttachedPolicies?.length || 0;
 
           return {
             ...role,
-            attachedPoliciesCount
+            attachedPoliciesCount,
           };
         } catch (error) {
-          console.error(`Error fetching details for role ${role.roleName}:`, error);
+          console.error(
+            `Error fetching details for role ${role.roleName}:`,
+            error,
+          );
           return {
             ...role,
-            attachedPoliciesCount: 0
+            attachedPoliciesCount: 0,
           };
         }
-      })
+      }),
     );
 
     return NextResponse.json(rolesWithDetails);
   } catch (error) {
-    console.error('Error listing IAM roles:', error);
+    console.error("Error listing IAM roles:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to list IAM roles' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error ? error.message : "Failed to list IAM roles",
+      },
+      { status: 500 },
     );
   }
 }
@@ -70,20 +83,20 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
-      roleName, 
-      assumeRolePolicyDocument, 
-      path = '/', 
+    const {
+      roleName,
+      assumeRolePolicyDocument,
+      path = "/",
       description,
       maxSessionDuration,
       tags,
-      permissionsBoundary 
+      permissionsBoundary,
     } = body;
 
     if (!roleName || !assumeRolePolicyDocument) {
       return NextResponse.json(
-        { error: 'Role name and assume role policy document are required' },
-        { status: 400 }
+        { error: "Role name and assume role policy document are required" },
+        { status: 400 },
       );
     }
 
@@ -92,8 +105,8 @@ export async function POST(request: NextRequest) {
       JSON.parse(assumeRolePolicyDocument);
     } catch (e) {
       return NextResponse.json(
-        { error: 'Invalid JSON in assume role policy document' },
-        { status: 400 }
+        { error: "Invalid JSON in assume role policy document" },
+        { status: 400 },
       );
     }
 
@@ -106,15 +119,15 @@ export async function POST(request: NextRequest) {
       PermissionsBoundary: permissionsBoundary,
       Tags: tags?.map((tag: { key: string; value: string }) => ({
         Key: tag.key,
-        Value: tag.value
-      }))
+        Value: tag.value,
+      })),
     });
 
     const response = await iamClient.send(command);
     const role = response.Role;
 
     if (!role) {
-      throw new Error('Role creation failed');
+      throw new Error("Role creation failed");
     }
 
     const newRole: IAMRole = {
@@ -123,25 +136,34 @@ export async function POST(request: NextRequest) {
       arn: role.Arn!,
       path: role.Path!,
       createDate: role.CreateDate!,
-      assumeRolePolicyDocument: decodeURIComponent(role.AssumeRolePolicyDocument || ''),
+      assumeRolePolicyDocument: decodeURIComponent(
+        role.AssumeRolePolicyDocument || "",
+      ),
       description: role.Description,
       maxSessionDuration: role.MaxSessionDuration,
-      permissionsBoundary: role.PermissionsBoundary ? {
-        permissionsBoundaryType: role.PermissionsBoundary.PermissionsBoundaryType,
-        permissionsBoundaryArn: role.PermissionsBoundary.PermissionsBoundaryArn
-      } : undefined,
-      tags: role.Tags?.map(tag => ({
+      permissionsBoundary: role.PermissionsBoundary
+        ? {
+            permissionsBoundaryType:
+              role.PermissionsBoundary.PermissionsBoundaryType,
+            permissionsBoundaryArn:
+              role.PermissionsBoundary.PermissionsBoundaryArn,
+          }
+        : undefined,
+      tags: role.Tags?.map((tag) => ({
         key: tag.Key!,
-        value: tag.Value!
-      }))
+        value: tag.Value!,
+      })),
     };
 
     return NextResponse.json(newRole, { status: 201 });
   } catch (error) {
-    console.error('Error creating IAM role:', error);
+    console.error("Error creating IAM role:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create IAM role' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error ? error.message : "Failed to create IAM role",
+      },
+      { status: 500 },
     );
   }
 }

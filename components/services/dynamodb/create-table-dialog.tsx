@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCreateTable } from '@/hooks/use-dynamodb';
+import { useState } from "react";
+import { useCreateTable } from "@/hooks/use-dynamodb";
 import {
   Dialog,
   DialogContent,
@@ -9,20 +9,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Plus, Trash2, AlertCircle } from "lucide-react";
 
 interface CreateTableDialogProps {
   open: boolean;
@@ -31,31 +31,34 @@ interface CreateTableDialogProps {
 
 interface AttributeDefinition {
   attributeName: string;
-  attributeType: 'S' | 'N' | 'B';
+  attributeType: "S" | "N" | "B";
 }
 
 interface KeySchemaElement {
   attributeName: string;
-  keyType: 'HASH' | 'RANGE';
+  keyType: "HASH" | "RANGE";
 }
 
-export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps) {
-  const [tableName, setTableName] = useState('');
-  const [billingMode, setBillingMode] = useState<'PAY_PER_REQUEST' | 'PROVISIONED'>(
-    'PAY_PER_REQUEST'
-  );
-  const [readCapacity, setReadCapacity] = useState('5');
-  const [writeCapacity, setWriteCapacity] = useState('5');
+export function CreateTableDialog({
+  open,
+  onOpenChange,
+}: CreateTableDialogProps) {
+  const [tableName, setTableName] = useState("");
+  const [billingMode, setBillingMode] = useState<
+    "PAY_PER_REQUEST" | "PROVISIONED"
+  >("PAY_PER_REQUEST");
+  const [readCapacity, setReadCapacity] = useState("5");
+  const [writeCapacity, setWriteCapacity] = useState("5");
   const [attributes, setAttributes] = useState<AttributeDefinition[]>([
-    { attributeName: '', attributeType: 'S' },
+    { attributeName: "", attributeType: "S" },
   ]);
-  const [partitionKey, setPartitionKey] = useState('');
-  const [sortKey, setSortKey] = useState('');
+  const [partitionKey, setPartitionKey] = useState("");
+  const [sortKey, setSortKey] = useState("");
 
   const createTable = useCreateTable();
 
   const handleAddAttribute = () => {
-    setAttributes([...attributes, { attributeName: '', attributeType: 'S' }]);
+    setAttributes([...attributes, { attributeName: "", attributeType: "S" }]);
   };
 
   const handleRemoveAttribute = (index: number) => {
@@ -65,7 +68,7 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
   const handleAttributeChange = (
     index: number,
     field: keyof AttributeDefinition,
-    value: string
+    value: string,
   ) => {
     const newAttributes = [...attributes];
     newAttributes[index] = { ...newAttributes[index], [field]: value };
@@ -80,23 +83,23 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
 
     // Build key schema
     const keySchema: KeySchemaElement[] = [
-      { attributeName: partitionKey, keyType: 'HASH' },
+      { attributeName: partitionKey, keyType: "HASH" },
     ];
     if (sortKey) {
-      keySchema.push({ attributeName: sortKey, keyType: 'RANGE' });
+      keySchema.push({ attributeName: sortKey, keyType: "RANGE" });
     }
 
     // Ensure key attributes are in attribute definitions
     const keyAttributeNames = keySchema.map((k) => k.attributeName);
     const definedAttributeNames = validAttributes.map((a) => a.attributeName);
     const missingKeyAttributes = keyAttributeNames.filter(
-      (name) => !definedAttributeNames.includes(name)
+      (name) => !definedAttributeNames.includes(name),
     );
 
     if (missingKeyAttributes.length > 0) {
       // Add missing key attributes with default type 'S'
       missingKeyAttributes.forEach((name) => {
-        validAttributes.push({ attributeName: name, attributeType: 'S' });
+        validAttributes.push({ attributeName: name, attributeType: "S" });
       });
     }
 
@@ -107,7 +110,7 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
       billingMode,
     };
 
-    if (billingMode === 'PROVISIONED') {
+    if (billingMode === "PROVISIONED") {
       tableConfig.provisionedThroughput = {
         readCapacityUnits: parseInt(readCapacity),
         writeCapacityUnits: parseInt(writeCapacity),
@@ -123,13 +126,13 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
   };
 
   const resetForm = () => {
-    setTableName('');
-    setBillingMode('PAY_PER_REQUEST');
-    setReadCapacity('5');
-    setWriteCapacity('5');
-    setAttributes([{ attributeName: '', attributeType: 'S' }]);
-    setPartitionKey('');
-    setSortKey('');
+    setTableName("");
+    setBillingMode("PAY_PER_REQUEST");
+    setReadCapacity("5");
+    setWriteCapacity("5");
+    setAttributes([{ attributeName: "", attributeType: "S" }]);
+    setPartitionKey("");
+    setSortKey("");
   };
 
   const isValid = tableName && partitionKey;
@@ -161,7 +164,10 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
               <Label>Primary Key</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="partitionKey" className="text-sm text-muted-foreground">
+                  <Label
+                    htmlFor="partitionKey"
+                    className="text-sm text-muted-foreground"
+                  >
                     Partition Key (Required)
                   </Label>
                   <Input
@@ -173,7 +179,10 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
                   />
                 </div>
                 <div>
-                  <Label htmlFor="sortKey" className="text-sm text-muted-foreground">
+                  <Label
+                    htmlFor="sortKey"
+                    className="text-sm text-muted-foreground"
+                  >
                     Sort Key (Optional)
                   </Label>
                   <Input
@@ -202,8 +211,8 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Define attributes that will be used in indexes. Key attributes will be added
-                  automatically.
+                  Define attributes that will be used in indexes. Key attributes
+                  will be added automatically.
                 </AlertDescription>
               </Alert>
               <div className="space-y-2">
@@ -212,7 +221,11 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
                     <Input
                       value={attr.attributeName}
                       onChange={(e) =>
-                        handleAttributeChange(index, 'attributeName', e.target.value)
+                        handleAttributeChange(
+                          index,
+                          "attributeName",
+                          e.target.value,
+                        )
                       }
                       placeholder="Attribute name"
                       className="flex-1"
@@ -220,7 +233,11 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
                     <Select
                       value={attr.attributeType}
                       onValueChange={(value) =>
-                        handleAttributeChange(index, 'attributeType', value as any)
+                        handleAttributeChange(
+                          index,
+                          "attributeType",
+                          value as any,
+                        )
                       }
                     >
                       <SelectTrigger className="w-32">
@@ -248,7 +265,10 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
 
             <div className="space-y-2">
               <Label>Billing Mode</Label>
-              <RadioGroup value={billingMode} onValueChange={setBillingMode as any}>
+              <RadioGroup
+                value={billingMode}
+                onValueChange={setBillingMode as any}
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="PAY_PER_REQUEST" id="on-demand" />
                   <Label htmlFor="on-demand" className="font-normal">
@@ -264,7 +284,7 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
               </RadioGroup>
             </div>
 
-            {billingMode === 'PROVISIONED' && (
+            {billingMode === "PROVISIONED" && (
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="readCapacity">Read Capacity Units</Label>
@@ -302,7 +322,7 @@ export function CreateTableDialog({ open, onOpenChange }: CreateTableDialogProps
               Cancel
             </Button>
             <Button type="submit" disabled={!isValid || createTable.isPending}>
-              {createTable.isPending ? 'Creating...' : 'Create Table'}
+              {createTable.isPending ? "Creating..." : "Create Table"}
             </Button>
           </DialogFooter>
         </form>

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCreateRestApi } from '@/hooks/use-apigateway';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useCreateRestApi } from "@/hooks/use-apigateway";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,33 +11,37 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 export function CreateApiDialog() {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [endpointType, setEndpointType] = useState<'REGIONAL' | 'EDGE' | 'PRIVATE'>('REGIONAL');
-  const [apiKeySource, setApiKeySource] = useState<'HEADER' | 'AUTHORIZER'>('HEADER');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [endpointType, setEndpointType] = useState<
+    "REGIONAL" | "EDGE" | "PRIVATE"
+  >("REGIONAL");
+  const [apiKeySource, setApiKeySource] = useState<"HEADER" | "AUTHORIZER">(
+    "HEADER",
+  );
   const createApi = useCreateRestApi();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name) {
-      toast.error('API name is required');
+      toast.error("API name is required");
       return;
     }
 
@@ -50,7 +54,7 @@ export function CreateApiDialog() {
         },
         apiKeySource,
       });
-      
+
       toast.success(`API "${name}" created successfully`);
       setOpen(false);
       resetForm();
@@ -60,10 +64,10 @@ export function CreateApiDialog() {
   };
 
   const resetForm = () => {
-    setName('');
-    setDescription('');
-    setEndpointType('REGIONAL');
-    setApiKeySource('HEADER');
+    setName("");
+    setDescription("");
+    setEndpointType("REGIONAL");
+    setApiKeySource("HEADER");
   };
 
   return (
@@ -93,7 +97,7 @@ export function CreateApiDialog() {
                 required
               />
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -107,7 +111,12 @@ export function CreateApiDialog() {
 
             <div className="grid gap-2">
               <Label htmlFor="endpointType">Endpoint Type</Label>
-              <Select value={endpointType} onValueChange={(value) => setEndpointType(value as 'REGIONAL' | 'EDGE' | 'PRIVATE')}>
+              <Select
+                value={endpointType}
+                onValueChange={(value) =>
+                  setEndpointType(value as "REGIONAL" | "EDGE" | "PRIVATE")
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -127,7 +136,12 @@ export function CreateApiDialog() {
 
             <div className="grid gap-2">
               <Label htmlFor="apiKeySource">API Key Source</Label>
-              <Select value={apiKeySource} onValueChange={(value) => setApiKeySource(value as 'HEADER' | 'AUTHORIZER')}>
+              <Select
+                value={apiKeySource}
+                onValueChange={(value) =>
+                  setApiKeySource(value as "HEADER" | "AUTHORIZER")
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -154,7 +168,7 @@ export function CreateApiDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={createApi.isPending}>
-              {createApi.isPending ? 'Creating...' : 'Create API'}
+              {createApi.isPending ? "Creating..." : "Create API"}
             </Button>
           </DialogFooter>
         </form>

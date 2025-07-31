@@ -1,16 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { IAMUser, IAMRole, IAMPolicy, IAMAccessKey } from '@/types';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { IAMUser, IAMRole, IAMPolicy, IAMAccessKey } from "@/types";
 
 // User hooks
 export function useIAMUsers() {
   return useQuery({
-    queryKey: ['iam-users'],
+    queryKey: ["iam-users"],
     queryFn: async () => {
-      const response = await fetch('/api/iam/users');
+      const response = await fetch("/api/iam/users");
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch IAM users');
+        throw new Error(error.error || "Failed to fetch IAM users");
       }
       return response.json();
     },
@@ -19,12 +19,12 @@ export function useIAMUsers() {
 
 export function useIAMUser(userName: string, enabled = false) {
   return useQuery({
-    queryKey: ['iam-user', userName],
+    queryKey: ["iam-user", userName],
     queryFn: async () => {
       const response = await fetch(`/api/iam/users/${userName}`);
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch IAM user');
+        throw new Error(error.error || "Failed to fetch IAM user");
       }
       return response.json();
     },
@@ -36,28 +36,28 @@ export function useCreateIAMUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { 
-      userName: string; 
-      path?: string; 
+    mutationFn: async (data: {
+      userName: string;
+      path?: string;
       tags?: Array<{ key: string; value: string }>;
       permissionsBoundary?: string;
     }) => {
-      const response = await fetch('/api/iam/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/iam/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create IAM user');
+        throw new Error(error.error || "Failed to create IAM user");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['iam-users'] });
-      toast.success('IAM user created successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-users"] });
+      toast.success("IAM user created successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -79,21 +79,21 @@ export function useUpdateIAMUser() {
       newPath?: string;
     }) => {
       const response = await fetch(`/api/iam/users/${userName}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newUserName, newPath }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to update IAM user');
+        throw new Error(error.error || "Failed to update IAM user");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['iam-users'] });
-      toast.success('IAM user updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-users"] });
+      toast.success("IAM user updated successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -107,19 +107,19 @@ export function useDeleteIAMUser() {
   return useMutation({
     mutationFn: async (userName: string) => {
       const response = await fetch(`/api/iam/users/${userName}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to delete IAM user');
+        throw new Error(error.error || "Failed to delete IAM user");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['iam-users'] });
-      toast.success('IAM user deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-users"] });
+      toast.success("IAM user deleted successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -130,12 +130,12 @@ export function useDeleteIAMUser() {
 // Access key hooks
 export function useAccessKeys(userName: string, enabled = false) {
   return useQuery({
-    queryKey: ['iam-access-keys', userName],
+    queryKey: ["iam-access-keys", userName],
     queryFn: async () => {
       const response = await fetch(`/api/iam/users/${userName}/access-keys`);
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch access keys');
+        throw new Error(error.error || "Failed to fetch access keys");
       }
       return response.json() as Promise<IAMAccessKey[]>;
     },
@@ -149,19 +149,21 @@ export function useCreateAccessKey() {
   return useMutation({
     mutationFn: async (userName: string) => {
       const response = await fetch(`/api/iam/users/${userName}/access-keys`, {
-        method: 'POST',
+        method: "POST",
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create access key');
+        throw new Error(error.error || "Failed to create access key");
       }
 
       return response.json() as Promise<IAMAccessKey>;
     },
     onSuccess: (_, userName) => {
-      queryClient.invalidateQueries({ queryKey: ['iam-access-keys', userName] });
-      toast.success('Access key created successfully');
+      queryClient.invalidateQueries({
+        queryKey: ["iam-access-keys", userName],
+      });
+      toast.success("Access key created successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -180,24 +182,26 @@ export function useUpdateAccessKey() {
     }: {
       userName: string;
       accessKeyId: string;
-      status: 'Active' | 'Inactive';
+      status: "Active" | "Inactive";
     }) => {
       const response = await fetch(`/api/iam/users/${userName}/access-keys`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accessKeyId, status }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to update access key');
+        throw new Error(error.error || "Failed to update access key");
       }
 
       return response.json();
     },
     onSuccess: (_, { userName }) => {
-      queryClient.invalidateQueries({ queryKey: ['iam-access-keys', userName] });
-      toast.success('Access key updated successfully');
+      queryClient.invalidateQueries({
+        queryKey: ["iam-access-keys", userName],
+      });
+      toast.success("Access key updated successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -219,20 +223,22 @@ export function useDeleteAccessKey() {
       const response = await fetch(
         `/api/iam/users/${userName}/access-keys?accessKeyId=${accessKeyId}`,
         {
-          method: 'DELETE',
-        }
+          method: "DELETE",
+        },
       );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to delete access key');
+        throw new Error(error.error || "Failed to delete access key");
       }
 
       return response.json();
     },
     onSuccess: (_, { userName }) => {
-      queryClient.invalidateQueries({ queryKey: ['iam-access-keys', userName] });
-      toast.success('Access key deleted successfully');
+      queryClient.invalidateQueries({
+        queryKey: ["iam-access-keys", userName],
+      });
+      toast.success("Access key deleted successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -243,12 +249,12 @@ export function useDeleteAccessKey() {
 // Role hooks
 export function useIAMRoles() {
   return useQuery({
-    queryKey: ['iam-roles'],
+    queryKey: ["iam-roles"],
     queryFn: async () => {
-      const response = await fetch('/api/iam/roles');
+      const response = await fetch("/api/iam/roles");
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch IAM roles');
+        throw new Error(error.error || "Failed to fetch IAM roles");
       }
       return response.json();
     },
@@ -257,12 +263,12 @@ export function useIAMRoles() {
 
 export function useIAMRole(roleName: string, enabled = false) {
   return useQuery({
-    queryKey: ['iam-role', roleName],
+    queryKey: ["iam-role", roleName],
     queryFn: async () => {
       const response = await fetch(`/api/iam/roles/${roleName}`);
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch IAM role');
+        throw new Error(error.error || "Failed to fetch IAM role");
       }
       return response.json();
     },
@@ -283,22 +289,22 @@ export function useCreateIAMRole() {
       tags?: Array<{ key: string; value: string }>;
       permissionsBoundary?: string;
     }) => {
-      const response = await fetch('/api/iam/roles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/iam/roles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create IAM role');
+        throw new Error(error.error || "Failed to create IAM role");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['iam-roles'] });
-      toast.success('IAM role created successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-roles"] });
+      toast.success("IAM role created successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -322,22 +328,26 @@ export function useUpdateIAMRole() {
       assumeRolePolicyDocument?: string;
     }) => {
       const response = await fetch(`/api/iam/roles/${roleName}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description, maxSessionDuration, assumeRolePolicyDocument }),
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          description,
+          maxSessionDuration,
+          assumeRolePolicyDocument,
+        }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to update IAM role');
+        throw new Error(error.error || "Failed to update IAM role");
       }
 
       return response.json();
     },
     onSuccess: (_, { roleName }) => {
-      queryClient.invalidateQueries({ queryKey: ['iam-roles'] });
-      queryClient.invalidateQueries({ queryKey: ['iam-role', roleName] });
-      toast.success('IAM role updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-roles"] });
+      queryClient.invalidateQueries({ queryKey: ["iam-role", roleName] });
+      toast.success("IAM role updated successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -351,19 +361,19 @@ export function useDeleteIAMRole() {
   return useMutation({
     mutationFn: async (roleName: string) => {
       const response = await fetch(`/api/iam/roles/${roleName}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to delete IAM role');
+        throw new Error(error.error || "Failed to delete IAM role");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['iam-roles'] });
-      toast.success('IAM role deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-roles"] });
+      toast.success("IAM role deleted successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -372,14 +382,14 @@ export function useDeleteIAMRole() {
 }
 
 // Policy hooks
-export function useIAMPolicies(scope: 'All' | 'AWS' | 'Local' = 'All') {
+export function useIAMPolicies(scope: "All" | "AWS" | "Local" = "All") {
   return useQuery({
-    queryKey: ['iam-policies', scope],
+    queryKey: ["iam-policies", scope],
     queryFn: async () => {
       const response = await fetch(`/api/iam/policies?scope=${scope}`);
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch IAM policies');
+        throw new Error(error.error || "Failed to fetch IAM policies");
       }
       return response.json();
     },
@@ -388,12 +398,14 @@ export function useIAMPolicies(scope: 'All' | 'AWS' | 'Local' = 'All') {
 
 export function useIAMPolicy(policyArn: string, enabled = false) {
   return useQuery({
-    queryKey: ['iam-policy', policyArn],
+    queryKey: ["iam-policy", policyArn],
     queryFn: async () => {
-      const response = await fetch(`/api/iam/policies/${encodeURIComponent(policyArn)}`);
+      const response = await fetch(
+        `/api/iam/policies/${encodeURIComponent(policyArn)}`,
+      );
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to fetch IAM policy');
+        throw new Error(error.error || "Failed to fetch IAM policy");
       }
       return response.json();
     },
@@ -412,22 +424,22 @@ export function useCreateIAMPolicy() {
       description?: string;
       tags?: Array<{ key: string; value: string }>;
     }) => {
-      const response = await fetch('/api/iam/policies', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/iam/policies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create IAM policy');
+        throw new Error(error.error || "Failed to create IAM policy");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['iam-policies'] });
-      toast.success('IAM policy created successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-policies"] });
+      toast.success("IAM policy created successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -448,23 +460,26 @@ export function useUpdateIAMPolicy() {
       policyDocument: string;
       setAsDefault?: boolean;
     }) => {
-      const response = await fetch(`/api/iam/policies/${encodeURIComponent(policyArn)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ policyDocument, setAsDefault }),
-      });
+      const response = await fetch(
+        `/api/iam/policies/${encodeURIComponent(policyArn)}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ policyDocument, setAsDefault }),
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to update IAM policy');
+        throw new Error(error.error || "Failed to update IAM policy");
       }
 
       return response.json();
     },
     onSuccess: (_, { policyArn }) => {
-      queryClient.invalidateQueries({ queryKey: ['iam-policies'] });
-      queryClient.invalidateQueries({ queryKey: ['iam-policy', policyArn] });
-      toast.success('IAM policy updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-policies"] });
+      queryClient.invalidateQueries({ queryKey: ["iam-policy", policyArn] });
+      toast.success("IAM policy updated successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -477,20 +492,23 @@ export function useDeleteIAMPolicy() {
 
   return useMutation({
     mutationFn: async (policyArn: string) => {
-      const response = await fetch(`/api/iam/policies/${encodeURIComponent(policyArn)}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/iam/policies/${encodeURIComponent(policyArn)}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to delete IAM policy');
+        throw new Error(error.error || "Failed to delete IAM policy");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['iam-policies'] });
-      toast.success('IAM policy deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["iam-policies"] });
+      toast.success("IAM policy deleted successfully");
     },
     onError: (error: Error) => {
       toast.error(error.message);

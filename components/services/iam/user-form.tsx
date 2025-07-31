@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,14 +8,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Plus, X, Info } from 'lucide-react';
-import { useCreateIAMUser } from '@/hooks/use-iam';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Plus, X, Info } from "lucide-react";
+import { useCreateIAMUser } from "@/hooks/use-iam";
 
 interface UserFormProps {
   open: boolean;
@@ -28,26 +28,26 @@ interface Tag {
 }
 
 export function UserForm({ open, onOpenChange }: UserFormProps) {
-  const [userName, setUserName] = useState('');
-  const [path, setPath] = useState('/');
+  const [userName, setUserName] = useState("");
+  const [path, setPath] = useState("/");
   const [tags, setTags] = useState<Tag[]>([]);
-  const [newTagKey, setNewTagKey] = useState('');
-  const [newTagValue, setNewTagValue] = useState('');
-  const [error, setError] = useState('');
+  const [newTagKey, setNewTagKey] = useState("");
+  const [newTagValue, setNewTagValue] = useState("");
+  const [error, setError] = useState("");
 
   const createMutation = useCreateIAMUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!userName) {
-      setError('User name is required');
+      setError("User name is required");
       return;
     }
 
     if (!/^[\w+=,.@-]+$/.test(userName)) {
-      setError('User name can only contain alphanumeric characters and +=,.@-');
+      setError("User name can only contain alphanumeric characters and +=,.@-");
       return;
     }
 
@@ -65,29 +65,29 @@ export function UserForm({ open, onOpenChange }: UserFormProps) {
   };
 
   const resetForm = () => {
-    setUserName('');
-    setPath('/');
+    setUserName("");
+    setPath("/");
     setTags([]);
-    setNewTagKey('');
-    setNewTagValue('');
-    setError('');
+    setNewTagKey("");
+    setNewTagValue("");
+    setError("");
   };
 
   const addTag = () => {
     if (newTagKey && newTagValue) {
-      if (tags.some(tag => tag.key === newTagKey)) {
-        setError('Tag key already exists');
+      if (tags.some((tag) => tag.key === newTagKey)) {
+        setError("Tag key already exists");
         return;
       }
       setTags([...tags, { key: newTagKey, value: newTagValue }]);
-      setNewTagKey('');
-      setNewTagValue('');
-      setError('');
+      setNewTagKey("");
+      setNewTagValue("");
+      setError("");
     }
   };
 
   const removeTag = (key: string) => {
-    setTags(tags.filter(tag => tag.key !== key));
+    setTags(tags.filter((tag) => tag.key !== key));
   };
 
   return (
@@ -154,13 +154,17 @@ export function UserForm({ open, onOpenChange }: UserFormProps) {
                     placeholder="Key"
                     value={newTagKey}
                     onChange={(e) => setNewTagKey(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addTag())
+                    }
                   />
                   <Input
                     placeholder="Value"
                     value={newTagValue}
                     onChange={(e) => setNewTagValue(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addTag())
+                    }
                   />
                   <Button
                     type="button"
@@ -178,8 +182,8 @@ export function UserForm({ open, onOpenChange }: UserFormProps) {
             <Alert>
               <Info className="h-4 w-4" />
               <AlertDescription>
-                After creating the user, you can attach policies, add them to groups,
-                and create access keys for programmatic access.
+                After creating the user, you can attach policies, add them to
+                groups, and create access keys for programmatic access.
               </AlertDescription>
             </Alert>
 
@@ -202,7 +206,7 @@ export function UserForm({ open, onOpenChange }: UserFormProps) {
               Cancel
             </Button>
             <Button type="submit" disabled={createMutation.isPending}>
-              {createMutation.isPending ? 'Creating...' : 'Create User'}
+              {createMutation.isPending ? "Creating..." : "Create User"}
             </Button>
           </DialogFooter>
         </form>

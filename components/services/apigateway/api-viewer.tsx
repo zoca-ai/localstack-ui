@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useRestApi } from '@/hooks/use-apigateway';
+import { useRestApi } from "@/hooks/use-apigateway";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Globe, Shield, Zap, Link, Calendar } from 'lucide-react';
-import { ResourceTree } from './resource-tree';
-import { StageList } from './stage-list';
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Globe, Shield, Zap, Link, Calendar } from "lucide-react";
+import { ResourceTree } from "./resource-tree";
+import { StageList } from "./stage-list";
 
 interface ApiViewerProps {
   apiId: string;
@@ -25,9 +25,9 @@ export function ApiViewer({ apiId, open, onOpenChange }: ApiViewerProps) {
   const { data: api, isLoading } = useRestApi(apiId, open);
 
   const getEndpointIcon = (endpointType?: string) => {
-    if (endpointType?.includes('EDGE')) {
+    if (endpointType?.includes("EDGE")) {
       return <Zap className="h-4 w-4 text-yellow-500" />;
-    } else if (endpointType?.includes('PRIVATE')) {
+    } else if (endpointType?.includes("PRIVATE")) {
       return <Shield className="h-4 w-4 text-blue-500" />;
     } else {
       return <Globe className="h-4 w-4 text-green-500" />;
@@ -50,7 +50,7 @@ export function ApiViewer({ apiId, open, onOpenChange }: ApiViewerProps) {
     );
   }
 
-  const endpointUrl = `https://${api?.id}.execute-api.${process.env.NEXT_PUBLIC_AWS_REGION || 'us-east-1'}.localhost.localstack.cloud:4566`;
+  const endpointUrl = `https://${api?.id}.execute-api.${process.env.NEXT_PUBLIC_AWS_REGION || "us-east-1"}.localhost.localstack.cloud:4566`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -69,7 +69,7 @@ export function ApiViewer({ apiId, open, onOpenChange }: ApiViewerProps) {
             <TabsTrigger value="stages">Stages</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
-          
+
           <div className="mt-4 max-h-[calc(90vh-200px)] overflow-y-auto">
             <TabsContent value="overview" className="space-y-4">
               <Card className="p-4">
@@ -80,37 +80,47 @@ export function ApiViewer({ apiId, open, onOpenChange }: ApiViewerProps) {
                     <span className="text-sm font-medium">{api?.name}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">API ID</span>
+                    <span className="text-sm text-muted-foreground">
+                      API ID
+                    </span>
                     <code className="text-xs bg-muted px-1 py-0.5 rounded">
                       {api?.id}
                     </code>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Endpoint Type</span>
+                    <span className="text-sm text-muted-foreground">
+                      Endpoint Type
+                    </span>
                     <div className="flex items-center gap-2">
                       {getEndpointIcon(api?.endpointConfiguration?.types?.[0])}
                       <Badge variant="outline">
-                        {api?.endpointConfiguration?.types?.[0] || 'REGIONAL'}
+                        {api?.endpointConfiguration?.types?.[0] || "REGIONAL"}
                       </Badge>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Created</span>
+                    <span className="text-sm text-muted-foreground">
+                      Created
+                    </span>
                     <span className="text-sm">
                       {api?.createdDate
                         ? new Date(api.createdDate).toLocaleString()
-                        : '-'}
+                        : "-"}
                     </span>
                   </div>
                   {api?.version && (
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Version</span>
+                      <span className="text-sm text-muted-foreground">
+                        Version
+                      </span>
                       <span className="text-sm">{api.version}</span>
                     </div>
                   )}
                   {api?.description && (
                     <div className="pt-2">
-                      <span className="text-sm text-muted-foreground">Description</span>
+                      <span className="text-sm text-muted-foreground">
+                        Description
+                      </span>
                       <p className="text-sm mt-1">{api.description}</p>
                     </div>
                   )}
@@ -127,16 +137,18 @@ export function ApiViewer({ apiId, open, onOpenChange }: ApiViewerProps) {
                     Use this URL to invoke your API (append stage name):
                   </p>
                   <code className="block text-xs bg-muted p-2 rounded">
-                    {endpointUrl}/{'{stage}'}
+                    {endpointUrl}/{"{stage}"}
                   </code>
                 </div>
               </Card>
 
               {api?.binaryMediaTypes && api.binaryMediaTypes.length > 0 && (
                 <Card className="p-4">
-                  <h3 className="text-sm font-semibold mb-3">Binary Media Types</h3>
+                  <h3 className="text-sm font-semibold mb-3">
+                    Binary Media Types
+                  </h3>
                   <div className="flex flex-wrap gap-2">
-                    {api.binaryMediaTypes.map(type => (
+                    {api.binaryMediaTypes.map((type) => (
                       <Badge key={type} variant="secondary">
                         {type}
                       </Badge>
@@ -145,35 +157,52 @@ export function ApiViewer({ apiId, open, onOpenChange }: ApiViewerProps) {
                 </Card>
               )}
             </TabsContent>
-            
+
             <TabsContent value="resources" className="space-y-4">
-              <ResourceTree apiId={apiId} rootResourceId={api?.rootResourceId} />
+              <ResourceTree
+                apiId={apiId}
+                rootResourceId={api?.rootResourceId}
+              />
             </TabsContent>
-            
+
             <TabsContent value="stages" className="space-y-4">
               <StageList apiId={apiId} />
             </TabsContent>
-            
+
             <TabsContent value="settings" className="space-y-4">
               <Card className="p-4">
                 <h3 className="text-sm font-semibold mb-3">API Settings</h3>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">API Key Source</span>
+                    <span className="text-sm text-muted-foreground">
+                      API Key Source
+                    </span>
                     <Badge variant="outline">
-                      {api?.apiKeySource || 'HEADER'}
+                      {api?.apiKeySource || "HEADER"}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Minimum Compression Size</span>
+                    <span className="text-sm text-muted-foreground">
+                      Minimum Compression Size
+                    </span>
                     <span className="text-sm">
-                      {api?.minimumCompressionSize ? `${api.minimumCompressionSize} bytes` : 'Disabled'}
+                      {api?.minimumCompressionSize
+                        ? `${api.minimumCompressionSize} bytes`
+                        : "Disabled"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Execute API Endpoint</span>
-                    <Badge variant={api?.disableExecuteApiEndpoint ? 'destructive' : 'default'}>
-                      {api?.disableExecuteApiEndpoint ? 'Disabled' : 'Enabled'}
+                    <span className="text-sm text-muted-foreground">
+                      Execute API Endpoint
+                    </span>
+                    <Badge
+                      variant={
+                        api?.disableExecuteApiEndpoint
+                          ? "destructive"
+                          : "default"
+                      }
+                    >
+                      {api?.disableExecuteApiEndpoint ? "Disabled" : "Enabled"}
                     </Badge>
                   </div>
                 </div>
@@ -184,9 +213,14 @@ export function ApiViewer({ apiId, open, onOpenChange }: ApiViewerProps) {
                   <h3 className="text-sm font-semibold mb-3">Tags</h3>
                   <div className="space-y-2">
                     {Object.entries(api.tags).map(([key, value]) => (
-                      <div key={key} className="flex items-center justify-between">
+                      <div
+                        key={key}
+                        className="flex items-center justify-between"
+                      >
                         <span className="text-sm font-medium">{key}</span>
-                        <span className="text-sm text-muted-foreground">{value}</span>
+                        <span className="text-sm text-muted-foreground">
+                          {value}
+                        </span>
                       </div>
                     ))}
                   </div>

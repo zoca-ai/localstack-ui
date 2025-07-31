@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useCreateSchedule } from '@/hooks/use-scheduler';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useCreateSchedule } from "@/hooks/use-scheduler";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,43 +11,47 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 interface CreateScheduleDialogProps {
   groupName?: string;
 }
 
-export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDialogProps) {
+export function CreateScheduleDialog({
+  groupName = "default",
+}: CreateScheduleDialogProps) {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [scheduleExpression, setScheduleExpression] = useState('');
-  const [timezone, setTimezone] = useState('UTC');
-  const [targetArn, setTargetArn] = useState('');
-  const [targetRoleArn, setTargetRoleArn] = useState('');
-  const [targetInput, setTargetInput] = useState('');
-  const [state, setState] = useState<'ENABLED' | 'DISABLED'>('ENABLED');
-  const [flexibleWindow, setFlexibleWindow] = useState<'OFF' | 'FLEXIBLE'>('OFF');
-  const [windowMinutes, setWindowMinutes] = useState('15');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [scheduleExpression, setScheduleExpression] = useState("");
+  const [timezone, setTimezone] = useState("UTC");
+  const [targetArn, setTargetArn] = useState("");
+  const [targetRoleArn, setTargetRoleArn] = useState("");
+  const [targetInput, setTargetInput] = useState("");
+  const [state, setState] = useState<"ENABLED" | "DISABLED">("ENABLED");
+  const [flexibleWindow, setFlexibleWindow] = useState<"OFF" | "FLEXIBLE">(
+    "OFF",
+  );
+  const [windowMinutes, setWindowMinutes] = useState("15");
   const createSchedule = useCreateSchedule();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name || !scheduleExpression || !targetArn || !targetRoleArn) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -56,7 +60,7 @@ export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDi
       try {
         JSON.parse(targetInput);
       } catch {
-        toast.error('Invalid JSON in target input field');
+        toast.error("Invalid JSON in target input field");
         return;
       }
     }
@@ -76,10 +80,11 @@ export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDi
         },
         flexibleTimeWindow: {
           mode: flexibleWindow,
-          maximumWindowInMinutes: flexibleWindow === 'FLEXIBLE' ? parseInt(windowMinutes) : undefined,
+          maximumWindowInMinutes:
+            flexibleWindow === "FLEXIBLE" ? parseInt(windowMinutes) : undefined,
         },
       });
-      
+
       toast.success(`Schedule "${name}" created successfully`);
       setOpen(false);
       resetForm();
@@ -89,16 +94,16 @@ export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDi
   };
 
   const resetForm = () => {
-    setName('');
-    setDescription('');
-    setScheduleExpression('');
-    setTimezone('UTC');
-    setTargetArn('');
-    setTargetRoleArn('');
-    setTargetInput('');
-    setState('ENABLED');
-    setFlexibleWindow('OFF');
-    setWindowMinutes('15');
+    setName("");
+    setDescription("");
+    setScheduleExpression("");
+    setTimezone("UTC");
+    setTargetArn("");
+    setTargetRoleArn("");
+    setTargetInput("");
+    setState("ENABLED");
+    setFlexibleWindow("OFF");
+    setWindowMinutes("15");
   };
 
   return (
@@ -128,7 +133,7 @@ export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDi
                 required
               />
             </div>
-            
+
             <div className="grid gap-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -162,8 +167,12 @@ export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDi
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="UTC">UTC</SelectItem>
-                  <SelectItem value="America/New_York">America/New_York</SelectItem>
-                  <SelectItem value="America/Los_Angeles">America/Los_Angeles</SelectItem>
+                  <SelectItem value="America/New_York">
+                    America/New_York
+                  </SelectItem>
+                  <SelectItem value="America/Los_Angeles">
+                    America/Los_Angeles
+                  </SelectItem>
                   <SelectItem value="Europe/London">Europe/London</SelectItem>
                   <SelectItem value="Asia/Tokyo">Asia/Tokyo</SelectItem>
                 </SelectContent>
@@ -209,18 +218,25 @@ export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDi
 
             <div className="grid gap-2">
               <Label>Flexible Time Window</Label>
-              <Select value={flexibleWindow} onValueChange={(value) => setFlexibleWindow(value as 'OFF' | 'FLEXIBLE')}>
+              <Select
+                value={flexibleWindow}
+                onValueChange={(value) =>
+                  setFlexibleWindow(value as "OFF" | "FLEXIBLE")
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="OFF">Off - Run at exact time</SelectItem>
-                  <SelectItem value="FLEXIBLE">Flexible - Run within window</SelectItem>
+                  <SelectItem value="FLEXIBLE">
+                    Flexible - Run within window
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {flexibleWindow === 'FLEXIBLE' && (
+            {flexibleWindow === "FLEXIBLE" && (
               <div className="grid gap-2">
                 <Label htmlFor="windowMinutes">Window Duration (minutes)</Label>
                 <Input
@@ -236,7 +252,12 @@ export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDi
 
             <div className="grid gap-2">
               <Label htmlFor="state">Initial State</Label>
-              <Select value={state} onValueChange={(value) => setState(value as 'ENABLED' | 'DISABLED')}>
+              <Select
+                value={state}
+                onValueChange={(value) =>
+                  setState(value as "ENABLED" | "DISABLED")
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -259,7 +280,7 @@ export function CreateScheduleDialog({ groupName = 'default' }: CreateScheduleDi
               Cancel
             </Button>
             <Button type="submit" disabled={createSchedule.isPending}>
-              {createSchedule.isPending ? 'Creating...' : 'Create Schedule'}
+              {createSchedule.isPending ? "Creating..." : "Create Schedule"}
             </Button>
           </DialogFooter>
         </form>

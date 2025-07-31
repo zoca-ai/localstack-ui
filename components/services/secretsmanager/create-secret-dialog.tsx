@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -20,27 +20,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useCreateSecret, useUpdateSecretValue, useSecret } from '@/hooks/use-secrets-manager';
-import { Secret } from '@/types';
-import { Plus, X, Loader2 } from 'lucide-react';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useCreateSecret,
+  useUpdateSecretValue,
+  useSecret,
+} from "@/hooks/use-secrets-manager";
+import { Secret } from "@/types";
+import { Plus, X, Loader2 } from "lucide-react";
 
 const secretSchema = z.object({
   name: z
     .string()
-    .min(1, 'Secret name is required')
+    .min(1, "Secret name is required")
     .regex(
       /^[a-zA-Z0-9/_+=.@-]+$/,
-      'Secret name can only contain alphanumeric characters and /_+=.@-'
+      "Secret name can only contain alphanumeric characters and /_+=.@-",
     ),
   description: z.string().optional(),
-  secretValue: z.string().min(1, 'Secret value is required'),
+  secretValue: z.string().min(1, "Secret value is required"),
 });
 
 type SecretFormValues = z.infer<typeof secretSchema>;
@@ -59,35 +63,38 @@ export function CreateSecretDialog({
   const createSecret = useCreateSecret();
   const updateSecretValue = useUpdateSecretValue();
   const [tags, setTags] = useState<Record<string, string>>({});
-  const [newTagKey, setNewTagKey] = useState('');
-  const [newTagValue, setNewTagValue] = useState('');
-  const [valueType, setValueType] = useState<'plaintext' | 'json'>('plaintext');
+  const [newTagKey, setNewTagKey] = useState("");
+  const [newTagValue, setNewTagValue] = useState("");
+  const [valueType, setValueType] = useState<"plaintext" | "json">("plaintext");
 
   const form = useForm<SecretFormValues>({
     resolver: zodResolver(secretSchema),
     defaultValues: {
-      name: editingSecret?.name || '',
-      description: editingSecret?.description || '',
-      secretValue: '',
+      name: editingSecret?.name || "",
+      description: editingSecret?.description || "",
+      secretValue: "",
     },
   });
 
   const isEditing = !!editingSecret;
 
   // Fetch existing secret value when editing
-  const { data: secretData, isLoading: isLoadingSecret } = useSecret(editingSecret?.name || null, isEditing && open);
+  const { data: secretData, isLoading: isLoadingSecret } = useSecret(
+    editingSecret?.name || null,
+    isEditing && open,
+  );
 
   // Update form when secret value is loaded
   useEffect(() => {
     if (isEditing && open) {
       if (secretData?.value?.secretString) {
-        form.setValue('secretValue', secretData.value.secretString);
+        form.setValue("secretValue", secretData.value.secretString);
         // Detect if it's JSON
         try {
           JSON.parse(secretData.value.secretString);
-          setValueType('json');
+          setValueType("json");
         } catch {
-          setValueType('plaintext');
+          setValueType("plaintext");
         }
       }
     }
@@ -97,18 +104,18 @@ export function CreateSecretDialog({
   useEffect(() => {
     if (!open) {
       form.reset({
-        name: '',
-        description: '',
-        secretValue: '',
+        name: "",
+        description: "",
+        secretValue: "",
       });
       setTags({});
-      setValueType('plaintext');
+      setValueType("plaintext");
     } else if (editingSecret) {
       // When opening for editing, set the form values
       form.reset({
         name: editingSecret.name,
-        description: editingSecret.description || '',
-        secretValue: '', // This will be populated when the secret value loads
+        description: editingSecret.description || "",
+        secretValue: "", // This will be populated when the secret value loads
       });
       setTags(editingSecret.tags || {});
     }
@@ -117,15 +124,15 @@ export function CreateSecretDialog({
   const onSubmit = async (values: SecretFormValues) => {
     try {
       const secretString = values.secretValue;
-      
+
       // Validate JSON if needed
-      if (valueType === 'json') {
+      if (valueType === "json") {
         try {
           JSON.parse(secretString);
         } catch {
-          form.setError('secretValue', {
-            type: 'manual',
-            message: 'Invalid JSON format',
+          form.setError("secretValue", {
+            type: "manual",
+            message: "Invalid JSON format",
           });
           return;
         }
@@ -154,8 +161,8 @@ export function CreateSecretDialog({
   const addTag = () => {
     if (newTagKey && newTagValue) {
       setTags({ ...tags, [newTagKey]: newTagValue });
-      setNewTagKey('');
-      setNewTagValue('');
+      setNewTagKey("");
+      setNewTagValue("");
     }
   };
 
@@ -167,8 +174,8 @@ export function CreateSecretDialog({
 
   const formatJSON = () => {
     try {
-      const parsed = JSON.parse(form.getValues('secretValue'));
-      form.setValue('secretValue', JSON.stringify(parsed, null, 2));
+      const parsed = JSON.parse(form.getValues("secretValue"));
+      form.setValue("secretValue", JSON.stringify(parsed, null, 2));
     } catch {
       // Invalid JSON, do nothing
     }
@@ -179,12 +186,12 @@ export function CreateSecretDialog({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? 'Update Secret Value' : 'Create New Secret'}
+            {isEditing ? "Update Secret Value" : "Create New Secret"}
           </DialogTitle>
           <DialogDescription>
             {isEditing
-              ? 'Update the value of an existing secret. This will create a new version.'
-              : 'Create a new secret in AWS Secrets Manager.'}
+              ? "Update the value of an existing secret. This will create a new version."
+              : "Create a new secret in AWS Secrets Manager."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -234,7 +241,10 @@ export function CreateSecretDialog({
                   <Skeleton className="h-[150px] w-full" />
                 </div>
               ) : (
-                <Tabs value={valueType} onValueChange={(v) => setValueType(v as 'plaintext' | 'json')}>
+                <Tabs
+                  value={valueType}
+                  onValueChange={(v) => setValueType(v as "plaintext" | "json")}
+                >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="plaintext">Plaintext</TabsTrigger>
                     <TabsTrigger value="json">JSON</TabsTrigger>
@@ -340,11 +350,8 @@ export function CreateSecretDialog({
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                disabled={isEditing && isLoadingSecret}
-              >
-                {isEditing ? 'Update Secret' : 'Create Secret'}
+              <Button type="submit" disabled={isEditing && isLoadingSecret}>
+                {isEditing ? "Update Secret" : "Create Secret"}
               </Button>
             </DialogFooter>
           </form>

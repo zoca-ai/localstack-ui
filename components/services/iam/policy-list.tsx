@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,34 +8,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  MoreHorizontal, 
-  Search, 
-  FileText,
-  Clock,
-  Link
-} from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
-import { useIAMPolicies } from '@/hooks/use-iam';
-import type { IAMPolicy } from '@/types';
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { MoreHorizontal, Search, FileText, Clock, Link } from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
+import { useIAMPolicies } from "@/hooks/use-iam";
+import type { IAMPolicy } from "@/types";
 
 interface PolicyListProps {
   onViewPolicy: (policyArn: string) => void;
@@ -43,9 +37,13 @@ interface PolicyListProps {
   onDeletePolicy: (policyArn: string) => void;
 }
 
-export function PolicyList({ onViewPolicy, onCreatePolicy, onDeletePolicy }: PolicyListProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [scope, setScope] = useState<'All' | 'AWS' | 'Local'>('All');
+export function PolicyList({
+  onViewPolicy,
+  onCreatePolicy,
+  onDeletePolicy,
+}: PolicyListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [scope, setScope] = useState<"All" | "AWS" | "Local">("All");
   const { data: policies, isLoading, error } = useIAMPolicies(scope);
 
   const filteredPolicies = policies?.filter((policy: IAMPolicy) => {
@@ -58,7 +56,7 @@ export function PolicyList({ onViewPolicy, onCreatePolicy, onDeletePolicy }: Pol
   });
 
   const isAWSManaged = (arn: string) => {
-    return arn.includes(':aws:policy/');
+    return arn.includes(":aws:policy/");
   };
 
   if (error) {
@@ -83,7 +81,10 @@ export function PolicyList({ onViewPolicy, onCreatePolicy, onDeletePolicy }: Pol
             className="pl-8"
           />
         </div>
-        <Select value={scope} onValueChange={(value) => setScope(value as 'All' | 'AWS' | 'Local')}>
+        <Select
+          value={scope}
+          onValueChange={(value) => setScope(value as "All" | "AWS" | "Local")}
+        >
           <SelectTrigger className="w-[150px]">
             <SelectValue />
           </SelectTrigger>
@@ -115,17 +116,32 @@ export function PolicyList({ onViewPolicy, onCreatePolicy, onDeletePolicy }: Pol
             {isLoading ? (
               [...Array(3)].map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-48" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-12" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-8" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : filteredPolicies?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-muted-foreground"
+                >
                   No policies found
                 </TableCell>
               </TableRow>
@@ -150,13 +166,13 @@ export function PolicyList({ onViewPolicy, onCreatePolicy, onDeletePolicy }: Pol
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={isAwsManaged ? 'secondary' : 'default'}>
-                        {isAwsManaged ? 'AWS Managed' : 'Customer'}
+                      <Badge variant={isAwsManaged ? "secondary" : "default"}>
+                        {isAwsManaged ? "AWS Managed" : "Customer"}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-muted-foreground line-clamp-1">
-                        {policy.description || 'No description'}
+                        {policy.description || "No description"}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -175,16 +191,21 @@ export function PolicyList({ onViewPolicy, onCreatePolicy, onDeletePolicy }: Pol
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenuTrigger
+                          asChild
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <Button variant="ghost" size="sm">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={(e) => {
-                            e.stopPropagation();
-                            onViewPolicy(policy.arn);
-                          }}>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onViewPolicy(policy.arn);
+                            }}
+                          >
                             View Details
                           </DropdownMenuItem>
                           {!isAwsManaged && (

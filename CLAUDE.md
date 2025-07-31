@@ -7,6 +7,7 @@ This document provides instructions for Claude (AI assistant) on how to work wit
 LocalStack UI is a standalone web-based interface for managing and monitoring LocalStack AWS services during local development. It provides a user-friendly dashboard to interact with various AWS services running locally.
 
 ### Tech Stack
+
 - **Framework**: Next.js 14+ (App Router)
 - **Language**: TypeScript (strict mode)
 - **UI Library**: shadcn/ui
@@ -45,6 +46,7 @@ localstack-ui/
 ## Development Guidelines
 
 ### 1. Code Style and Conventions
+
 - Use TypeScript with strict mode enabled
 - Follow existing code patterns and conventions
 - Use server-side API routes to avoid CORS issues with LocalStack
@@ -53,7 +55,9 @@ localstack-ui/
 - Use dialogs instead of sheets for viewing details
 
 ### 2. Testing Commands
+
 Before committing any changes, run:
+
 ```bash
 npm run lint        # Check for linting errors
 npm run typecheck   # Check TypeScript types
@@ -61,6 +65,7 @@ npm run build       # Build the project
 ```
 
 ### 3. Component Architecture
+
 - Use React Query for all data fetching
 - Implement hooks for service interactions
 - Keep components focused and reusable
@@ -71,6 +76,7 @@ npm run build       # Build the project
 To add support for a new LocalStack service, follow these steps:
 
 ### Step 1: Update Types
+
 Add service-specific types in `/types/index.ts`:
 
 ```typescript
@@ -82,22 +88,24 @@ export interface YourServiceItem {
 ```
 
 ### Step 2: Create AWS Client
+
 Update `/lib/aws-config.ts` to add the new service client:
 
 ```typescript
-import { YourServiceClient } from '@aws-sdk/client-your-service';
+import { YourServiceClient } from "@aws-sdk/client-your-service";
 
 export const yourServiceClient = new YourServiceClient({
   endpoint: LOCALSTACK_ENDPOINT,
   region: AWS_REGION,
   credentials: {
-    accessKeyId: 'test',
-    secretAccessKey: 'test',
+    accessKeyId: "test",
+    secretAccessKey: "test",
   },
 });
 ```
 
 ### Step 3: Create API Routes
+
 Create server-side API routes in `/app/api/your-service/`:
 
 ```typescript
@@ -125,15 +133,16 @@ export async function DELETE(request, { params }) {
 ```
 
 ### Step 4: Create Hooks
+
 Add React hooks in `/hooks/use-your-service.ts`:
 
 ```typescript
 export function useYourServiceItems() {
   return useQuery({
-    queryKey: ['your-service-items'],
+    queryKey: ["your-service-items"],
     queryFn: async () => {
-      const response = await fetch('/api/your-service');
-      if (!response.ok) throw new Error('Failed to fetch');
+      const response = await fetch("/api/your-service");
+      if (!response.ok) throw new Error("Failed to fetch");
       return response.json();
     },
   });
@@ -141,6 +150,7 @@ export function useYourServiceItems() {
 ```
 
 ### Step 5: Create Components
+
 Create UI components in `/components/services/your-service/`:
 
 1. **List Component** (`item-list.tsx`):
@@ -159,6 +169,7 @@ Create UI components in `/components/services/your-service/`:
    - Handle errors gracefully
 
 ### Step 6: Create Service Page
+
 Create the main page in `/app/services/your-service/page.tsx`:
 
 ```typescript
@@ -174,6 +185,7 @@ export default function YourServicePage() {
 ```
 
 ### Step 7: Update Navigation
+
 Add the service to `/config/services.ts`:
 
 ```typescript
@@ -188,6 +200,7 @@ Add the service to `/config/services.ts`:
 ```
 
 ### Step 8: Update Health Check
+
 Add health check in `/hooks/use-localstack.ts`:
 
 ```typescript
@@ -199,21 +212,23 @@ case 'your-service':
 ## Common Patterns
 
 ### Error Handling
+
 Always wrap API calls in try-catch blocks and return appropriate error responses:
 
 ```typescript
 try {
   // Your logic here
 } catch (error: any) {
-  console.error('Error:', error);
+  console.error("Error:", error);
   return NextResponse.json(
-    { error: error.message || 'Operation failed' },
-    { status: 500 }
+    { error: error.message || "Operation failed" },
+    { status: 500 },
   );
 }
 ```
 
 ### Loading States
+
 Use React Query's built-in loading states:
 
 ```typescript
@@ -224,13 +239,14 @@ if (error) return <Alert>Error: {error.message}</Alert>;
 ```
 
 ### Search Implementation
+
 Add search to list components:
 
 ```typescript
-const [searchQuery, setSearchQuery] = useState('');
+const [searchQuery, setSearchQuery] = useState("");
 
-const filteredItems = items?.filter(item =>
-  item.name.toLowerCase().includes(searchQuery.toLowerCase())
+const filteredItems = items?.filter((item) =>
+  item.name.toLowerCase().includes(searchQuery.toLowerCase()),
 );
 ```
 

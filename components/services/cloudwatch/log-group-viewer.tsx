@@ -1,24 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { FileText, Trash2, Plus, RefreshCw } from 'lucide-react';
+import { useState } from "react";
+import { format } from "date-fns";
+import { FileText, Trash2, Plus, RefreshCw } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -26,7 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,17 +31,17 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { formatBytes } from '@/lib/utils';
+} from "@/components/ui/alert-dialog";
+import { formatBytes } from "@/lib/utils";
 import {
   useCloudWatchLogGroup,
   useCloudWatchLogStreams,
   useDeleteCloudWatchLogStream,
-} from '@/hooks/use-cloudwatch';
-import { LogGroupForm } from './log-group-form';
-import { LogViewer } from './log-viewer';
-import { LogStreamForm } from './log-stream-form';
-import type { CloudWatchLogStream } from '@/types';
+} from "@/hooks/use-cloudwatch";
+import { LogGroupForm } from "./log-group-form";
+import { LogViewer } from "./log-viewer";
+import { LogStreamForm } from "./log-stream-form";
+import type { CloudWatchLogStream } from "@/types";
 
 interface LogGroupViewerProps {
   logGroupName: string;
@@ -54,18 +49,30 @@ interface LogGroupViewerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupViewerProps) {
-  const [activeTab, setActiveTab] = useState('details');
+export function LogGroupViewer({
+  logGroupName,
+  open,
+  onOpenChange,
+}: LogGroupViewerProps) {
+  const [activeTab, setActiveTab] = useState("details");
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedStream, setSelectedStream] = useState<CloudWatchLogStream | null>(null);
+  const [selectedStream, setSelectedStream] =
+    useState<CloudWatchLogStream | null>(null);
   const [deleteStream, setDeleteStream] = useState<string | null>(null);
   const [showCreateStream, setShowCreateStream] = useState(false);
 
-  const { data: logGroup, isLoading: isLoadingGroup } = useCloudWatchLogGroup(logGroupName, open);
-  const { data: logStreams, isLoading: isLoadingStreams, refetch: refetchStreams } = useCloudWatchLogStreams(
+  const { data: logGroup, isLoading: isLoadingGroup } = useCloudWatchLogGroup(
     logGroupName,
-    { orderBy: 'LastEventTime', descending: true }
+    open,
   );
+  const {
+    data: logStreams,
+    isLoading: isLoadingStreams,
+    refetch: refetchStreams,
+  } = useCloudWatchLogStreams(logGroupName, {
+    orderBy: "LastEventTime",
+    descending: true,
+  });
   const deleteStreamMutation = useDeleteCloudWatchLogStream();
 
   const handleDeleteStream = async () => {
@@ -95,7 +102,11 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="flex-1 overflow-hidden"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="streams">Log Streams</TabsTrigger>
@@ -125,8 +136,8 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
                         </p>
                         <p className="text-sm">
                           {logGroup?.creationTime
-                            ? format(new Date(logGroup.creationTime), 'PPp')
-                            : '-'}
+                            ? format(new Date(logGroup.creationTime), "PPp")
+                            : "-"}
                         </p>
                       </div>
                       <div className="space-y-2">
@@ -136,7 +147,7 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
                         <p className="text-sm">
                           {logGroup?.retentionInDays
                             ? `${logGroup.retentionInDays} days`
-                            : 'Never expire'}
+                            : "Never expire"}
                         </p>
                       </div>
                       <div className="space-y-2">
@@ -146,21 +157,25 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
                         <p className="text-sm">
                           {logGroup?.storedBytes
                             ? formatBytes(logGroup.storedBytes)
-                            : '0 B'}
+                            : "0 B"}
                         </p>
                       </div>
                       <div className="space-y-2">
                         <p className="text-sm font-medium text-muted-foreground">
                           Metric Filter Count
                         </p>
-                        <p className="text-sm">{logGroup?.metricFilterCount || 0}</p>
+                        <p className="text-sm">
+                          {logGroup?.metricFilterCount || 0}
+                        </p>
                       </div>
                       {logGroup?.arn && (
                         <div className="space-y-2">
                           <p className="text-sm font-medium text-muted-foreground">
                             ARN
                           </p>
-                          <p className="text-sm font-mono break-all">{logGroup.arn}</p>
+                          <p className="text-sm font-mono break-all">
+                            {logGroup.arn}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -189,7 +204,11 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
                 {logStreams?.length || 0} log streams
               </p>
               <div className="flex gap-2">
-                <Button onClick={() => refetchStreams()} variant="outline" size="sm">
+                <Button
+                  onClick={() => refetchStreams()}
+                  variant="outline"
+                  size="sm"
+                >
                   <RefreshCw className="h-4 w-4" />
                 </Button>
                 <Button onClick={() => setShowCreateStream(true)} size="sm">
@@ -239,13 +258,16 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
                           </TableCell>
                           <TableCell>
                             {stream.lastEventTimestamp
-                              ? format(new Date(stream.lastEventTimestamp), 'PPp')
-                              : '-'}
+                              ? format(
+                                  new Date(stream.lastEventTimestamp),
+                                  "PPp",
+                                )
+                              : "-"}
                           </TableCell>
                           <TableCell>
                             {stream.storedBytes
                               ? formatBytes(stream.storedBytes)
-                              : '0 B'}
+                              : "0 B"}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
@@ -255,7 +277,7 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedStream(stream);
-                                  setActiveTab('logs');
+                                  setActiveTab("logs");
                                 }}
                               >
                                 <FileText className="h-4 w-4" />
@@ -292,9 +314,13 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
                     </p>
                   </div>
                   <Badge variant="outline">
-                    Last event: {selectedStream.lastEventTimestamp
-                      ? format(new Date(selectedStream.lastEventTimestamp), 'PPp')
-                      : 'No events'}
+                    Last event:{" "}
+                    {selectedStream.lastEventTimestamp
+                      ? format(
+                          new Date(selectedStream.lastEventTimestamp),
+                          "PPp",
+                        )
+                      : "No events"}
                   </Badge>
                 </div>
                 <LogViewer
@@ -310,13 +336,16 @@ export function LogGroupViewer({ logGroupName, open, onOpenChange }: LogGroupVie
           </TabsContent>
         </Tabs>
 
-        <AlertDialog open={!!deleteStream} onOpenChange={() => setDeleteStream(null)}>
+        <AlertDialog
+          open={!!deleteStream}
+          onOpenChange={() => setDeleteStream(null)}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will permanently delete the log stream "{deleteStream}" and all its events.
-                This action cannot be undone.
+                This will permanently delete the log stream "{deleteStream}" and
+                all its events. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

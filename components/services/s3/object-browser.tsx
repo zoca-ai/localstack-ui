@@ -1,7 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { useS3Objects, useDownloadObject, useDeleteObject, useDeleteObjects } from '@/hooks/use-s3';
+import { useState, useMemo } from "react";
+import {
+  useS3Objects,
+  useDownloadObject,
+  useDeleteObject,
+  useDeleteObjects,
+} from "@/hooks/use-s3";
 import {
   Table,
   TableBody,
@@ -9,17 +14,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +34,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -37,7 +42,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+} from "@/components/ui/breadcrumb";
 import {
   ChevronLeft,
   Download,
@@ -47,8 +52,8 @@ import {
   Search,
   Trash2,
   Upload,
-} from 'lucide-react';
-import { formatDistanceToNow, formatBytes } from '@/lib/utils';
+} from "lucide-react";
+import { formatDistanceToNow, formatBytes } from "@/lib/utils";
 
 interface ObjectBrowserProps {
   bucketName: string;
@@ -56,13 +61,17 @@ interface ObjectBrowserProps {
   onUploadClick: (prefix: string) => void;
 }
 
-export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrowserProps) {
-  const [currentPrefix, setCurrentPrefix] = useState('');
+export function ObjectBrowser({
+  bucketName,
+  onBack,
+  onUploadClick,
+}: ObjectBrowserProps) {
+  const [currentPrefix, setCurrentPrefix] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
-  const [searchQuery, setSearchQuery] = useState('');
-  const [deleteTarget, setDeleteTarget] = useState<{ key: string } | { keys: string[] } | null>(
-    null
-  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<
+    { key: string } | { keys: string[] } | null
+  >(null);
 
   const { data, isLoading } = useS3Objects(bucketName, currentPrefix);
   const downloadObject = useDownloadObject();
@@ -71,13 +80,13 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
 
   const breadcrumbs = useMemo(() => {
     if (!currentPrefix) return [];
-    return currentPrefix.split('/').filter(Boolean);
+    return currentPrefix.split("/").filter(Boolean);
   }, [currentPrefix]);
 
   const filteredObjects = useMemo(() => {
     if (!data || !searchQuery) return data?.objects || [];
     return data.objects.filter((obj: any) =>
-      obj.key.toLowerCase().includes(searchQuery.toLowerCase())
+      obj.key.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [data, searchQuery]);
 
@@ -87,8 +96,8 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
   };
 
   const handleBreadcrumbNavigate = (index: number) => {
-    const newPrefix = breadcrumbs.slice(0, index + 1).join('/') + '/';
-    handleNavigate(index === -1 ? '' : newPrefix);
+    const newPrefix = breadcrumbs.slice(0, index + 1).join("/") + "/";
+    handleNavigate(index === -1 ? "" : newPrefix);
   };
 
   const handleSelectAll = (checked: boolean) => {
@@ -116,7 +125,7 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
   const handleDelete = async () => {
     if (!deleteTarget) return;
 
-    if ('key' in deleteTarget) {
+    if ("key" in deleteTarget) {
       await deleteObject.mutateAsync({ bucketName, key: deleteTarget.key });
     } else {
       await deleteObjects.mutateAsync({ bucketName, keys: deleteTarget.keys });
@@ -133,7 +142,7 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
   };
 
   const getObjectName = (key: string) => {
-    const parts = key.split('/');
+    const parts = key.split("/");
     return parts[parts.length - 1] || parts[parts.length - 2];
   };
 
@@ -167,21 +176,23 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
                   {bucketName}
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              {breadcrumbs.map((crumb, index) => [
-                <BreadcrumbSeparator key={`sep-${index}`} />,
-                <BreadcrumbItem key={`crumb-${index}`}>
-                  {index === breadcrumbs.length - 1 ? (
-                    <BreadcrumbPage>{crumb}</BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink
-                      className="cursor-pointer"
-                      onClick={() => handleBreadcrumbNavigate(index)}
-                    >
-                      {crumb}
-                    </BreadcrumbLink>
-                  )}
-                </BreadcrumbItem>
-              ]).flat()}
+              {breadcrumbs
+                .map((crumb, index) => [
+                  <BreadcrumbSeparator key={`sep-${index}`} />,
+                  <BreadcrumbItem key={`crumb-${index}`}>
+                    {index === breadcrumbs.length - 1 ? (
+                      <BreadcrumbPage>{crumb}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink
+                        className="cursor-pointer"
+                        onClick={() => handleBreadcrumbNavigate(index)}
+                      >
+                        {crumb}
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>,
+                ])
+                .flat()}
             </BreadcrumbList>
           </Breadcrumb>
         </div>
@@ -275,7 +286,9 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleDownload(object.key)}>
+                    <DropdownMenuItem
+                      onClick={() => handleDownload(object.key)}
+                    >
                       <Download className="mr-2 h-4 w-4" />
                       Download
                     </DropdownMenuItem>
@@ -294,7 +307,7 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
         </TableBody>
       </Table>
 
-      {(!data?.objects.length && !data?.prefixes.length) && (
+      {!data?.objects.length && !data?.prefixes.length && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No objects found</p>
           <p className="text-sm text-muted-foreground mt-2">
@@ -311,12 +324,14 @@ export function ObjectBrowser({ bucketName, onBack, onUploadClick }: ObjectBrows
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Objects</AlertDialogTitle>
             <AlertDialogDescription>
-              {deleteTarget && 'key' in deleteTarget
+              {deleteTarget && "key" in deleteTarget
                 ? `Are you sure you want to delete "${getObjectName(
-                    deleteTarget.key
+                    deleteTarget.key,
                   )}"? This action cannot be undone.`
                 : `Are you sure you want to delete ${
-                    deleteTarget && 'keys' in deleteTarget ? deleteTarget.keys.length : 0
+                    deleteTarget && "keys" in deleteTarget
+                      ? deleteTarget.keys.length
+                      : 0
                   } objects? This action cannot be undone.`}
             </AlertDialogDescription>
           </AlertDialogHeader>

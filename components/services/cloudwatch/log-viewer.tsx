@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { format } from 'date-fns';
-import { Search, Download, RefreshCw, Play, Pause } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useState, useEffect, useRef } from "react";
+import { format } from "date-fns";
+import { Search, Download, RefreshCw, Play, Pause } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useCloudWatchLogEvents } from '@/hooks/use-cloudwatch';
+} from "@/components/ui/select";
+import { useCloudWatchLogEvents } from "@/hooks/use-cloudwatch";
 
 interface LogViewerProps {
   logGroupName: string;
@@ -23,35 +23,39 @@ interface LogViewerProps {
 }
 
 export function LogViewer({ logGroupName, logStreamName }: LogViewerProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isTailing, setIsTailing] = useState(false);
-  const [timeRange, setTimeRange] = useState('1h');
+  const [timeRange, setTimeRange] = useState("1h");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const shouldAutoScroll = useRef(true);
 
   const getTimeRange = () => {
     const now = Date.now();
     const ranges: Record<string, number> = {
-      '5m': 5 * 60 * 1000,
-      '15m': 15 * 60 * 1000,
-      '30m': 30 * 60 * 1000,
-      '1h': 60 * 60 * 1000,
-      '3h': 3 * 60 * 60 * 1000,
-      '6h': 6 * 60 * 60 * 1000,
-      '12h': 12 * 60 * 60 * 1000,
-      '1d': 24 * 60 * 60 * 1000,
-      '3d': 3 * 24 * 60 * 60 * 1000,
-      '7d': 7 * 24 * 60 * 60 * 1000,
+      "5m": 5 * 60 * 1000,
+      "15m": 15 * 60 * 1000,
+      "30m": 30 * 60 * 1000,
+      "1h": 60 * 60 * 1000,
+      "3h": 3 * 60 * 60 * 1000,
+      "6h": 6 * 60 * 60 * 1000,
+      "12h": 12 * 60 * 60 * 1000,
+      "1d": 24 * 60 * 60 * 1000,
+      "3d": 3 * 24 * 60 * 60 * 1000,
+      "7d": 7 * 24 * 60 * 60 * 1000,
     };
     return {
-      startTime: now - (ranges[timeRange] || ranges['1h']),
+      startTime: now - (ranges[timeRange] || ranges["1h"]),
       endTime: now,
     };
   };
 
   const { startTime, endTime } = getTimeRange();
 
-  const { data: logEvents, isLoading, refetch } = useCloudWatchLogEvents(
+  const {
+    data: logEvents,
+    isLoading,
+    refetch,
+  } = useCloudWatchLogEvents(
     logGroupName,
     logStreamName,
     {
@@ -60,16 +64,18 @@ export function LogViewer({ logGroupName, logStreamName }: LogViewerProps) {
       limit: 1000,
       startFromHead: !isTailing,
     },
-    true
+    true,
   );
 
-  const filteredEvents = logEvents?.filter(event =>
-    event.message.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredEvents = logEvents?.filter((event) =>
+    event.message.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   useEffect(() => {
     if (shouldAutoScroll.current && scrollAreaRef.current && isTailing) {
-      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      const scrollContainer = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]",
+      );
       if (scrollContainer) {
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
@@ -78,20 +84,24 @@ export function LogViewer({ logGroupName, logStreamName }: LogViewerProps) {
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.target as HTMLDivElement;
-    const isAtBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 10;
+    const isAtBottom =
+      target.scrollTop + target.clientHeight >= target.scrollHeight - 10;
     shouldAutoScroll.current = isAtBottom;
   };
 
   const downloadLogs = () => {
     if (!filteredEvents) return;
-    
-    const content = filteredEvents.map(event => 
-      `${format(new Date(event.timestamp), 'yyyy-MM-dd HH:mm:ss.SSS')} ${event.message}`
-    ).join('\n');
-    
-    const blob = new Blob([content], { type: 'text/plain' });
+
+    const content = filteredEvents
+      .map(
+        (event) =>
+          `${format(new Date(event.timestamp), "yyyy-MM-dd HH:mm:ss.SSS")} ${event.message}`,
+      )
+      .join("\n");
+
+    const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `${logGroupName}-${logStreamName}-${Date.now()}.log`;
     document.body.appendChild(a);
@@ -102,16 +112,16 @@ export function LogViewer({ logGroupName, logStreamName }: LogViewerProps) {
 
   const getLogLevelBadge = (message: string) => {
     const lowerMessage = message.toLowerCase();
-    if (lowerMessage.includes('error') || lowerMessage.includes('fatal')) {
+    if (lowerMessage.includes("error") || lowerMessage.includes("fatal")) {
       return <Badge variant="destructive">ERROR</Badge>;
     }
-    if (lowerMessage.includes('warn')) {
+    if (lowerMessage.includes("warn")) {
       return <Badge variant="secondary">WARN</Badge>;
     }
-    if (lowerMessage.includes('info')) {
+    if (lowerMessage.includes("info")) {
       return <Badge>INFO</Badge>;
     }
-    if (lowerMessage.includes('debug')) {
+    if (lowerMessage.includes("debug")) {
       return <Badge variant="outline">DEBUG</Badge>;
     }
     return null;
@@ -160,7 +170,7 @@ export function LogViewer({ logGroupName, logStreamName }: LogViewerProps) {
         </Button>
         <Button
           onClick={() => setIsTailing(!isTailing)}
-          variant={isTailing ? 'default' : 'outline'}
+          variant={isTailing ? "default" : "outline"}
           size="icon"
         >
           {isTailing ? (
@@ -193,7 +203,7 @@ export function LogViewer({ logGroupName, logStreamName }: LogViewerProps) {
                     className="flex items-start gap-2 hover:bg-muted/50 rounded px-2 py-1"
                   >
                     <span className="text-muted-foreground whitespace-nowrap">
-                      {format(new Date(event.timestamp), 'HH:mm:ss.SSS')}
+                      {format(new Date(event.timestamp), "HH:mm:ss.SSS")}
                     </span>
                     {getLogLevelBadge(event.message)}
                     <span className="flex-1 whitespace-pre-wrap break-all">

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useDynamoDBItems, useDeleteItem } from '@/hooks/use-dynamodb';
+import { useState } from "react";
+import { useDynamoDBItems, useDeleteItem } from "@/hooks/use-dynamodb";
 import {
   Table,
   TableBody,
@@ -9,10 +9,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,16 +23,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Plus, Trash2, Edit, RefreshCw, FileJson } from 'lucide-react';
-import { ItemFormDialog } from './item-form-dialog';
-import { ItemViewerDialog } from './item-viewer-dialog';
+} from "@/components/ui/alert-dialog";
+import { Plus, Trash2, Edit, RefreshCw, FileJson } from "lucide-react";
+import { ItemFormDialog } from "./item-form-dialog";
+import { ItemViewerDialog } from "./item-viewer-dialog";
 
 interface ItemBrowserProps {
   tableName: string;
   keySchema?: Array<{
     attributeName: string;
-    keyType: 'HASH' | 'RANGE';
+    keyType: "HASH" | "RANGE";
   }>;
 }
 
@@ -41,7 +41,7 @@ export function ItemBrowser({ tableName, keySchema }: ItemBrowserProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showViewerDialog, setShowViewerDialog] = useState(false);
-  
+
   const { data, isLoading, error, refetch } = useDynamoDBItems(tableName);
   const deleteItem = useDeleteItem();
 
@@ -89,7 +89,9 @@ export function ItemBrowser({ tableName, keySchema }: ItemBrowserProps) {
   if (error) {
     return (
       <div className="text-center py-8">
-        <p className="text-destructive">Failed to load items: {error.message}</p>
+        <p className="text-destructive">
+          Failed to load items: {error.message}
+        </p>
         <Button onClick={() => refetch()} variant="outline" className="mt-4">
           Try Again
         </Button>
@@ -120,7 +122,7 @@ export function ItemBrowser({ tableName, keySchema }: ItemBrowserProps) {
       <div className="flex justify-between items-center">
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">
-            Showing {itemCount} items{' '}
+            Showing {itemCount} items{" "}
             {scannedCount > itemCount && `(scanned ${scannedCount})`}
           </p>
           {data?.lastEvaluatedKey && (
@@ -145,7 +147,9 @@ export function ItemBrowser({ tableName, keySchema }: ItemBrowserProps) {
         <div className="text-center py-12">
           <FileJson className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold">No items found</h3>
-          <p className="text-muted-foreground">Add your first item to this table.</p>
+          <p className="text-muted-foreground">
+            Add your first item to this table.
+          </p>
         </div>
       ) : (
         <div className="rounded-md border overflow-x-auto">
@@ -175,9 +179,9 @@ export function ItemBrowser({ tableName, keySchema }: ItemBrowserProps) {
                   {orderedKeys.map((key) => (
                     <TableCell key={key} className="max-w-[200px] truncate">
                       {item[key] !== undefined ? (
-                        typeof item[key] === 'object' ? (
+                        typeof item[key] === "object" ? (
                           <Badge variant="secondary">
-                            {Array.isArray(item[key]) ? 'List' : 'Map'}
+                            {Array.isArray(item[key]) ? "List" : "Map"}
                           </Badge>
                         ) : (
                           String(item[key])
@@ -214,8 +218,8 @@ export function ItemBrowser({ tableName, keySchema }: ItemBrowserProps) {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Item</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete this item? This action cannot be
-                              undone.
+                              Are you sure you want to delete this item? This
+                              action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

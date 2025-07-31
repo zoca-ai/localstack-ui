@@ -1,13 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CloudFormationStack, CloudFormationResource, CloudFormationEvent } from '@/types';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  CloudFormationStack,
+  CloudFormationResource,
+  CloudFormationEvent,
+} from "@/types";
 
 // Stack hooks
 export function useStacks() {
   return useQuery<CloudFormationStack[]>({
-    queryKey: ['cloudformation-stacks'],
+    queryKey: ["cloudformation-stacks"],
     queryFn: async () => {
-      const response = await fetch('/api/cloudformation/stacks');
-      if (!response.ok) throw new Error('Failed to fetch stacks');
+      const response = await fetch("/api/cloudformation/stacks");
+      if (!response.ok) throw new Error("Failed to fetch stacks");
       return response.json();
     },
     refetchInterval: 5000, // Refetch every 5 seconds to track stack status
@@ -16,10 +20,12 @@ export function useStacks() {
 
 export function useStack(stackName: string, enabled?: boolean) {
   return useQuery<CloudFormationStack>({
-    queryKey: ['cloudformation-stack', stackName],
+    queryKey: ["cloudformation-stack", stackName],
     queryFn: async () => {
-      const response = await fetch(`/api/cloudformation/stacks/${encodeURIComponent(stackName)}`);
-      if (!response.ok) throw new Error('Failed to fetch stack');
+      const response = await fetch(
+        `/api/cloudformation/stacks/${encodeURIComponent(stackName)}`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch stack");
       return response.json();
     },
     enabled: enabled !== false && !!stackName,
@@ -29,10 +35,12 @@ export function useStack(stackName: string, enabled?: boolean) {
 
 export function useStackTemplate(stackName: string, enabled?: boolean) {
   return useQuery<{ templateBody: string; stagesAvailable: string[] }>({
-    queryKey: ['cloudformation-stack-template', stackName],
+    queryKey: ["cloudformation-stack-template", stackName],
     queryFn: async () => {
-      const response = await fetch(`/api/cloudformation/stacks/${encodeURIComponent(stackName)}?template=true`);
-      if (!response.ok) throw new Error('Failed to fetch template');
+      const response = await fetch(
+        `/api/cloudformation/stacks/${encodeURIComponent(stackName)}?template=true`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch template");
       return response.json();
     },
     enabled: enabled !== false && !!stackName,
@@ -41,7 +49,7 @@ export function useStackTemplate(stackName: string, enabled?: boolean) {
 
 export function useCreateStack() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (data: {
       stackName: string;
@@ -63,23 +71,23 @@ export function useCreateStack() {
       roleARN?: string;
       enableTerminationProtection?: boolean;
     }) => {
-      const response = await fetch('/api/cloudformation/stacks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/cloudformation/stacks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error('Failed to create stack');
+      if (!response.ok) throw new Error("Failed to create stack");
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cloudformation-stacks'] });
+      queryClient.invalidateQueries({ queryKey: ["cloudformation-stacks"] });
     },
   });
 }
 
 export function useUpdateStack() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (data: {
       stackName: string;
@@ -100,39 +108,45 @@ export function useUpdateStack() {
       notificationARNs?: string[];
       roleARN?: string;
     }) => {
-      const response = await fetch('/api/cloudformation/stacks', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/cloudformation/stacks", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error('Failed to update stack');
+      if (!response.ok) throw new Error("Failed to update stack");
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cloudformation-stacks'] });
-      queryClient.invalidateQueries({ queryKey: ['cloudformation-stack'] });
+      queryClient.invalidateQueries({ queryKey: ["cloudformation-stacks"] });
+      queryClient.invalidateQueries({ queryKey: ["cloudformation-stack"] });
     },
   });
 }
 
 export function useDeleteStack() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ stackName, retainResources }: { stackName: string; retainResources?: string[] }) => {
+    mutationFn: async ({
+      stackName,
+      retainResources,
+    }: {
+      stackName: string;
+      retainResources?: string[];
+    }) => {
       const params = new URLSearchParams({ stackName });
       if (retainResources && retainResources.length > 0) {
-        params.append('retainResources', retainResources.join(','));
+        params.append("retainResources", retainResources.join(","));
       }
-      
+
       const response = await fetch(`/api/cloudformation/stacks?${params}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      if (!response.ok) throw new Error('Failed to delete stack');
+      if (!response.ok) throw new Error("Failed to delete stack");
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cloudformation-stacks'] });
+      queryClient.invalidateQueries({ queryKey: ["cloudformation-stacks"] });
     },
   });
 }
@@ -140,10 +154,12 @@ export function useDeleteStack() {
 // Resource hooks
 export function useStackResources(stackName: string, enabled?: boolean) {
   return useQuery<CloudFormationResource[]>({
-    queryKey: ['cloudformation-resources', stackName],
+    queryKey: ["cloudformation-resources", stackName],
     queryFn: async () => {
-      const response = await fetch(`/api/cloudformation/resources?stackName=${encodeURIComponent(stackName)}`);
-      if (!response.ok) throw new Error('Failed to fetch resources');
+      const response = await fetch(
+        `/api/cloudformation/resources?stackName=${encodeURIComponent(stackName)}`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch resources");
       return response.json();
     },
     enabled: enabled !== false && !!stackName,
@@ -151,17 +167,21 @@ export function useStackResources(stackName: string, enabled?: boolean) {
   });
 }
 
-export function useStackResource(stackName: string, logicalResourceId: string, enabled?: boolean) {
+export function useStackResource(
+  stackName: string,
+  logicalResourceId: string,
+  enabled?: boolean,
+) {
   return useQuery<CloudFormationResource[]>({
-    queryKey: ['cloudformation-resource', stackName, logicalResourceId],
+    queryKey: ["cloudformation-resource", stackName, logicalResourceId],
     queryFn: async () => {
       const params = new URLSearchParams({
         stackName,
         logicalResourceId,
       });
-      
+
       const response = await fetch(`/api/cloudformation/resources?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch resource');
+      if (!response.ok) throw new Error("Failed to fetch resource");
       return response.json();
     },
     enabled: enabled !== false && !!stackName && !!logicalResourceId,
@@ -171,10 +191,12 @@ export function useStackResource(stackName: string, logicalResourceId: string, e
 // Event hooks
 export function useStackEvents(stackName: string, enabled?: boolean) {
   return useQuery<CloudFormationEvent[]>({
-    queryKey: ['cloudformation-events', stackName],
+    queryKey: ["cloudformation-events", stackName],
     queryFn: async () => {
-      const response = await fetch(`/api/cloudformation/events?stackName=${encodeURIComponent(stackName)}`);
-      if (!response.ok) throw new Error('Failed to fetch events');
+      const response = await fetch(
+        `/api/cloudformation/events?stackName=${encodeURIComponent(stackName)}`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch events");
       return response.json();
     },
     enabled: enabled !== false && !!stackName,

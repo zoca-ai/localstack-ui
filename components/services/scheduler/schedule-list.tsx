@@ -1,7 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSchedules, useDeleteSchedule, useUpdateSchedule } from '@/hooks/use-scheduler';
+import { useState } from "react";
+import {
+  useSchedules,
+  useDeleteSchedule,
+  useUpdateSchedule,
+} from "@/hooks/use-scheduler";
 import {
   Table,
   TableBody,
@@ -9,14 +13,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
-import { toast } from 'sonner';
-import { Search, Trash2, Clock, Calendar, Layers } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { Search, Trash2, Clock, Calendar, Layers } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,9 +30,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { CreateScheduleDialog } from './create-schedule-dialog';
-import { ScheduleViewer } from './schedule-viewer';
+} from "@/components/ui/alert-dialog";
+import { CreateScheduleDialog } from "./create-schedule-dialog";
+import { ScheduleViewer } from "./schedule-viewer";
 
 interface ScheduleListProps {
   groupName?: string;
@@ -38,13 +42,20 @@ export function ScheduleList({ groupName }: ScheduleListProps) {
   const { data: schedules, isLoading, error } = useSchedules(groupName);
   const deleteSchedule = useDeleteSchedule();
   const updateSchedule = useUpdateSchedule();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSchedule, setSelectedSchedule] = useState<{ name: string; groupName: string } | null>(null);
-  const [scheduleToDelete, setScheduleToDelete] = useState<{ name: string; groupName: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSchedule, setSelectedSchedule] = useState<{
+    name: string;
+    groupName: string;
+  } | null>(null);
+  const [scheduleToDelete, setScheduleToDelete] = useState<{
+    name: string;
+    groupName: string;
+  } | null>(null);
 
-  const filteredSchedules = schedules?.filter(schedule =>
-    schedule.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredSchedules =
+    schedules?.filter((schedule) =>
+      schedule.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+    ) || [];
 
   const handleDelete = async () => {
     if (!scheduleToDelete) return;
@@ -63,7 +74,7 @@ export function ScheduleList({ groupName }: ScheduleListProps) {
 
   const handleToggle = async (schedule: any) => {
     try {
-      const newState = schedule.state === 'ENABLED' ? 'DISABLED' : 'ENABLED';
+      const newState = schedule.state === "ENABLED" ? "DISABLED" : "ENABLED";
       await updateSchedule.mutateAsync({
         name: schedule.name,
         groupName: schedule.groupName,
@@ -123,7 +134,10 @@ export function ScheduleList({ groupName }: ScheduleListProps) {
           <TableBody>
             {filteredSchedules.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={7}
+                  className="text-center text-muted-foreground"
+                >
                   No schedules found
                 </TableCell>
               </TableRow>
@@ -132,10 +146,12 @@ export function ScheduleList({ groupName }: ScheduleListProps) {
                 <TableRow
                   key={`${schedule.groupName}-${schedule.name}`}
                   className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => setSelectedSchedule({
-                    name: schedule.name || '',
-                    groupName: schedule.groupName || 'default'
-                  })}
+                  onClick={() =>
+                    setSelectedSchedule({
+                      name: schedule.name || "",
+                      groupName: schedule.groupName || "default",
+                    })
+                  }
                 >
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
@@ -151,12 +167,14 @@ export function ScheduleList({ groupName }: ScheduleListProps) {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Switch
-                        checked={schedule.state === 'ENABLED'}
+                        checked={schedule.state === "ENABLED"}
                         onCheckedChange={() => handleToggle(schedule)}
                         onClick={(e) => e.stopPropagation()}
                       />
                       <Badge
-                        variant={schedule.state === 'ENABLED' ? 'default' : 'secondary'}
+                        variant={
+                          schedule.state === "ENABLED" ? "default" : "secondary"
+                        }
                       >
                         {schedule.state}
                       </Badge>
@@ -165,16 +183,16 @@ export function ScheduleList({ groupName }: ScheduleListProps) {
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Layers className="h-3 w-3 text-muted-foreground" />
-                      {schedule.groupName || 'default'}
+                      {schedule.groupName || "default"}
                     </div>
                   </TableCell>
                   <TableCell className="max-w-xs truncate">
-                    {schedule.target?.arn || '-'}
+                    {schedule.target?.arn || "-"}
                   </TableCell>
                   <TableCell>
                     {schedule.lastModificationDate
                       ? new Date(schedule.lastModificationDate).toLocaleString()
-                      : '-'}
+                      : "-"}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
@@ -183,8 +201,8 @@ export function ScheduleList({ groupName }: ScheduleListProps) {
                       onClick={(e) => {
                         e.stopPropagation();
                         setScheduleToDelete({
-                          name: schedule.name || '',
-                          groupName: schedule.groupName || 'default'
+                          name: schedule.name || "",
+                          groupName: schedule.groupName || "default",
                         });
                       }}
                     >
@@ -207,17 +225,24 @@ export function ScheduleList({ groupName }: ScheduleListProps) {
         />
       )}
 
-      <AlertDialog open={!!scheduleToDelete} onOpenChange={(open) => !open && setScheduleToDelete(null)}>
+      <AlertDialog
+        open={!!scheduleToDelete}
+        onOpenChange={(open) => !open && setScheduleToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Schedule</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the schedule "{scheduleToDelete?.name}"? This action cannot be undone.
+              Are you sure you want to delete the schedule "
+              {scheduleToDelete?.name}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

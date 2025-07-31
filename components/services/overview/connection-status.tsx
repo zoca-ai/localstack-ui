@@ -1,10 +1,16 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useLocalStackHealth } from '@/hooks/use-localstack';
-import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useLocalStackHealth } from "@/hooks/use-localstack";
+import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 
 export function ConnectionStatus() {
   const { data: health, isLoading, error } = useLocalStackHealth();
@@ -52,9 +58,9 @@ export function ConnectionStatus() {
   };
 
   const statusVariant = {
-    healthy: 'default' as const,
-    unhealthy: 'destructive' as const,
-    unknown: 'secondary' as const,
+    healthy: "default" as const,
+    unhealthy: "destructive" as const,
+    unknown: "secondary" as const,
   };
 
   return (
@@ -69,14 +75,14 @@ export function ConnectionStatus() {
           <div className="flex items-center gap-2">
             {health && statusIcon[health.status]}
             <Badge variant={health && statusVariant[health.status]}>
-              {health?.status || 'Unknown'}
+              {health?.status || "Unknown"}
             </Badge>
           </div>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Endpoint</span>
           <span className="text-sm text-muted-foreground">
-            {health?.endpoint || 'N/A'}
+            {health?.endpoint || "N/A"}
           </span>
         </div>
         <div className="flex items-center justify-between">
@@ -84,7 +90,7 @@ export function ConnectionStatus() {
           <span className="text-sm text-muted-foreground">
             {health?.lastChecked
               ? new Date(health.lastChecked).toLocaleTimeString()
-              : 'N/A'}
+              : "N/A"}
           </span>
         </div>
       </CardContent>

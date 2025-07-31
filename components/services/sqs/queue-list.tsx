@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSQSQueues, useDeleteQueue, usePurgeQueue } from '@/hooks/use-sqs';
+import { useState } from "react";
+import { useSQSQueues, useDeleteQueue, usePurgeQueue } from "@/hooks/use-sqs";
 import {
   Table,
   TableBody,
@@ -9,15 +9,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,9 +27,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { MoreVertical, Trash2, MessageSquare, Eraser } from 'lucide-react';
-import { formatDistanceToNow } from '@/lib/utils';
+} from "@/components/ui/alert-dialog";
+import { MoreVertical, Trash2, MessageSquare, Eraser } from "lucide-react";
+import { formatDistanceToNow } from "@/lib/utils";
 
 interface QueueListProps {
   onSelectQueue: (queueUrl: string, queueName: string) => void;
@@ -39,19 +39,25 @@ export function QueueList({ onSelectQueue }: QueueListProps) {
   const { data: queues, isLoading } = useSQSQueues();
   const deleteQueue = useDeleteQueue();
   const purgeQueue = usePurgeQueue();
-  const [queueToDelete, setQueueToDelete] = useState<{ url: string; name: string } | null>(null);
-  const [queueToPurge, setQueueToPurge] = useState<{ url: string; name: string } | null>(null);
+  const [queueToDelete, setQueueToDelete] = useState<{
+    url: string;
+    name: string;
+  } | null>(null);
+  const [queueToPurge, setQueueToPurge] = useState<{
+    url: string;
+    name: string;
+  } | null>(null);
 
   const handleDeleteQueue = async () => {
     if (!queueToDelete) return;
-    
+
     await deleteQueue.mutateAsync(queueToDelete.url);
     setQueueToDelete(null);
   };
 
   const handlePurgeQueue = async () => {
     if (!queueToPurge) return;
-    
+
     await purgeQueue.mutateAsync(queueToPurge.url);
     setQueueToPurge(null);
   };
@@ -93,12 +99,20 @@ export function QueueList({ onSelectQueue }: QueueListProps) {
           {queues.map((queue) => (
             <TableRow key={queue.queueUrl}>
               <TableCell className="font-medium">{queue.queueName}</TableCell>
-              <TableCell>{queue.attributes?.ApproximateNumberOfMessages || '0'}</TableCell>
-              <TableCell>{queue.attributes?.ApproximateNumberOfMessagesNotVisible || '0'}</TableCell>
+              <TableCell>
+                {queue.attributes?.ApproximateNumberOfMessages || "0"}
+              </TableCell>
+              <TableCell>
+                {queue.attributes?.ApproximateNumberOfMessagesNotVisible || "0"}
+              </TableCell>
               <TableCell>
                 {queue.attributes?.CreatedTimestamp
-                  ? formatDistanceToNow(new Date(parseInt(queue.attributes.CreatedTimestamp) * 1000)) + ' ago'
-                  : 'Unknown'}
+                  ? formatDistanceToNow(
+                      new Date(
+                        parseInt(queue.attributes.CreatedTimestamp) * 1000,
+                      ),
+                    ) + " ago"
+                  : "Unknown"}
               </TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
@@ -108,19 +122,33 @@ export function QueueList({ onSelectQueue }: QueueListProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onSelectQueue(queue.queueUrl, queue.queueName)}>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        onSelectQueue(queue.queueUrl, queue.queueName)
+                      }
+                    >
                       <MessageSquare className="mr-2 h-4 w-4" />
                       View Messages
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => setQueueToPurge({ url: queue.queueUrl, name: queue.queueName })}
+                      onClick={() =>
+                        setQueueToPurge({
+                          url: queue.queueUrl,
+                          name: queue.queueName,
+                        })
+                      }
                     >
                       <Eraser className="mr-2 h-4 w-4" />
                       Purge Queue
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-destructive"
-                      onClick={() => setQueueToDelete({ url: queue.queueUrl, name: queue.queueName })}
+                      onClick={() =>
+                        setQueueToDelete({
+                          url: queue.queueUrl,
+                          name: queue.queueName,
+                        })
+                      }
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete Queue
@@ -133,13 +161,17 @@ export function QueueList({ onSelectQueue }: QueueListProps) {
         </TableBody>
       </Table>
 
-      <AlertDialog open={!!queueToDelete} onOpenChange={() => setQueueToDelete(null)}>
+      <AlertDialog
+        open={!!queueToDelete}
+        onOpenChange={() => setQueueToDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Queue</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the queue &quot;{queueToDelete?.name}&quot;? This action
-              cannot be undone and all messages in the queue will be permanently deleted.
+              Are you sure you want to delete the queue &quot;
+              {queueToDelete?.name}&quot;? This action cannot be undone and all
+              messages in the queue will be permanently deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -154,13 +186,17 @@ export function QueueList({ onSelectQueue }: QueueListProps) {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={!!queueToPurge} onOpenChange={() => setQueueToPurge(null)}>
+      <AlertDialog
+        open={!!queueToPurge}
+        onOpenChange={() => setQueueToPurge(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Purge Queue</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to purge the queue &quot;{queueToPurge?.name}&quot;? This will
-              permanently delete all messages in the queue. This action cannot be undone.
+              Are you sure you want to purge the queue &quot;
+              {queueToPurge?.name}&quot;? This will permanently delete all
+              messages in the queue. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

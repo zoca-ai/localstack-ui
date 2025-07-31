@@ -1,23 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cloudFormationClient } from '@/lib/aws-config';
-import { DescribeStacksCommand, GetTemplateCommand } from '@aws-sdk/client-cloudformation';
+import { NextRequest, NextResponse } from "next/server";
+import { cloudFormationClient } from "@/lib/aws-config";
+import {
+  DescribeStacksCommand,
+  GetTemplateCommand,
+} from "@aws-sdk/client-cloudformation";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { stackName: string } }
+  { params }: { params: { stackName: string } },
 ) {
   try {
     const { searchParams } = new URL(request.url);
-    const getTemplate = searchParams.get('template') === 'true';
-    
+    const getTemplate = searchParams.get("template") === "true";
+
     if (getTemplate) {
       const command = new GetTemplateCommand({
         StackName: params.stackName,
-        TemplateStage: 'Processed',
+        TemplateStage: "Processed",
       });
-      
+
       const response = await cloudFormationClient.send(command);
-      
+
       return NextResponse.json({
         templateBody: response.TemplateBody,
         stagesAvailable: response.StagesAvailable,
@@ -26,17 +29,14 @@ export async function GET(
       const command = new DescribeStacksCommand({
         StackName: params.stackName,
       });
-      
+
       const response = await cloudFormationClient.send(command);
       const stack = response.Stacks?.[0];
-      
+
       if (!stack) {
-        return NextResponse.json(
-          { error: 'Stack not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Stack not found" }, { status: 404 });
       }
-      
+
       return NextResponse.json({
         stackId: stack.StackId,
         stackName: stack.StackName,
@@ -64,10 +64,10 @@ export async function GET(
       });
     }
   } catch (error: any) {
-    console.error('Error describing stack:', error);
+    console.error("Error describing stack:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to describe stack' },
-      { status: 500 }
+      { error: error.message || "Failed to describe stack" },
+      { status: 500 },
     );
   }
 }
