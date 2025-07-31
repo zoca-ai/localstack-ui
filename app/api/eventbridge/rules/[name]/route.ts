@@ -4,14 +4,15 @@ import { DescribeRuleCommand } from "@aws-sdk/client-eventbridge";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } },
+  { params }: { params: Promise<{ name: string }> },
 ) {
   try {
+    const { name } = await params;
     const { searchParams } = new URL(request.url);
     const eventBusName = searchParams.get("eventBusName") || "default";
 
     const command = new DescribeRuleCommand({
-      Name: params.name,
+      Name: name,
       EventBusName: eventBusName,
     });
 

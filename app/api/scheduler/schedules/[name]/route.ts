@@ -4,14 +4,15 @@ import { GetScheduleCommand } from "@aws-sdk/client-scheduler";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } },
+  { params }: { params: Promise<{ name: string }> },
 ) {
   try {
+    const { name } = await params;
     const { searchParams } = new URL(request.url);
     const groupName = searchParams.get("groupName") || "default";
 
     const command = new GetScheduleCommand({
-      Name: params.name,
+      Name: name,
       GroupName: groupName,
     });
 

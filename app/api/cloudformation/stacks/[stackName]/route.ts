@@ -7,15 +7,16 @@ import {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { stackName: string } },
+  { params }: { params: Promise<{ stackName: string }> },
 ) {
   try {
+    const { stackName } = await params;
     const { searchParams } = new URL(request.url);
     const getTemplate = searchParams.get("template") === "true";
 
     if (getTemplate) {
       const command = new GetTemplateCommand({
-        StackName: params.stackName,
+        StackName: stackName,
         TemplateStage: "Processed",
       });
 
@@ -27,7 +28,7 @@ export async function GET(
       });
     } else {
       const command = new DescribeStacksCommand({
-        StackName: params.stackName,
+        StackName: stackName,
       });
 
       const response = await cloudFormationClient.send(command);
