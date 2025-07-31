@@ -63,51 +63,6 @@ export default function SecretsManagerPage() {
           </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Key className="h-5 w-5" />
-                Secure Storage
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Store API keys, database passwords, and other sensitive data
-                securely
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Version Control
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Automatic versioning of secrets with the ability to restore
-                previous versions
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <RefreshCw className="h-5 w-5" />
-                Rotation Support
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Schedule automatic rotation of secrets to maintain security best
-                practices
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
