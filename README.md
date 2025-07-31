@@ -50,7 +50,7 @@ A modern web-based interface for managing and monitoring LocalStack AWS services
 
 6. **Open the application**
    
-   Navigate to [http://localhost:3000](http://localhost:3000)
+   Navigate to [http://localhost:4563](http://localhost:4563)
 
 ## Available Scripts
 
